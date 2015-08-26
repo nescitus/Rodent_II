@@ -27,21 +27,21 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
   MOVES m[1];
   UNDO u[1];
 
-  // QUIESCENCE SEARCH ENTRY POINT
+  // Quiescence search entry point
 
   if (depth <= 0)
     return Quiesce(p, ply, alpha, beta, pv);
 
   nodes++;
 
-  // EARLY EXIT
+  // Early exit
 
   Check();
   if (abort_search) return 0;
   if (ply) *pv = 0;
   if (IsDraw(p) && ply) return 0;
 
-  // TRANSPOSITION TABLE READ
+  // Transposition table read
 
   move = 0;
   if (TransRetrieve(p->key, &move, &score, alpha, beta, depth, ply)) {
@@ -49,15 +49,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 		  return score;
   }
 
-  // SAFEGUARD AGAINST EXCEEDING PLY LIMIT
+  // Safeguard against exceeding MAX_PLY limit
 
   if (ply >= MAX_PLY - 1) return Evaluate(p);
 
   int fl_check = InCheck(p);
 
-  // NULL MOVE
+  // Null move
 
-  if (depth > 1 && beta <= Evaluate(p) && !fl_check && MayNull(p)) {
+  if (depth > 1 
+  && beta <= Evaluate(p) 
+  && !fl_check 
+  && MayNull(p)) {
     DoNull(p, u);
     score = -Search(p, ply + 1, -beta, -beta + 1, depth - 3, new_pv);
     UndoNull(p, u);
@@ -71,18 +74,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
   best = -INF;
   InitMoves(p, m, move, ply);
 
-  // MAIN LOOP
+  // Main loop
 
   while ((move = NextMove(m, &mv_type))) {
     DoMove(p, move, u);
     if (Illegal(p)) { UndoMove(p, move, u); continue; }
 	mv_tried++;
 
-	// SET NEW DEPTH
+	// Set new depth
 
     new_depth = depth - 1 + InCheck(p);
 
-	// LATE MOVE REDUCTION (LMR)
+	// Late move reduction (LMR)
 
 	reduction = 0;
 
@@ -108,7 +111,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
         score = -Search(p, ply + 1, -beta, -alpha, new_depth, new_pv);
     }
 
-	// LMR RE_SEARCH
+	// LMR re-search
 
 	if (reduction && score > alpha) {
 		new_depth += reduction;
@@ -119,7 +122,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
     UndoMove(p, move, u);
     if (abort_search) return 0;
 
-	// BETA CUTOFF
+	// Beta cutoff
 
     if (score >= beta) {
       Hist(p, move, depth, ply);
@@ -127,7 +130,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
       return score;
     }
 
-	// SCORE CHANGE
+	// Node value change
 
     if (score > best) {
       best = score;
@@ -139,12 +142,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
     }
   }
 
-  // RETURN CORRECT CHECKMATE/STALEMATE SCORE
+  // Return correct checkmate/stalemate score
 
   if (best == -INF)
     return InCheck(p) ? -MATE + ply : 0;
 
-  // TRANSPOSITION TABLE WRITE
+  // Transposition table write
 
   if (*pv) {
     Hist(p, *pv, depth, ply);
@@ -152,7 +155,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
   } else
     TransStore(p->key, 0, best, UPPER, depth, ply);
 
-  // EXIT
+  // Exit
 
   return best;
 }
@@ -177,6 +180,9 @@ int IsDraw(POS *p)
 void DisplayPv(int score, int *pv)
 {
   char *type, pv_str[512];
+  int elapsed = GetMS() - start_time;
+  U64 nps = 0;
+  if (elapsed) nps = (nodes * 1000) / elapsed;
 
   type = "mate";
   if (score < -MAX_EVAL)
@@ -185,9 +191,11 @@ void DisplayPv(int score, int *pv)
     score = (MATE - score + 1) / 2;
   else
     type = "cp";
+
   PvToStr(pv, pv_str);
-  printf("info depth %d time %d nodes %d score %s %d pv %s\n",
-      root_depth, GetMS() - start_time, nodes, type, score, pv_str);
+
+  printf("info depth %d time %d nodes %d nps %d score %s %d pv %s\n",
+      root_depth, elapsed, nodes, nps, type, score, pv_str);
 }
 
 void Check(void)

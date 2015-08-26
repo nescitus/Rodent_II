@@ -35,7 +35,7 @@ int move_time;
 int pondering;
 int root_depth;
 int max_depth;
-int nodes;
+U64 nodes;
 int abort_search;
 int start_time;
 ENTRY *tt;
