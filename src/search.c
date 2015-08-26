@@ -29,8 +29,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
   Check();
   if (abort_search) return 0;
   if (ply) *pv = 0;
-  if (Repetition(p) && ply)
-    return 0;
+  if (IsDraw(p) && ply) return 0;
+
   move = 0;
   if (TransRetrieve(p->key, &move, &score, alpha, beta, depth, ply))
     return score;
@@ -95,10 +95,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
   Check();
   if (abort_search) return 0;
   *pv = 0;
-  if (Repetition(p))
-    return 0;
-  if (ply >= MAX_PLY - 1)
-    return Evaluate(p);
+  if (IsDraw(p)) return 0;
+  if (ply >= MAX_PLY - 1) return Evaluate(p);
   best = Evaluate(p);
   if (best >= beta)
     return best;
@@ -124,13 +122,20 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
   return best;
 }
 
-int Repetition(POS *p)
+int IsDraw(POS *p)
 {
-  int i;
+  // Draw by 50 move rule
 
-  for (i = 4; i <= p->rev_moves; i += 2)
-    if (p->key == p->rep_list[p->head - i])
-      return 1;
+  if (p->rev_moves > 100) return 1;
+
+  // Draw by repetition
+
+  for (int i = 4; i <= p->rev_moves; i += 2)
+	  if (p->key == p->rep_list[p->head - i])
+		  return 1;
+
+  // Default: no draw
+
   return 0;
 }
 

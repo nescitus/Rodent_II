@@ -190,7 +190,7 @@ void PvToStr(int *, char *);
 int Quiesce(POS *, int, int, int, int *);
 U64 Random64(void);
 void ReadLine(char *, int);
-int Repetition(POS *);
+int IsDraw(POS *);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *);
 int Search(POS *, int, int, int, int, int *);
