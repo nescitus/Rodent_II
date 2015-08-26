@@ -21,23 +21,41 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 {
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int mv_type;
+  int is_pv = (beta > alpha + 1);
+  int mv_tried = 0;
   MOVES m[1];
   UNDO u[1];
 
+  // QUIESCENCE SEARCH ENTRY POINT
+
   if (depth <= 0)
     return Quiesce(p, ply, alpha, beta, pv);
+
   nodes++;
+
+  // EARLY EXIT
+
   Check();
   if (abort_search) return 0;
   if (ply) *pv = 0;
   if (IsDraw(p) && ply) return 0;
 
+  // TRANSPOSITION TABLE READ
+
   move = 0;
-  if (TransRetrieve(p->key, &move, &score, alpha, beta, depth, ply))
-    return score;
-  if (ply >= MAX_PLY - 1)
-    return Evaluate(p);
-  if (depth > 1 && beta <= Evaluate(p) && !InCheck(p) && MayNull(p)) {
+  if (TransRetrieve(p->key, &move, &score, alpha, beta, depth, ply)) {
+	  return score;
+  }
+
+  // SAFEGUARD AGAINST EXCEEDING PLY LIMIT
+
+  if (ply >= MAX_PLY - 1) return Evaluate(p);
+
+  int fl_check = InCheck(p);
+
+  // NULL MOVE
+
+  if (depth > 1 && beta <= Evaluate(p) && !fl_check && MayNull(p)) {
     DoNull(p, u);
     score = -Search(p, ply + 1, -beta, -beta + 1, depth - 3, new_pv);
     UndoNull(p, u);
@@ -47,12 +65,23 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
       return score;
     }
   }
+
   best = -INF;
   InitMoves(p, m, move, ply);
+
+  // MAIN LOOP
+
   while ((move = NextMove(m, &mv_type))) {
     DoMove(p, move, u);
     if (Illegal(p)) { UndoMove(p, move, u); continue; }
+	mv_tried++;
+
+	// SET NEW DEPTH
+
     new_depth = depth - 1 + InCheck(p);
+
+	// PVS
+
     if (best == -INF)
       score = -Search(p, ply + 1, -beta, -alpha, new_depth, new_pv);
     else {
@@ -62,11 +91,17 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
     }
     UndoMove(p, move, u);
     if (abort_search) return 0;
+
+	// BETA CUTOFF
+
     if (score >= beta) {
       Hist(p, move, depth, ply);
       TransStore(p->key, move, score, LOWER, depth, ply);
       return score;
     }
+
+	// SCORE CHANGE
+
     if (score > best) {
       best = score;
       if (score > alpha) {
@@ -76,50 +111,22 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
       }
     }
   }
+
+  // RETURN CORRECT CHECKMATE/STALEMATE SCORE
+
   if (best == -INF)
     return InCheck(p) ? -MATE + ply : 0;
+
+  // TRANSPOSITION TABLE WRITE
+
   if (*pv) {
     Hist(p, *pv, depth, ply);
     TransStore(p->key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->key, 0, best, UPPER, depth, ply);
-  return best;
-}
 
-int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
-{
-  int best, score, move, new_pv[MAX_PLY];
-  MOVES m[1];
-  UNDO u[1];
+  // EXIT
 
-  nodes++;
-  Check();
-  if (abort_search) return 0;
-  *pv = 0;
-  if (IsDraw(p)) return 0;
-  if (ply >= MAX_PLY - 1) return Evaluate(p);
-  best = Evaluate(p);
-  if (best >= beta)
-    return best;
-  if (best > alpha)
-    alpha = best;
-  InitCaptures(p, m);
-  while ((move = NextCapture(m))) {
-    DoMove(p, move, u);
-    if (Illegal(p)) { UndoMove(p, move, u); continue; }
-    score = -Quiesce(p, ply + 1, -beta, -alpha, new_pv);
-    UndoMove(p, move, u);
-    if (abort_search) return 0;
-    if (score >= beta)
-      return score;
-    if (score > best) {
-      best = score;
-      if (score > alpha) {
-        alpha = score;
-        BuildPv(pv, new_pv, move);
-      }
-    }
-  }
   return best;
 }
 
