@@ -20,6 +20,7 @@ void Think(POS *p, int *pv)
 int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 {
   int best, score, move, new_depth, new_pv[MAX_PLY];
+  int reduction;
   int mv_type;
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0;
@@ -44,7 +45,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 
   move = 0;
   if (TransRetrieve(p->key, &move, &score, alpha, beta, depth, ply)) {
-	  return score;
+	  if (!is_pv || (score > alpha && score < beta)) // in pv nodes only exact scores are returned
+		  return score;
   }
 
   // SAFEGUARD AGAINST EXCEEDING PLY LIMIT
@@ -80,7 +82,23 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 
     new_depth = depth - 1 + InCheck(p);
 
+	// LATE MOVE REDUCTION (LMR)
+
+	reduction = 0;
+
+	if (!fl_check
+	&&  !InCheck(p)
+	&&   mv_tried > 3
+	&&   depth > 3
+	&&  !is_pv
+	&&   mv_type == MV_NORMAL) {
+		 reduction = 1;
+		 new_depth -= reduction;
+	}
+
 	// PVS
+
+	re_search:
 
     if (best == -INF)
       score = -Search(p, ply + 1, -beta, -alpha, new_depth, new_pv);
@@ -89,6 +107,15 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
       if (!abort_search && score > alpha && score < beta)
         score = -Search(p, ply + 1, -beta, -alpha, new_depth, new_pv);
     }
+
+	// LMR RE_SEARCH
+
+	if (reduction && score > alpha) {
+		new_depth += reduction;
+		reduction = 0;
+		goto re_search;
+	}
+
     UndoMove(p, move, u);
     if (abort_search) return 0;
 
