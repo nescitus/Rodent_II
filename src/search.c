@@ -20,6 +20,7 @@ void Think(POS *p, int *pv)
 int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
 {
   int best, score, move, new_depth, new_pv[MAX_PLY];
+  int mv_type;
   MOVES m[1];
   UNDO u[1];
 
@@ -48,7 +49,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv)
   }
   best = -INF;
   InitMoves(p, m, move, ply);
-  while ((move = NextMove(m))) {
+  while ((move = NextMove(m, &mv_type))) {
     DoMove(p, move, u);
     if (Illegal(p)) { UndoMove(p, move, u); continue; }
     new_depth = depth - 1 + InCheck(p);

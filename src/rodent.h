@@ -1,14 +1,15 @@
 #ifndef RODENT_H
 #define RODENT_H
 
-enum {WC, BC, NO_CL};
-enum {P, N, B, R, Q, K, NO_TP};
-enum {WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
-enum {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
-enum {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
-enum {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
-enum {NONE, UPPER, LOWER, EXACT};
-enum {
+enum eColor     {WC, BC, NO_CL};
+enum ePieceType {P, N, B, R, Q, K, NO_TP};
+enum ePiece     {WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
+enum eFileName  {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
+enum eRankName  {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
+enum eMoveType  {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
+enum eMoveFlag  { MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT };
+enum eHashEntry {NONE, UPPER, LOWER, EXACT};
+enum eSquare {
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
   A3, B3, C3, D3, E3, F3, G3, H3,
@@ -180,7 +181,7 @@ int Mobility(POS *, int);
 void MoveToStr(int, char *);
 int MvvLva(POS *, int);
 int NextCapture(MOVES *);
-int NextMove(MOVES *);
+int NextMove(MOVES *, int *);
 void ParseGo(POS *, char *);
 void ParsePosition(POS *, char *);
 void ParseSetoption(char *);
