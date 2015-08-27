@@ -153,9 +153,9 @@ typedef struct {
 } ENTRY;
 
 void AllocTrans(int);
-int Attacked(POS *, int, int);
-U64 AttacksFrom(POS *, int);
-U64 AttacksTo(POS *, int);
+int Attacked(POS *p, int sq, int sd);
+U64 AttacksFrom(POS *p, int sq);
+U64 AttacksTo(POS *p, int sq);
 int BadCapture(POS *, int);
 void BuildPv(int *, int *, int);
 void Check(void);
@@ -173,6 +173,7 @@ int GetMS(void);
 void Hist(POS *, int, int, int);
 void Init(void);
 void InitCaptures(POS *, MOVES *);
+void InitEval(void);
 void InitMoves(POS *, MOVES *, int, int);
 int InputAvailable(void);
 U64 Key(POS *);
