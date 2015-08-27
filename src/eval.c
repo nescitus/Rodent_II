@@ -2,6 +2,9 @@
 #include "eval.h"
 
 #define REL_SQ(sq,cl)   ( sq ^ (cl * 56) )
+#define ShiftNorth(x)   (x<<8)
+#define ShiftSouth(x)   (x>>8)
+
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
@@ -36,12 +39,20 @@ void InitEval(void)
 	}
 }
 
-int Mobility(POS *p, int sd)
+int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbMob, bbAtt;
-  int sq, mob, cnt;
+  U64 bbPieces, bbZone, bbMob, bbAtt;
+  int op = Opp(sd);
+  int sq, mob, cnt, att;
 
-  mob = 0;
+  // Init
+
+  mob = att = 0;
+  bbZone = k_attacks[KingSq(p, op)];
+  if (sd == WC) bbZone |= ShiftSouth(bbZone);
+  if (sd == BC) bbZone |= ShiftNorth(bbZone);
+
+  // Knight
 
   bbPieces = PcBb(p, sd, N);
   while (bbPieces) {
@@ -51,13 +62,18 @@ int Mobility(POS *p, int sd)
 	  eg[sd] += eg_pst_data[sd][N][sq];
 	  phase += 1;
 
-	  bbMob = n_attacks[sq] & ~p->cl_bb[sd];
+	  bbMob = bbAtt = n_attacks[sq] & ~p->cl_bb[sd];
 	  cnt = PopCnt(bbMob);
 	  mg[sd] += n_mob_mg[cnt];
 	  eg[sd] += n_mob_eg[cnt];
 
+	  if (bbAtt & bbZone)
+		  att += 8 * PopCnt(bbAtt & bbZone);
+
 	  bbPieces &= bbPieces - 1;
   }
+
+  // Bishop
 
   bbPieces = PcBb(p, sd, B);
   while (bbPieces) {
@@ -71,8 +87,14 @@ int Mobility(POS *p, int sd)
 	mg[sd] += b_mob_mg[cnt];
 	eg[sd] += b_mob_eg[cnt];
 
+	bbAtt = BAttacks(OccBb(p) ^ PcBb(p, sd, Q), sq);
+	if (bbAtt & bbZone)
+		att += 2 * PopCnt(bbAtt & bbZone);
+
     bbPieces &= bbPieces - 1;
   }
+
+  // Rook
 
   bbPieces = PcBb(p, sd, R);
   while (bbPieces) {
@@ -86,9 +108,14 @@ int Mobility(POS *p, int sd)
 	mg[sd] += r_mob_mg[cnt];
 	eg[sd] += r_mob_eg[cnt];
 
+	bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
+	if (bbAtt & bbZone)
+		att += 3 * PopCnt(bbAtt & bbZone);
     
 	bbPieces &= bbPieces - 1;
   }
+
+  // Queen
 
   bbPieces = PcBb(p, sd, Q);
   while (bbPieces) {
@@ -102,7 +129,16 @@ int Mobility(POS *p, int sd)
 	mg[sd] += q_mob_mg[cnt];
 	eg[sd] += q_mob_eg[cnt];
 
+	bbAtt  = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
+	bbAtt |= BAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, B), sq);
+	if (bbAtt & bbZone)
+		att += 5 * PopCnt(bbAtt & bbZone);
+
     bbPieces &= bbPieces - 1;
+  }
+
+  if (PcBb(p, sd, Q)) {
+	  mob += safety[att];
   }
 
   return mob;
@@ -110,36 +146,40 @@ int Mobility(POS *p, int sd)
 
 int EvaluatePawns(POS *p, int sd)
 {
-  U64 pieces;
+  U64 bbPieces;
   int sq, score;
 
   score = 0;
-  pieces = PcBb(p, sd, P);
-  while (pieces) {
-    sq = FirstOne(pieces);
+  bbPieces = PcBb(p, sd, P);
+  while (bbPieces) {
+    sq = FirstOne(bbPieces);
 
 	mg[sd] += mg_pst_data[sd][P][sq];
 	eg[sd] += eg_pst_data[sd][P][sq];
     
-	if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
-      score += passed_bonus[sd][Rank(sq)];
-    
-	if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-      score -= 20;
+	// Passed pawns
 
-    pieces &= pieces - 1;
+	if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P))) {
+		score += passed_bonus[sd][Rank(sq)];
+	}
+    
+	// Isolated pawns
+
+	if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P))) {
+		score -= 20;
+	}
+
+    bbPieces &= bbPieces - 1;
   }
   return score;
 }
 
-int EvaluateKing(POS *p, int sd)
+void EvaluateKing(POS *p, int sd)
 {
 	int sq = KingSq(p, sd);
 
 	mg[sd] += mg_pst_data[sd][K][sq];
 	eg[sd] += eg_pst_data[sd][K][sq];
-
-    return 0;
 }
 
 int Evaluate(POS *p)
@@ -149,10 +189,11 @@ int Evaluate(POS *p)
   eg[WC] = eg[BC] = 0;
   phase = 0;
 
-  score += Mobility(p, WC) - Mobility(p, BC);
+  score += EvaluatePieces(p, WC) - EvaluatePieces(p, BC);
   //score += p->pst[WC] - p->pst[BC];
   score += EvaluatePawns(p, WC) - EvaluatePawns(p, BC);
-  score += EvaluateKing(p, WC) - EvaluateKing(p, BC);
+  EvaluateKing(p, WC); 
+  EvaluateKing(p, BC);
 
   // Interpolate mg/eg scores
 
@@ -165,11 +206,13 @@ int Evaluate(POS *p)
   score = (((total_mg * phase_mg) + (total_eg * phase_eg)) / 24);
 
   // Keep score below checkmate values
-
+  
   if (score < -MAX_EVAL)
     score = -MAX_EVAL;
   else if (score > MAX_EVAL)
     score = MAX_EVAL;
+
+  // Return score relative to side to move
 
   return p->side == WC ? score : -score;
 }
