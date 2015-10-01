@@ -30,10 +30,9 @@ void ClearTrans(void)
 int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth, int ply)
 {
   ENTRY *entry;
-  int i;
 
   entry = tt + (key & tt_mask);
-  for (i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     if (entry->key == key) {
       entry->date = tt_date;
       *move = entry->move;
@@ -63,6 +62,7 @@ void TransStore(U64 key, int move, int score, int flags, int depth, int ply)
     score -= ply;
   else if (score > MAX_EVAL)
     score += ply;
+
   replace = NULL;
   oldest = -1;
   entry = tt + (key & tt_mask);

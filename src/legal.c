@@ -2,17 +2,18 @@
 
 int Legal(POS *p, int move)
 {
-  int side, fsq, tsq, ftp, ttp;
+  int side = p->side;
+  int fsq = Fsq(move);
+  int tsq = Tsq(move);
+  int ftp = TpOnSq(p, fsq);
+  int ttp = TpOnSq(p, tsq);
 
-  side = p->side;
-  fsq = Fsq(move);
-  tsq = Tsq(move);
-  ftp = TpOnSq(p, fsq);
-  ttp = TpOnSq(p, tsq);
   if (ftp == NO_TP || Cl(p->pc[fsq]) != side)
     return 0;
+
   if (ttp != NO_TP && Cl(p->pc[tsq]) == side)
     return 0;
+
   switch (MoveType(move)) {
   case NORMAL:
     break;
@@ -21,11 +22,11 @@ int Legal(POS *p, int move)
       if (fsq != E1)
         return 0;
       if (tsq > fsq) {
-        if ((p->c_flags & 1) && !(OccBb(p) & (U64)0x0000000000000060))
+        if ((p->castle_flags & 1) && !(OccBb(p) & (U64)0x0000000000000060))
           if (!Attacked(p, E1, BC) && !Attacked(p, F1, BC))
             return 1;
       } else {
-        if ((p->c_flags & 2) && !(OccBb(p) & (U64)0x000000000000000E))
+        if ((p->castle_flags & 2) && !(OccBb(p) & (U64)0x000000000000000E))
           if (!Attacked(p, E1, BC) && !Attacked(p, D1, BC))
             return 1;
       }
@@ -33,11 +34,11 @@ int Legal(POS *p, int move)
       if (fsq != E8)
         return 0;
       if (tsq > fsq) {
-        if ((p->c_flags & 4) && !(OccBb(p) & (U64)0x6000000000000000))
+        if ((p->castle_flags & 4) && !(OccBb(p) & (U64)0x6000000000000000))
           if (!Attacked(p, E8, WC) && !Attacked(p, F8, WC))
             return 1;
       } else {
-        if ((p->c_flags & 8) && !(OccBb(p) & (U64)0x0E00000000000000))
+        if ((p->castle_flags & 8) && !(OccBb(p) & (U64)0x0E00000000000000))
           if (!Attacked(p, E8, WC) && !Attacked(p, D8, WC))
             return 1;
       }

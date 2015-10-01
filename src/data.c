@@ -7,8 +7,7 @@ U64 n_attacks[64];
 U64 k_attacks[64];
 U64 passed_mask[2][64];
 U64 adjacent_mask[8];
-int pst[6][64];
-int c_mask[64];
+int castle_mask[64];
 const int bit_table[64] = {
    0,  1,  2,  7,  3, 13,  8, 19,
    4, 25, 14, 28,  9, 34, 20, 40,
@@ -19,10 +18,7 @@ const int bit_table[64] = {
   62, 11, 23, 32, 36, 44, 52, 55,
   61, 22, 43, 51, 60, 42, 59, 58
 };
-const int passed_bonus[2][8] = {
-  {0, 20, 20, 40, 60, 80, 100, 0},
-  {0, 100, 80, 60, 40, 20, 20, 0}
-};
+
 const int tp_value[7] = {
   100, 325, 325, 500, 1000, 0, 0
 };
@@ -31,13 +27,10 @@ int killer[MAX_PLY][2];
 U64 zob_piece[12][64];
 U64 zob_castle[16];
 U64 zob_ep[8];
-int move_time;
 int pondering;
 int root_depth;
-int max_depth;
 U64 nodes;
 int abort_search;
-int start_time;
 ENTRY *tt;
 int tt_size;
 int tt_mask;

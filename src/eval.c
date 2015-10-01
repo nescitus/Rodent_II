@@ -1,218 +1,293 @@
 #include "rodent.h"
 #include "eval.h"
 
-#define REL_SQ(sq,cl)   ( sq ^ (cl * 56) )
-#define ShiftNorth(x)   (x<<8)
-#define ShiftSouth(x)   (x>>8)
+static const int max_phase = 24;
+static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
-const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
+                                   SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
+                                 };
+static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | SqBb(G2) | SqBb(H2),
+                                   SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
+                                 };
+
+static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_BB, RANK_5_BB, RANK_6_BB, RANK_7_BB, RANK_8_BB },
+                                     { RANK_8_BB, RANK_7_BB, RANK_6_BB, RANK_5_BB, RANK_4_BB, RANK_3_BB, RANK_2_BB, RANK_1_BB } };
+
+static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
+
+U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
 int mg[2];
 int eg[2];
-int phase;
 
 void InitEval(void)
 {
-	// Init piece/square tables (including material values)
-
 	for (int sq = 0; sq < 64; sq++) {
 		for (int sd = 0; sd < 2; sd++) {
-			mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + 100; // TODO: lower material value
-			eg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnEg[sq] + 100; // TODO: lower material value
-
-			mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + 325;
-			eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + 325;
-
-			mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + 325;
-			eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + 325;
-
-			mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + 500;
-			eg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookEg[sq] + 500;
-
-			mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + 975;
-			eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + 975;
-
+			mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
+			eg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnEg[sq] + tp_value[P];
+			mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + tp_value[N];
+			eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + tp_value[N];
+			mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
+			eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
+			mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
+			eg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookEg[sq] + tp_value[R];
+			mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
+			eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
 			mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
 			eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 		}
+	}
+
+	// Init support mask (for detecting weak pawns)
+
+	for (int sq = 0; sq < 64; sq++) {
+		support_mask[WC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+		support_mask[WC][sq] |= FillSouth(support_mask[WC][sq]);
+
+		support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+		support_mask[BC][sq] |= FillNorth(support_mask[BC][sq]);
 	}
 }
 
 int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbZone, bbMob, bbAtt;
-  int op = Opp(sd);
-  int sq, mob, cnt, att;
+  U64 bbPieces, bbMob, bbAtt;
+  int op, sq, cnt, ksq, att, wood, mob;
 
-  // Init
+  op = Opp(sd);
+  ksq = KingSq(p, op);
+  att = 0;
+  wood = 0;
 
-  mob = att = 0;
-  bbZone = k_attacks[KingSq(p, op)];
+  // Init enemy king zone for attack evaluation
+
+  U64 bbZone = k_attacks[ksq];
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
   if (sd == BC) bbZone |= ShiftNorth(bbZone);
 
-  // Knight
+  mob = 0;
 
   bbPieces = PcBb(p, sd, N);
   while (bbPieces) {
-	  sq = FirstOne(bbPieces);
+    sq = PopFirstBit(&bbPieces);
+	  
+	// Knight mobility
 
-	  mg[sd] += mg_pst_data[sd][N][sq];
-	  eg[sd] += eg_pst_data[sd][N][sq];
-	  phase += 1;
+    bbMob = n_attacks[sq] & ~p->cl_bb[sd];
+    cnt = PopCnt(bbMob) - 4;
+    Add(sd, 4*cnt, 4*cnt);
 
-	  bbMob = bbAtt = n_attacks[sq] & ~p->cl_bb[sd];
-	  cnt = PopCnt(bbMob);
-	  mg[sd] += n_mob_mg[cnt];
-	  eg[sd] += n_mob_eg[cnt];
+	// Knight attacks enemy king zone
 
-	  if (bbAtt & bbZone)
-		  att += 8 * PopCnt(bbAtt & bbZone);
-
-	  bbPieces &= bbPieces - 1;
+    bbAtt = n_attacks[sq];
+    if (bbAtt & bbZone) {
+      wood++;
+      att += 5 * PopCnt(bbAtt & bbZone);
+    }
   }
-
-  // Bishop
 
   bbPieces = PcBb(p, sd, B);
   while (bbPieces) {
-    sq = FirstOne(bbPieces);
+    sq = PopFirstBit(&bbPieces);
+	
+	// Bishop mobility
 
-	mg[sd] += mg_pst_data[sd][B][sq];
-	eg[sd] += eg_pst_data[sd][B][sq];
-	phase += 1;
+	bbMob = BAttacks(OccBb(p), sq);
+	cnt = PopCnt(bbMob) - 7;
+	Add(sd, 5 * cnt, 5 * cnt);
 
-    cnt = PopCnt(BAttacks(OccBb(p), sq));
-	mg[sd] += b_mob_mg[cnt];
-	eg[sd] += b_mob_eg[cnt];
+	// Bishop attacks enemy king zone
 
-	bbAtt = BAttacks(OccBb(p) ^ PcBb(p, sd, Q), sq);
-	if (bbAtt & bbZone)
-		att += 2 * PopCnt(bbAtt & bbZone);
-
-    bbPieces &= bbPieces - 1;
+	bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
+	if (bbAtt & bbZone) {
+	  wood++;
+	  att += 4 * PopCnt(bbAtt & bbZone);
+	}
   }
-
-  // Rook
 
   bbPieces = PcBb(p, sd, R);
   while (bbPieces) {
-    sq = FirstOne(bbPieces);
+    sq = PopFirstBit(&bbPieces);
+	
+	// Rook mobility
 
-	mg[sd] += mg_pst_data[sd][R][sq];
-	eg[sd] += eg_pst_data[sd][R][sq];
-	phase += 2;
+	bbMob = RAttacks(OccBb(p), sq);
+	cnt = PopCnt(bbMob) - 7;
+	Add(sd, 2 * cnt, 4 * cnt);
 
-    cnt = PopCnt(RAttacks(OccBb(p), sq));
-	mg[sd] += r_mob_mg[cnt];
-	eg[sd] += r_mob_eg[cnt];
+	// Rook attacks enemy king zone
 
 	bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
-	if (bbAtt & bbZone)
-		att += 3 * PopCnt(bbAtt & bbZone);
-    
-	bbPieces &= bbPieces - 1;
+	if (bbAtt & bbZone) {
+	  wood++;
+	  att += 8 * PopCnt(bbAtt & bbZone);
+	}
   }
-
-  // Queen
 
   bbPieces = PcBb(p, sd, Q);
   while (bbPieces) {
-    sq = FirstOne(bbPieces);
+    sq = PopFirstBit(&bbPieces);
 
-	mg[sd] += mg_pst_data[sd][Q][sq];
-	eg[sd] += eg_pst_data[sd][Q][sq];
-	phase += 4;
+	// Queen mobility
 
-    cnt = PopCnt(QAttacks(OccBb(p), sq));
-	mg[sd] += q_mob_mg[cnt];
-	eg[sd] += q_mob_eg[cnt];
+	bbMob = QAttacks(OccBb(p), sq);
+	cnt = PopCnt(bbMob) - 14;
+	Add(sd, 1 * cnt, 2 * cnt);
 
-	bbAtt  = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
-	bbAtt |= BAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, B), sq);
-	if (bbAtt & bbZone)
-		att += 5 * PopCnt(bbAtt & bbZone);
-
-    bbPieces &= bbPieces - 1;
+	// Queen attacks enemy king zone
+	 
+	bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+	bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+	if (bbAtt & bbZone) {
+	  wood++;
+	  att += 16 * PopCnt(bbAtt & bbZone);
+	}
   }
 
-  if (PcBb(p, sd, Q)) {
-	  mob += safety[att];
-  }
-
+  if (wood > 1) mob += att * (wood-1);
+  
   return mob;
 }
 
-int EvaluatePawns(POS *p, int sd)
+void EvaluatePawns(POS *p, int sd)
 {
-  U64 bbPieces;
-  int sq, score;
+	U64 bbPieces;
+  int sq;
 
-  score = 0;
   bbPieces = PcBb(p, sd, P);
   while (bbPieces) {
-    sq = FirstOne(bbPieces);
+    sq = PopFirstBit(&bbPieces);
 
-	mg[sd] += mg_pst_data[sd][P][sq];
-	eg[sd] += eg_pst_data[sd][P][sq];
-    
-	// Passed pawns
+	// Passed pawn
 
-	if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P))) {
-		score += passed_bonus[sd][Rank(sq)];
-	}
-    
-	// Isolated pawns
+	if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
+		Add(sd, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
 
-	if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P))) {
-		score -= 20;
-	}
+	// Isolated pawn
 
-    bbPieces &= bbPieces - 1;
+	if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
+		Add(sd, -20, -20);
+
+	// Backward pawn
+
+	else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+		Add(sd, -16, -8);
   }
-  return score;
 }
 
 void EvaluateKing(POS *p, int sd)
 {
+	const int startSq[2] = { E1, E8 };
+	const int qCastle[2] = { B1, B8 };
+	const int kCastle[2] = { G1, G8 };
+
+	U64 bbKingFile, bbNextFile;
+	int result = 0;
 	int sq = KingSq(p, sd);
 
-	mg[sd] += mg_pst_data[sd][K][sq];
-	eg[sd] += eg_pst_data[sd][K][sq];
+	// Normalize king square for pawn shield evaluation,
+	// to discourage shuffling the king between g1 and h1.
+
+	if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
+	if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
+
+	// Evaluate shielding and storming pawns on each file.
+
+	bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+	result += EvalKingFile(p, sd, bbKingFile);
+
+	bbNextFile = ShiftEast(bbKingFile);
+	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+
+	bbNextFile = ShiftWest(bbKingFile);
+	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+
+	mg[sd] += result;
+
 }
 
+int EvalKingFile(POS * p, int sd, U64 bbFile)
+{
+	int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
+	int storm = EvalFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
+	if (bbFile & bbCentralFile) return (shelter / 2) + storm;
+	else return shelter + storm;
+}
+
+int EvalFileShelter(U64 bbOwnPawns, int sd)
+{
+	if (!bbOwnPawns) return -36;
+	if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
+	if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
+	if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
+	if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
+	if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
+	if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
+	return 0;
+}
+
+int EvalFileStorm(U64 bbOppPawns, int sd)
+{
+	if (!bbOppPawns) return -16;
+	if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
+	if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
+	if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
+	return 0;
+}
+ 
 int Evaluate(POS *p)
 {
+  // Init eval with incrementally updated stuff
+
   int score = 0;
-  mg[WC] = mg[BC] = 0;
-  eg[WC] = eg[BC] = 0;
-  phase = 0;
+  mg[WC] = p->mg_pst[WC];
+  mg[BC] = p->mg_pst[BC];
+  eg[WC] = p->eg_pst[WC];
+  eg[BC] = p->eg_pst[BC];
+
+  // Tempo bonus
+
+  mg[p->side] += 10;
+  eg[p->side] += 5;
+
+  // Bishop pair
+
+  if (PopCnt(PcBb(p, WC, B)) > 1) score += 50;
+  if (PopCnt(PcBb(p, BC, B)) > 1) score -= 50;
+
+  // Evaluate pieces and pawns
 
   score += EvaluatePieces(p, WC) - EvaluatePieces(p, BC);
-  //score += p->pst[WC] - p->pst[BC];
-  score += EvaluatePawns(p, WC) - EvaluatePawns(p, BC);
-  EvaluateKing(p, WC); 
+  EvaluatePawns(p, WC); 
+  EvaluatePawns(p, BC);
+  EvaluateKing(p, WC);
   EvaluateKing(p, BC);
-
-  // Interpolate mg/eg scores
-
-  int total_mg = mg[WC] - mg[BC];
-  int total_eg = eg[WC] - eg[BC];
-  int phase_mg = phase;
-  if (phase_mg > 24) phase_mg = 24;
-  int phase_eg = 24 - phase_mg;
-
-  score = (((total_mg * phase_mg) + (total_eg * phase_eg)) / 24);
-
-  // Keep score below checkmate values
   
+  // Merge mg/eg scores
+
+  int mg_phase = Min(max_phase, p->phase);
+  int eg_phase = max_phase - mg_phase;
+  int mg_score = mg[WC] - mg[BC];
+  int eg_score = eg[WC] - eg[BC];
+  score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
+
+  // Make sure eval doesn't exceed mate score
+
   if (score < -MAX_EVAL)
     score = -MAX_EVAL;
   else if (score > MAX_EVAL)
     score = MAX_EVAL;
 
-  // Return score relative to side to move
+  // Return score relative to the side to move
 
   return p->side == WC ? score : -score;
+}
+
+void Add(int sd, int mg_bonus, int eg_bonus)
+{
+	mg[sd] += mg_bonus;
+	eg[sd] += eg_bonus;
 }

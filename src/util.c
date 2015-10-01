@@ -44,18 +44,6 @@ int InputAvailable(void)
 #endif
 }
 
-int GetMS(void)
-{
-#if defined(_WIN32) || defined(_WIN64)
-  return GetTickCount();
-#else
-  struct timeval tv;
-
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
-#endif
-}
-
 U64 Random64(void)
 {
   static U64 next = 1;
@@ -64,21 +52,35 @@ U64 Random64(void)
   return next;
 }
 
-U64 Key(POS *p)
+U64 InitHashKey(POS *p)
 {
-  int i;
-  U64 key;
+  U64 key = 0;
 
-  key = 0;
-  for (i = 0; i < 64; i++)
+  for (int i = 0; i < 64; i++)
     if (p->pc[i] != NO_PC)
       key ^= zob_piece[p->pc[i]][i];
-  key ^= zob_castle[p->c_flags];
+
+  key ^= zob_castle[p->castle_flags];
+  
   if (p->ep_sq != NO_SQ)
     key ^= zob_ep[File(p->ep_sq)];
+
   if (p->side == BC)
     key ^= SIDE_RANDOM;
+
   return key;
+}
+
+U64 InitPawnKey(POS *p)
+{
+	U64 key = 0;
+
+	for (int i = 0; i < 64; i++) {
+		if ((p->tp_bb[P] & SqBb(i)) || (p->tp_bb[K] & SqBb(i)))
+			key ^= zob_piece[p->pc[i]][i];
+	}
+
+	return key;
 }
 
 int PopCnt(U64 bb)
@@ -94,9 +96,30 @@ int PopCnt(U64 bb)
   return (bb * k4) >> 56;
 }
 
+int PopFirstBit(U64 * bb)
+{
+	U64 bbLocal = *bb;
+	*bb &= (*bb - 1);
+	return FirstOne(bbLocal);
+}
+
+U64 FillNorth(U64 bb) {
+	bb |= bb << 8;
+	bb |= bb << 16;
+	bb |= bb << 32;
+	return bb;
+}
+
+U64 FillSouth(U64 bb) {
+	bb |= bb >> 8;
+	bb |= bb >> 16;
+	bb |= bb >> 32;
+	return bb;
+}
+
 void MoveToStr(int move, char *move_str)
 {
-  static const char prom_char[4] = "nbrq";
+  static const char prom_char[5] = "nbrq";
 
   move_str[0] = File(Fsq(move)) + 'a';
   move_str[1] = Rank(Fsq(move)) + '1';

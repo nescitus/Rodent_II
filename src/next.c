@@ -14,7 +14,7 @@ int NextMove(MOVES *m, int *flag)
 	int move;
 
 	switch (m->phase) {
-	case 0:
+	case 0: // return transposition table move, if legal
 		move = m->trans_move;
 		if (move && Legal(m->p, move)) {
 			m->phase = 1;
@@ -22,14 +22,14 @@ int NextMove(MOVES *m, int *flag)
 			return move;
 		}
 
-	case 1:
+	case 1: // helper phase: generate captures
 		m->last = GenerateCaptures(m->p, m->move);
 		ScoreCaptures(m);
 		m->next = m->move;
 		m->badp = m->bad;
 		m->phase = 2;
 
-	case 2:
+	case 2: // return good captures, save bad ones on the separate list
 		while (m->next < m->last) {
 			move = SelectBest(m);
 
@@ -44,7 +44,7 @@ int NextMove(MOVES *m, int *flag)
 			return move;
 		}
 
-	case 3:
+	case 3:  // first killer move
 		move = m->killer1;
 		if (move && move != m->trans_move &&
 			m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
@@ -53,7 +53,7 @@ int NextMove(MOVES *m, int *flag)
 			return move;
 		}
 
-	case 4:
+	case 4:  // second killer move
 		move = m->killer2;
 		if (move && move != m->trans_move &&
 			m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
@@ -62,13 +62,13 @@ int NextMove(MOVES *m, int *flag)
 			return move;
 		}
 
-	case 5:
+	case 5:  // helper phase: generate quiet moves
 		m->last = GenerateQuiet(m->p, m->move);
 		ScoreQuiet(m);
 		m->next = m->move;
 		m->phase = 6;
 
-	case 6:
+	case 6:  // return quiet moves
 		while (m->next < m->last) {
 			move = SelectBest(m);
 			if (move == m->trans_move ||
@@ -82,7 +82,7 @@ int NextMove(MOVES *m, int *flag)
 		m->next = m->bad;
 		m->phase = 7;
 
-	case 7:
+	case 7: // return bad captures
 		if (m->next < m->badp) {
 			*flag = MV_BADCAPT;
 			return *m->next++;
@@ -151,14 +151,15 @@ int SelectBest(MOVES *m)
 
 int BadCapture(POS *p, int move)
 {
-  int fsq, tsq;
+  int fsq = Fsq(move);
+  int tsq = Tsq(move);
 
-  fsq = Fsq(move);
-  tsq = Tsq(move);
   if (tp_value[TpOnSq(p, tsq)] >= tp_value[TpOnSq(p, fsq)])
     return 0;
+
   if (MoveType(move) == EP_CAP)
     return 0;
+
   return Swap(p, fsq, tsq) < 0;
 }
 
@@ -166,29 +167,47 @@ int MvvLva(POS *p, int move)
 {
   if (p->pc[Tsq(move)] != NO_PC)
     return TpOnSq(p, Tsq(move)) * 6 + 5 - TpOnSq(p, Fsq(move));
+
   if (IsProm(move))
     return PromType(move) - 5;
+
   return 5;
 }
 
 void ClearHist(void)
 {
-  int i, j;
-
-  for (i = 0; i < 12; i++)
-    for (j = 0; j < 64; j++)
+  for (int i = 0; i < 12; i++)
+    for (int j = 0; j < 64; j++)
       history[i][j] = 0;
-  for (i = 0; i < MAX_PLY; i++) {
+
+  for (int i = 0; i < MAX_PLY; i++) {
     killer[i][0] = 0;
     killer[i][1] = 0;
   }
 }
 
-void Hist(POS *p, int move, int depth, int ply)
+void UpdateHistory(POS *p, int move, int depth, int ply)
 {
+
+  // Don't update stuff used for move ordering if a move changes material balance
+
   if (p->pc[Tsq(move)] != NO_PC || IsProm(move) || MoveType(move) == EP_CAP)
     return;
-  history[p->pc[Fsq(move)]][Tsq(move)] += depth;
+
+  // Increment history counter
+
+  history[p->pc[Fsq(move)]][Tsq(move)] += depth * depth;
+
+  // Prevent history counters from growing too high
+
+  if (history[p->pc[Fsq(move)]][Tsq(move)] > (1 << 15)) {
+	  for (int i = 0; i < 12; i++)
+		  for (int j = 0; j < 64; j++)
+			  history[i][j] /= 2;
+  }
+
+  // Update killer moves, taking care that they are different
+
   if (move != killer[ply][0]) {
     killer[ply][1] = killer[ply][0];
     killer[ply][0] = move;

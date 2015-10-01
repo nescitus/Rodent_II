@@ -1,15 +1,15 @@
-#ifndef RODENT_H
-#define RODENT_H
+//REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
+// 2083 lines
 
-enum eColor     {WC, BC, NO_CL};
-enum ePieceType {P, N, B, R, Q, K, NO_TP};
-enum ePiece     {WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
-enum eFileName  {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
-enum eRankName  {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
-enum eMoveType  {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
-enum eMoveFlag  { MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT };
-enum eHashEntry {NONE, UPPER, LOWER, EXACT};
-enum eSquare {
+enum eColor{WC, BC, NO_CL};
+enum ePieceType{P, N, B, R, Q, K, NO_TP};
+enum ePiece{WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
+enum eFile {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
+enum eRank {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
+enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
+enum eHashEntry{NONE, UPPER, LOWER, EXACT};
+enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
+enum eSquare{
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
   A3, B3, C3, D3, E3, F3, G3, H3,
@@ -26,6 +26,7 @@ enum eSquare {
 #define INF             32767
 #define MATE            32000
 #define MAX_EVAL        29999
+#define MAX_INT    2147483646
 
 #define RANK_1_BB       (U64)0x00000000000000FF
 #define RANK_2_BB       (U64)0x000000000000FF00
@@ -48,6 +49,20 @@ enum eSquare {
 #define DIAG_A1H8_BB    (U64)0x8040201008040201
 #define DIAG_A8H1_BB    (U64)0x0102040810204080
 #define DIAG_B8H2_BB    (U64)0x0204081020408000
+
+#define bbNotA          (U64)0xfefefefefefefefe // ~FILE_A_BB
+#define bbNotH          (U64)0x7f7f7f7f7f7f7f7f // ~FILE_H_BB
+
+#define ShiftNorth(x)   (x<<8)
+#define ShiftSouth(x)   (x>>8)
+#define ShiftWest(x)    ((x & bbNotA)>>1)
+#define ShiftEast(x)    ((x & bbNotH)<<1)
+#define ShiftNW(x)      ((x & bbNotA)<<7)
+#define ShiftNE(x)      ((x & bbNotH)<<9)
+#define ShiftSW(x)      ((x & bbNotA)>>9)
+#define ShiftSE(x)      ((x & bbNotH)>>7)
+
+#define MoreThanOne(bb) ( bb & (bb - 1) )
 
 #define SIDE_RANDOM     (~((U64)0))
 
@@ -103,22 +118,44 @@ enum eSquare {
 
 #define FirstOne(x)     bit_table[(((x) & (~(x) + 1)) * (U64)0x0218A392CD3D5DBF) >> 58]
 
+#define REL_SQ(sq,cl)   ( sq ^ (cl * 56) )
+#define RelSqBb(sq,cl)  ( SqBb(REL_SQ(sq,cl) ) )
+
 typedef unsigned long long U64;
 
 typedef struct {
-  U64 cl_bb[2];
-  U64 tp_bb[6];
-  int pc[64];
-  int king_sq[2];
-  int mat[2];
-  int pst[2];
-  int side;
-  int c_flags;
-  int ep_sq;
-  int rev_moves;
-  int head;
-  U64 key;
-  U64 rep_list[256];
+	int ttp;
+	int castle_flags;
+	int ep_sq;
+	int rev_moves;
+	U64 hash_key;
+	U64 pawn_key;
+} UNDO;
+
+typedef class {
+public:
+	U64 cl_bb[2];
+	U64 tp_bb[6];
+	int pc[64];
+	int king_sq[2];
+	int mat[2];
+	int mg_pst[2];
+	int eg_pst[2];
+	int cnt[2][6];
+	int phase;
+	int side;
+	int castle_flags;
+	int ep_sq;
+	int rev_moves;
+	int head;
+	U64 hash_key;
+	U64 pawn_key;
+	U64 rep_list[256];
+
+	void DoMove(int move, UNDO * u);
+	void DoNull(UNDO * u);
+	void UndoMove(int move, UNDO * u);
+	void UndoNull(UNDO * u);
 } POS;
 
 typedef struct {
@@ -136,14 +173,6 @@ typedef struct {
 } MOVES;
 
 typedef struct {
-  int ttp;
-  int c_flags;
-  int ep_sq;
-  int rev_moves;
-  U64 key;
-} UNDO;
-
-typedef struct {
   U64 key;
   short date;
   short move;
@@ -152,60 +181,66 @@ typedef struct {
   unsigned char depth;
 } ENTRY;
 
-void AllocTrans(int);
-int Attacked(POS *p, int sq, int sd);
+void Add(int sd, int mg_bonus, int eg_bonus);
+void AllocTrans(int mbsize);
+int Attacked(POS *p, int sq, int side);
 U64 AttacksFrom(POS *p, int sq);
 U64 AttacksTo(POS *p, int sq);
-int BadCapture(POS *, int);
-void BuildPv(int *, int *, int);
+int BadCapture(POS *p, int move);
+void BuildPv(int *dst, int *src, int move);
 void Check(void);
 void ClearHist(void);
 void ClearTrans(void);
 void DisplayPv(int score, int *pv);
-void DoMove(POS *, int, UNDO *);
-void DoNull(POS *, UNDO *);
-int Evaluate(POS *);
-void EvaluateKing(POS * p, int sd);
-int EvaluatePawns(POS * p, int sd);
-int EvaluatePieces(POS * p, int sd);
-int *GenerateCaptures(POS *, int *);
-int *GenerateQuiet(POS *, int *);
+int Evaluate(POS * p);
+void EvaluateKing(POS *p, int sd);
+int EvalKingFile(POS * p, int sd, U64 bbFile);
+int EvalFileShelter(U64 bbOwnPawns, int sd);
+int EvalFileStorm(U64 bbOppPawns, int sd);
+void EvaluatePawns(POS * p, int sd);
+U64 FillNorth(U64 bb);
+U64 FillSouth(U64 bb);
+int *GenerateCaptures(POS *p, int *list);
+int *GenerateQuiet(POS *p, int *list);
 int GetMS(void);
-void Hist(POS *, int, int, int);
+void UpdateHistory(POS *p, int move, int depth, int ply);
 void Init(void);
-void InitCaptures(POS *, MOVES *);
 void InitEval(void);
-void InitMoves(POS *, MOVES *, int, int);
+void InitCaptures(POS *p, MOVES *m);
+void InitMoves(POS *p, MOVES *m, int trans_move, int ply);
 int InputAvailable(void);
-U64 Key(POS *);
-int Legal(POS *, int);
-void MoveToStr(int, char *);
-int MvvLva(POS *, int);
-int NextCapture(MOVES *);
-int NextMove(MOVES *, int *);
+U64 InitHashKey(POS * p);
+U64 InitPawnKey(POS * p);
+void Iterate(POS *p, int *pv);
+int Legal(POS *p, int move);
+int Mobility(POS * p, int sd);
+void MoveToStr(int move, char *move_str);
+int MvvLva(POS *p, int move);
+int NextCapture(MOVES *m);
+int NextMove(MOVES *m, int *flag);
 void ParseGo(POS *, char *);
 void ParsePosition(POS *, char *);
 void ParseSetoption(char *);
 char *ParseToken(char *, char *);
 int PopCnt(U64);
+int PopFirstBit(U64 * bb);
 void PvToStr(int *, char *);
-int Quiesce(POS *, int, int, int, int *);
+int Quiesce(POS *p, int ply, int alpha, int beta, int *pv);
 U64 Random64(void);
-void ReadLine(char *, int);
+void ReadLine(char *str, int n);
 int IsDraw(POS * p);
 void ScoreCaptures(MOVES *);
-void ScoreQuiet(MOVES *);
-int Search(POS *p, int ply, int alpha, int beta, int depth, int *pv);
-int SelectBest(MOVES *);
-void SetPosition(POS *, char *);
-int StrToMove(POS *, char *);
-int Swap(POS *, int, int);
+void ScoreQuiet(MOVES *m);
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv);
+int SelectBest(MOVES *m);
+void SetPosition(POS *p, char *epd);
+int StrToMove(POS *p, char *move_str);
+int Swap(POS *p, int from, int to);
 void Think(POS *p, int *pv);
-int TransRetrieve(U64, int *, int *, int, int, int, int);
-void TransStore(U64, int, int, int, int, int);
+int Timeout(void);
+int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth, int ply);
+void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
-void UndoMove(POS *, int, UNDO *);
-void UndoNull(POS *, UNDO *);
 
 extern U64 line_mask[4][64];
 extern U64 attacks[4][64][64];
@@ -214,26 +249,23 @@ extern U64 n_attacks[64];
 extern U64 k_attacks[64];
 extern U64 passed_mask[2][64];
 extern U64 adjacent_mask[8];
-extern int pst[6][64];
-extern int c_mask[64];
+extern int mg_pst_data[2][6][64];
+extern int eg_pst_data[2][6][64];
+extern int castle_mask[64];
 extern const int bit_table[64];
 extern const int passed_bonus[2][8];
 extern const int tp_value[7];
+extern const int phase_value[7];
 extern int history[12][64];
 extern int killer[MAX_PLY][2];
 extern U64 zob_piece[12][64];
 extern U64 zob_castle[16];
 extern U64 zob_ep[8];
-extern int move_time;
 extern int pondering;
 extern int root_depth;
-extern int max_depth;
 extern U64 nodes;
 extern int abort_search;
-extern int start_time;
 extern ENTRY *tt;
 extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
-
-#endif

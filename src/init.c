@@ -23,6 +23,7 @@ void Init(void)
     else
       line_mask[3][i] = DIAG_A8H1_BB >> (-j * 8);
   }
+
   for (i = 0; i < 4; i++)
     for (j = 0; j < 64; j++)
       for (k = 0; k < 64; k++) {
@@ -38,6 +39,7 @@ void Init(void)
           }
         }
       }
+
   for (i = 0; i < 2; i++)
     for (j = 0; j < 64; j++) {
       p_attacks[i][j] = 0;
@@ -47,6 +49,7 @@ void Init(void)
           p_attacks[i][j] |= SqBb(Unmap0x88(x));
       }
     }
+
   for (i = 0; i < 64; i++) {
     n_attacks[i] = 0;
     for (j = 0; j < 8; j++) {
@@ -55,6 +58,7 @@ void Init(void)
         n_attacks[i] |= SqBb(Unmap0x88(x));
     }
   }
+
   for (i = 0; i < 64; i++) {
     k_attacks[i] = 0;
     for (j = 0; j < 8; j++) {
@@ -63,6 +67,7 @@ void Init(void)
         k_attacks[i] |= SqBb(Unmap0x88(x));
     }
   }
+
   for (i = 0; i < 64; i++) {
     passed_mask[WC][i] = 0;
     for (j = File(i) - 1; j <= File(i) + 1; j++) {
@@ -73,6 +78,7 @@ void Init(void)
         passed_mask[WC][i] |= SqBb(Sq(j, k));
     }
   }
+
   for (i = 0; i < 64; i++) {
     passed_mask[BC][i] = 0;
     for (j = File(i) - 1; j <= File(i) + 1; j++) {
@@ -83,6 +89,7 @@ void Init(void)
         passed_mask[BC][i] |= SqBb(Sq(j, k));
     }
   }
+
   for (i = 0; i < 8; i++) {
     adjacent_mask[i] = 0;
     if (i > 0)
@@ -90,28 +97,23 @@ void Init(void)
     if (i < 7)
       adjacent_mask[i] |= FILE_A_BB << (i + 1);
   }
-  for (i = 0; i < 64; i++) {
-    j = line[File(i)] + line[Rank(i)];
-    pst[P][i] = j * 2;
-    pst[N][i] = j * 4;
-    pst[B][i] = j * 2;
-    pst[R][i] = line[File(i)];
-    pst[Q][i] = j;
-    pst[K][i] = j * 6;
-  }
+
   for (i = 0; i < 64; i++)
-    c_mask[i] = 15;
-  c_mask[A1] = 13;
-  c_mask[E1] = 12;
-  c_mask[H1] = 14;
-  c_mask[A8] = 7;
-  c_mask[E8] = 3;
-  c_mask[H8] = 11;
+    castle_mask[i] = 15;
+  castle_mask[A1] = 13;
+  castle_mask[E1] = 12;
+  castle_mask[H1] = 14;
+  castle_mask[A8] = 7;
+  castle_mask[E8] = 3;
+  castle_mask[H8] = 11;
+
   for (i = 0; i < 12; i++)
     for (j = 0; j < 64; j++)
       zob_piece[i][j] = Random64();
+
   for (i = 0; i < 16; i++)
     zob_castle[i] = Random64();
+
   for (i = 0; i < 8; i++)
     zob_ep[i] = Random64();
 }
