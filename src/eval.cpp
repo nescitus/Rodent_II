@@ -2,7 +2,7 @@
 #include "eval.h"
 
 static const int max_phase = 24;
-static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
 static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
                                    SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
@@ -80,7 +80,7 @@ int EvaluatePieces(POS *p, int sd)
     cnt = PopCnt(bbMob) - 4;
     Add(sd, 4*cnt, 4*cnt);
 
-	// Knight attacks enemy king zone
+	// Knight attacks on enemy king zone
 
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
@@ -99,7 +99,7 @@ int EvaluatePieces(POS *p, int sd)
 	cnt = PopCnt(bbMob) - 7;
 	Add(sd, 5 * cnt, 5 * cnt);
 
-	// Bishop attacks enemy king zone
+	// Bishop attacks on enemy king zone
 
 	bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
 	if (bbAtt & bbZone) {
@@ -118,7 +118,7 @@ int EvaluatePieces(POS *p, int sd)
 	cnt = PopCnt(bbMob) - 7;
 	Add(sd, 2 * cnt, 4 * cnt);
 
-	// Rook attacks enemy king zone
+	// Rook attacks on enemy king zone
 
 	bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
 	if (bbAtt & bbZone) {
@@ -137,7 +137,7 @@ int EvaluatePieces(POS *p, int sd)
 	cnt = PopCnt(bbMob) - 14;
 	Add(sd, 1 * cnt, 2 * cnt);
 
-	// Queen attacks enemy king zone
+	// Queen attacks on enemy king zone
 	 
 	bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
 	bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
@@ -154,7 +154,7 @@ int EvaluatePieces(POS *p, int sd)
 
 void EvaluatePawns(POS *p, int sd)
 {
-	U64 bbPieces;
+  U64 bbPieces;
   int sq;
 
   bbPieces = PcBb(p, sd, P);
