@@ -228,6 +228,9 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
   if (IsDraw(p)) return 0;
   if (ply >= MAX_PLY - 1) return Evaluate(p);
 
+  // Get a stand-pat score and adjust bounds
+  // (exiting if eval exceeds beta)
+
   best = Evaluate(p); 
   if (best >= beta)
     return best;
@@ -235,14 +238,28 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
     alpha = best;
 
   InitCaptures(p, m);
+
+  // Main loop
+
   while ((move = NextCapture(m))) {
+
+	// Delta pruning
+
+	if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
+
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
     score = -Quiesce(p, ply + 1, -beta, -alpha, new_pv);
     p->UndoMove(move, u);
     if (abort_search) return 0;
+
+	// Beta cutoff
+
     if (score >= beta)
       return score;
+
+	// Adjust alpha and score
+
     if (score > best) {
       best = score;
       if (score > alpha) {

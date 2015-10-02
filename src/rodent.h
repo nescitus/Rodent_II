@@ -1,5 +1,5 @@
 //REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2246 lines
+// 2297 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -187,6 +187,7 @@ int Attacked(POS *p, int sq, int side);
 U64 AttacksFrom(POS *p, int sq);
 U64 AttacksTo(POS *p, int sq);
 int BadCapture(POS *p, int move);
+void Bench(int depth);
 void BuildPv(int *dst, int *src, int move);
 void Check(void);
 void ClearHist(void);
@@ -228,6 +229,7 @@ void PvToStr(int *, char *);
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv);
 U64 Random64(void);
 void ReadLine(char *str, int n);
+void ResetEngine(void);
 int IsDraw(POS * p);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
