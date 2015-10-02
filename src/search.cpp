@@ -247,6 +247,10 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
 
 	if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
 
+	// Pruning of bad captures
+
+	if (BadCapture(p, move)) continue;
+
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
     score = -Quiesce(p, ply + 1, -beta, -alpha, new_pv);

@@ -105,8 +105,6 @@ int NextCapture(MOVES *m)
 
   while (m->next < m->last) {
     move = SelectBest(m);
-    if (BadCapture(m->p, move))
-      continue;
     return move;
   }
   return 0;
@@ -154,11 +152,17 @@ int BadCapture(POS *p, int move)
   int fsq = Fsq(move);
   int tsq = Tsq(move);
 
+  // Captures that gain material or capture equal piece are good by definition
+
   if (tp_value[TpOnSq(p, tsq)] >= tp_value[TpOnSq(p, fsq)])
     return 0;
 
+  // En passant captures are good by definition
+
   if (MoveType(move) == EP_CAP)
     return 0;
+
+  // We have to evaluate this capture using expensive Static Exchange Evaluation
 
   return Swap(p, fsq, tsq) < 0;
 }
