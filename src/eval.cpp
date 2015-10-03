@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "rodent.h"
 #include "eval.h"
 
@@ -54,8 +55,14 @@ void InitEval(void)
 
 int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbMob, bbAtt;
+  U64 bbPieces, bbMob, bbAtt, bbFile;
   int op, sq, cnt, ksq, att, wood, mob;
+
+  // Is color OK?
+
+  assert(sd == WC || sd == BC);
+
+  // Init some 
 
   op = Opp(sd);
   ksq = KingSq(p, op);

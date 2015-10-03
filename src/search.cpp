@@ -312,7 +312,7 @@ void DisplayPv(int score, int *pv)
   else
     type = "cp";
   PvToStr(pv, pv_str);
-  printf("info depth %d time %d nodes %d nps %d score %s %d pv %s\n",
+  printf("info depth %d time %I64d nodes %I64d nps %d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
 }
 

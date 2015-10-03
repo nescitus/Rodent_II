@@ -1,4 +1,5 @@
 #include "rodent.h"
+#include <assert.h>
 
 void InitMoves(POS *p, MOVES *m, int trans_move, int ply)
 {
@@ -197,6 +198,13 @@ void UpdateHistory(POS *p, int move, int depth, int ply)
 
   if (p->pc[Tsq(move)] != NO_PC || IsProm(move) || MoveType(move) == EP_CAP)
     return;
+
+  // Asserts suggested by Ferdinand Mosca because history[] would overflow
+  // if p->pc[Fsq(move)] == NO_PC.  If they ever fire, either move or board 
+  // data are corrupt.
+
+  assert(p->pc[Fsq(move)] != NO_PC);  // To detect no_pc
+  assert(p->pc[Fsq(move)] <= NO_PC);  // To detect beyond no_pc for deeper examination 
 
   // Increment history counter
 
