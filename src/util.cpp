@@ -126,6 +126,14 @@ void MoveToStr(int move, char *move_str)
   move_str[2] = File(Tsq(move)) + 'a';
   move_str[3] = Rank(Tsq(move)) + '1';
   move_str[4] = '\0';
+
+  // Bugfix by Dave Kaye for compatibility with Knights GUI (Linux) and UCI specs
+  // (needed if a GUI forces the engine to analyse in checkmate/stalemate position)
+
+  if (strcmp(move_str, "a1a1") == 0) {
+	  strcpy(move_str, "0000");
+  }
+
   if (IsProm(move)) {
     move_str[4] = prom_char[(move >> 12) & 3];
     move_str[5] = '\0';
