@@ -1,7 +1,7 @@
 // bench: 1430849
 // bench 12: 27665314 40,9 s 1.567
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2301 lines
+// 2321 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -209,6 +209,7 @@ int GetMS(void);
 void UpdateHistory(POS *p, int move, int depth, int ply);
 void Init(void);
 void InitEval(void);
+void InitSearch(void);
 void InitCaptures(POS *p, MOVES *m);
 void InitMoves(POS *p, MOVES *m, int trans_move, int ply);
 int InputAvailable(void);

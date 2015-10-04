@@ -4,6 +4,28 @@
 #include "rodent.h"
 #include "timer.h"
 
+double lmrSize[2][MAX_PLY][MAX_MOVES];
+
+void InitSearch(void)
+{
+	// Set depth of late move reduction using modified Stockfish formula
+
+	for (int depth = 0; depth < MAX_PLY; depth++)
+		for (int moves = 0; moves < MAX_MOVES; moves++) {
+			lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zw node
+			lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // pv node
+
+			for (int node = 0; node <= 1; node++) {
+				if (lmrSize[node][depth][moves] < 1) lmrSize[node][depth][moves] = 0; // ultra-small reductions make no sense
+				else lmrSize[node][depth][moves] += 0.5;
+
+				if (lmrSize[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
+					lmrSize[node][depth][moves] = depth - 1;
+			}
+		}
+}
+
+
 void Think(POS *p, int *pv)
 {
 	ClearHist();
@@ -85,7 +107,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
 
-  fl_check = InCheck(p); 
+  fl_check = InCheck(p);
 
   // Null move
 
@@ -146,10 +168,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 	&& mv_tried > 3 
 	&& !fl_check 
 	&& !InCheck(p) 
+	&& lmrSize[is_pv][depth][mv_tried] > 0
 	&& MoveType(move) != CASTLE 
 	&&  mv_type == MV_NORMAL) {
-		reduction = 1;
-		if (!is_pv && mv_tried > 6) reduction = 2;
+		//reduction = 1;
+		//if (!is_pv && mv_tried > 6) reduction = 2;
+		reduction = lmrSize[is_pv][depth][mv_tried];
 		new_depth -= reduction;
 	}
 

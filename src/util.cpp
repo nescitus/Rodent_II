@@ -121,6 +121,8 @@ void MoveToStr(int move, char *move_str)
 {
   static const char prom_char[5] = "nbrq";
 
+  // Move coordinates
+
   move_str[0] = File(Fsq(move)) + 'a';
   move_str[1] = Rank(Fsq(move)) + '1';
   move_str[2] = File(Tsq(move)) + 'a';
@@ -133,6 +135,8 @@ void MoveToStr(int move, char *move_str)
   if (strcmp(move_str, "a1a1") == 0) {
 	  strcpy(move_str, "0000");
   }
+
+  // Add promoted piece, if any
 
   if (IsProm(move)) {
     move_str[4] = prom_char[(move >> 12) & 3];

@@ -7,6 +7,7 @@ int main()
 {
   Init();
   InitEval();
+  InitSearch();
   UciLoop();
   return 0;
 }
