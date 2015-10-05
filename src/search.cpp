@@ -118,6 +118,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     int eval = Evaluate(p);
     if (eval > beta) {
 	  reduction = 3;
+	  if (depth > 8) reduction += depth / 4;
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
       p->UndoNull(u);
@@ -129,7 +130,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   }
 
   // None of the attempts at an early cutoff worked, we need a real search.
-
+  
   best = -INF;
   InitMoves(p, m, move, ply);
   

@@ -1,7 +1,7 @@
-// bench: 1430849
-// bench 12: 27665314 40,9 s 1.567
+// bench: 1258728
+// bench 12: 16350471 31,4 s 1.478
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2321 lines
+// 2332 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -206,6 +206,8 @@ U64 FillSouth(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int GetMS(void);
+U64 GetWPControl(U64 bb);
+U64 GetBPControl(U64 bb);
 void UpdateHistory(POS *p, int move, int depth, int ply);
 void Init(void);
 void InitEval(void);

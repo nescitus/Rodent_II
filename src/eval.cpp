@@ -55,7 +55,7 @@ void InitEval(void)
 
 int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbMob, bbAtt;
+  U64 bbPieces, bbMob, bbAtt, bbTaboo;
   int op, sq, cnt, ksq, att, wood, mob;
 
   // Is color OK?
@@ -75,6 +75,9 @@ int EvaluatePieces(POS *p, int sd)
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
   if (sd == BC) bbZone |= ShiftNorth(bbZone);
 
+  if (sd == WC) bbTaboo = GetBPControl(PcBb(p, BC, P) );
+  if (sd == BC) bbTaboo = GetWPControl(PcBb(p, WC, P));
+
   mob = 0;
 
   bbPieces = PcBb(p, sd, N);
@@ -84,7 +87,7 @@ int EvaluatePieces(POS *p, int sd)
 	// Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
-    cnt = PopCnt(bbMob) - 4;
+    cnt = PopCnt(bbMob &~bbTaboo) - 4;
     Add(sd, 4*cnt, 4*cnt);
 
 	// Knight attacks on enemy king zone
@@ -103,7 +106,7 @@ int EvaluatePieces(POS *p, int sd)
 	// Bishop mobility
 
 	bbMob = BAttacks(OccBb(p), sq);
-	cnt = PopCnt(bbMob) - 7;
+	cnt = PopCnt(bbMob &~bbTaboo) - 7;
 	Add(sd, 5 * cnt, 5 * cnt);
 
 	// Bishop attacks on enemy king zone
