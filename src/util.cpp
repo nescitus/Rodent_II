@@ -117,6 +117,14 @@ U64 FillSouth(U64 bb) {
 	return bb;
 }
 
+U64 GetWPControl(U64 bb) {
+	return (ShiftNE(bb) | ShiftNW(bb));
+}
+
+U64 GetBPControl(U64 bb) {
+	return (ShiftSE(bb) | ShiftSW(bb));
+}
+
 void MoveToStr(int move, char *move_str)
 {
   static const char prom_char[5] = "nbrq";
