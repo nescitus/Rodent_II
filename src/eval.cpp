@@ -73,10 +73,10 @@ int EvaluatePieces(POS *p, int sd)
 
   U64 bbZone = k_attacks[ksq];
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
-  if (sd == BC) bbZone |= ShiftNorth(bbZone);
+  else          bbZone |= ShiftNorth(bbZone);
 
   if (sd == WC) bbTaboo = GetBPControl(PcBb(p, BC, P) );
-  if (sd == BC) bbTaboo = GetWPControl(PcBb(p, WC, P));
+  else          bbTaboo = GetWPControl(PcBb(p, WC, P));
 
   mob = 0;
 

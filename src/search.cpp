@@ -45,7 +45,7 @@ void Iterate(POS *p, int *pv)
 	for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
 		int elapsed = Timer.GetElapsedTime();
 		if (elapsed) nps = nodes * 1000 / elapsed;
-		printf("info depth %d time %d nodes %d nps %d\n", root_depth, elapsed, nodes, nps);
+		printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 		cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
 		if (abort_search || Timer.FinishIteration()) break;
 		val = cur_val;
@@ -337,7 +337,7 @@ void DisplayPv(int score, int *pv)
   else
     type = "cp";
   PvToStr(pv, pv_str);
-  printf("info depth %d time %I64d nodes %I64d nps %d score %s %d pv %s\n",
+  printf("info depth %d time %d nodes %I64d nps %I64d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
 }
 
