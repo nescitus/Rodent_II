@@ -55,7 +55,7 @@ void InitEval(void)
 
 int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbMob, bbAtt, bbTaboo;
+  U64 bbPieces, bbMob, bbAtt, bbTaboo, bbFile;
   int op, sq, cnt, ksq, att, wood, mob;
 
   // Is color OK?
@@ -135,6 +135,15 @@ int EvaluatePieces(POS *p, int sd)
 	  wood++;
 	  att += 8 * PopCnt(bbAtt & bbZone);
 	}
+
+	// Rook on (half) open file
+
+	bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+	if (!(bbFile & PcBb(p, sd, P))) {
+		if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
+		else                            Add(sd,  5,  5);
+	}
+
   }
 
   bbPieces = PcBb(p, sd, Q);
