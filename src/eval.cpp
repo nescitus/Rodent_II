@@ -75,10 +75,14 @@ int EvaluatePieces(POS *p, int sd)
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
   else          bbZone |= ShiftNorth(bbZone);
 
+  // Init squares controlled by enemy pawns for mobility evaluation
+
   if (sd == WC) bbTaboo = GetBPControl(PcBb(p, BC, P) );
   else          bbTaboo = GetWPControl(PcBb(p, WC, P));
 
   mob = 0;
+
+  // Knight
 
   bbPieces = PcBb(p, sd, N);
   while (bbPieces) {
@@ -99,6 +103,8 @@ int EvaluatePieces(POS *p, int sd)
     }
   }
 
+  // Bishop
+
   bbPieces = PcBb(p, sd, B);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
@@ -117,6 +123,8 @@ int EvaluatePieces(POS *p, int sd)
 	  att += 4 * PopCnt(bbAtt & bbZone);
 	}
   }
+
+  // Rook
 
   bbPieces = PcBb(p, sd, R);
   while (bbPieces) {
@@ -143,8 +151,9 @@ int EvaluatePieces(POS *p, int sd)
 		if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
 		else                            Add(sd,  5,  5);
 	}
-
   }
+
+  // Queen
 
   bbPieces = PcBb(p, sd, Q);
   while (bbPieces) {
@@ -175,6 +184,12 @@ void EvaluatePawns(POS *p, int sd)
 {
   U64 bbPieces;
   int sq;
+
+  // Is color OK?
+
+  assert(sd == WC || sd == BC);
+
+  // Loop through the pawns, evaluating each one
 
   bbPieces = PcBb(p, sd, P);
   while (bbPieces) {
@@ -231,7 +246,7 @@ void EvaluateKing(POS *p, int sd)
 int EvalKingFile(POS * p, int sd, U64 bbFile)
 {
 	int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
-	int storm = EvalFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
+	int storm   = EvalFileStorm  (bbFile & PcBb(p, Opp(sd), P), sd);
 	if (bbFile & bbCentralFile) return (shelter / 2) + storm;
 	else return shelter + storm;
 }
