@@ -175,7 +175,9 @@ int EvaluatePieces(POS *p, int sd)
 	}
   }
 
-  if (wood > 1) mob += att * (wood-1);
+  // Score king attacks if own queen is present
+
+  if (wood > 1 && p->cnt[sd][Q]) mob += att * (wood-1);
   
   return mob;
 }
