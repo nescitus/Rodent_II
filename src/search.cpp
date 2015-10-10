@@ -128,7 +128,28 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
       if (score >= beta)
         return score;
 	  }
-  }
+  } 
+  
+  // end of null move code
+
+  // Razoring based on Toga II 3.0
+
+  if (!is_pv
+  &&  !fl_check
+  &&  !move
+  &&  !was_null
+  &&  !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
+  && depth <= 3) {
+    int threshold = beta - 300 - (depth - 1) * 60;
+    int eval = Evaluate(p);
+
+    if (eval < threshold) {
+      score = Quiesce(p, ply, alpha, beta, pv);
+      if (score < threshold) return score;
+    }
+  } 
+  
+  // end of razoring code
 
   // None of the attempts at an early cutoff worked, we need a real search.
   

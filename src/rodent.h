@@ -1,7 +1,7 @@
-// bench: 1358655
-// bench 12: 18196619 28,6 s 1.473
+// bench: 1143881bbRelRank
+// bench 12: 14531178 24,1 s 1.398
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2368 lines
+// 2398 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -23,6 +23,8 @@ enum eSquare{
   NO_SQ
 };
 
+typedef unsigned long long U64;
+
 #define MAX_PLY         64
 #define MAX_MOVES       256
 #define INF             32767
@@ -38,6 +40,9 @@ enum eSquare{
 #define RANK_6_BB       (U64)0x0000FF0000000000
 #define RANK_7_BB       (U64)0x00FF000000000000
 #define RANK_8_BB       (U64)0xFF00000000000000
+
+static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_BB, RANK_5_BB, RANK_6_BB, RANK_7_BB, RANK_8_BB },
+                                     { RANK_8_BB, RANK_7_BB, RANK_6_BB, RANK_5_BB, RANK_4_BB, RANK_3_BB, RANK_2_BB, RANK_1_BB } };
 
 #define FILE_A_BB       (U64)0x0101010101010101
 #define FILE_B_BB       (U64)0x0202020202020202
@@ -122,8 +127,6 @@ enum eSquare{
 
 #define REL_SQ(sq,cl)   ( sq ^ (cl * 56) )
 #define RelSqBb(sq,cl)  ( SqBb(REL_SQ(sq,cl) ) )
-
-typedef unsigned long long U64;
 
 typedef struct {
 	int ttp;
