@@ -55,7 +55,7 @@ void Iterate(POS *p, int *pv)
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv)
 {
   int best, score, move, new_depth, new_pv[MAX_PLY];
-  int fl_check, mv_type, reduction;
+  int fl_check, fl_prunable_node, mv_type, reduction;
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0;
   int quiet_tried = 0;
@@ -85,18 +85,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   move = 0;
   if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply)) {
 	  
-	  // For move ordering purposes, a cutoff from hash is treated
-	  // exactly like a cutoff from search
+    // For move ordering purposes, a cutoff from hash is treated
+    // exactly like a cutoff from search
 
-	  if (score >= beta) UpdateHistory(p, move, depth, ply);
+    if (score >= beta) UpdateHistory(p, move, depth, ply);
 
-	  // In pv nodes only exact scores are returned. This is done because
-	  // there is much more pruning and reductions in zero-window nodes,
-	  // so retrieving such scores in pv nodes works like retrieving scores
-	  // from slightly lower depth.
+    // In pv nodes only exact scores are returned. This is done because
+    // there is much more pruning and reductions in zero-window nodes,
+    // so retrieving such scores in pv nodes works like retrieving scores
+    // from slightly lower depth.
 
-	  if (!is_pv || (score > alpha && score < beta))
-		  return score;
+    if (!is_pv || (score > alpha && score < beta))
+      return score;
   }
   
   // Safeguard against exceeding ply limit
@@ -108,13 +108,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // to pruning/reduction decisions
 
   fl_check = InCheck(p);
+  fl_prunable_node = !fl_check & !is_pv;
 
   // Null move
 
   if (depth > 1
-  && !is_pv
+  && fl_prunable_node
   && !was_null
-  && !fl_check
   && MayNull(p)) {
     int eval = Evaluate(p);
     if (eval > beta) {
@@ -134,8 +134,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   // Razoring based on Toga II 3.0
 
-  if (!is_pv
-  &&  !fl_check
+  if (fl_prunable_node
   &&  !move
   &&  !was_null
   &&  !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
@@ -173,9 +172,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
 	// Late move pruning
 
-	if (!is_pv
+	if (fl_prunable_node
 	&& quiet_tried > 4 * depth
-	&& !fl_check
 	&& !InCheck(p)
 	&& depth <= 3
 	&& MoveType(move) != CASTLE
