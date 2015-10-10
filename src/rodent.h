@@ -1,5 +1,5 @@
-// bench: 1303315
-// bench 12: 22283111 26,8 s 1.488
+// bench: 1358655
+// bench 12: 18196619 28,6 s 1.473
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 2368 lines
 

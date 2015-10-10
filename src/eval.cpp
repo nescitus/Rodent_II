@@ -25,6 +25,8 @@ int eg_pst_data[2][6][64];
 int mg[2];
 int eg[2];
 
+sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
+
 void InitEval(void)
 {
 	for (int sq = 0; sq < 64; sq++) {
@@ -126,6 +128,11 @@ int EvaluatePieces(POS *p, int sd)
 	  att += 4 * PopCnt(bbAtt & bbZone);
 	}
 
+	// Bishop outpost
+
+	tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+	if (SqBb(sq) & ~bbPawnCanTake[op])
+		Add(sd, tmp, tmp);
   }
 
   // Rook
@@ -280,6 +287,15 @@ int EvalFileStorm(U64 bbOppPawns, int sd)
  
 int Evaluate(POS *p)
 {
+
+  // Try to retrieve score from eval hashtable
+
+  int addr = p->hash_key % EVAL_HASH_SIZE;
+  if (EvalTT[addr].key == p->hash_key) {
+	int hashScore = EvalTT[addr].score;
+	return p->side == WC ? hashScore : -hashScore;
+  }
+
   // Init eval with incrementally updated stuff
 
   int score = 0;
@@ -327,6 +343,11 @@ int Evaluate(POS *p)
     score = -MAX_EVAL;
   else if (score > MAX_EVAL)
     score = MAX_EVAL;
+
+  // Save eval score in the evaluation hash table
+
+  EvalTT[addr].key = p->hash_key;
+  EvalTT[addr].score = score;
 
   // Return score relative to the side to move
 
