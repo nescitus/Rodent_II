@@ -17,6 +17,8 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 
+U64 bbPawnTakes[2];
+U64 bbPawnCanTake[2];
 U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
@@ -55,8 +57,8 @@ void InitEval(void)
 
 int EvaluatePieces(POS *p, int sd)
 {
-  U64 bbPieces, bbMob, bbAtt, bbTaboo, bbFile;
-  int op, sq, cnt, ksq, att, wood, mob;
+  U64 bbPieces, bbMob, bbAtt, bbFile;
+  int op, sq, cnt, ksq, att, wood, mob, tmp;
 
   // Is color OK?
 
@@ -75,11 +77,6 @@ int EvaluatePieces(POS *p, int sd)
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
   else          bbZone |= ShiftNorth(bbZone);
 
-  // Init squares controlled by enemy pawns for mobility evaluation
-
-  if (sd == WC) bbTaboo = GetBPControl(PcBb(p, BC, P) );
-  else          bbTaboo = GetWPControl(PcBb(p, WC, P));
-
   mob = 0;
 
   // Knight
@@ -91,7 +88,7 @@ int EvaluatePieces(POS *p, int sd)
 	// Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
-    cnt = PopCnt(bbMob &~bbTaboo) - 4;
+    cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
     Add(sd, 4*cnt, 4*cnt);
 
 	// Knight attacks on enemy king zone
@@ -101,6 +98,12 @@ int EvaluatePieces(POS *p, int sd)
       wood++;
       att += 5 * PopCnt(bbAtt & bbZone);
     }
+
+	// Knight outpost
+
+    tmp = pstKnightOutpost[REL_SQ(sq, sd)];
+	if (SqBb(sq) & ~bbPawnCanTake[op]) 
+	   Add(sd, tmp, tmp);
   }
 
   // Bishop
@@ -112,7 +115,7 @@ int EvaluatePieces(POS *p, int sd)
 	// Bishop mobility
 
 	bbMob = BAttacks(OccBb(p), sq);
-	cnt = PopCnt(bbMob &~bbTaboo) - 7;
+	cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
 	Add(sd, 5 * cnt, 5 * cnt);
 
 	// Bishop attacks on enemy king zone
@@ -122,6 +125,7 @@ int EvaluatePieces(POS *p, int sd)
 	  wood++;
 	  att += 4 * PopCnt(bbAtt & bbZone);
 	}
+
   }
 
   // Rook
@@ -283,6 +287,13 @@ int Evaluate(POS *p)
   mg[BC] = p->mg_pst[BC];
   eg[WC] = p->eg_pst[WC];
   eg[BC] = p->eg_pst[BC];
+
+  // Calculate variables used during evaluation
+
+  bbPawnTakes[WC] = GetWPControl(PcBb(p, WC, P));
+  bbPawnTakes[BC] = GetBPControl(PcBb(p, BC, P));
+  bbPawnCanTake[WC] = FillNorth(bbPawnTakes[WC]);
+  bbPawnCanTake[BC] = FillSouth(bbPawnTakes[BC]);
 
   // Tempo bonus
 

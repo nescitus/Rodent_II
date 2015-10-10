@@ -111,7 +111,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   // Null move
 
-  if (depth > 1 
+  if (depth > 1
   && !is_pv
   && !was_null
   && !fl_check
