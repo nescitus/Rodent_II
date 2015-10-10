@@ -139,7 +139,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   &&  !move
   &&  !was_null
   &&  !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-  && depth <= 3) {
+  &&   depth <= 3) {
     int threshold = beta - 300 - (depth - 1) * 60;
     int eval = Evaluate(p);
 
