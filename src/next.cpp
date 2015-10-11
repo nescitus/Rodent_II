@@ -12,84 +12,84 @@ void InitMoves(POS *p, MOVES *m, int trans_move, int ply)
 
 int NextMove(MOVES *m, int *flag)
 {
-	int move;
+  int move;
 
-	switch (m->phase) {
-	case 0: // return transposition table move, if legal
-		move = m->trans_move;
-		if (move && Legal(m->p, move)) {
-			m->phase = 1;
-			*flag = MV_HASH;
-			return move;
-		}
+  switch (m->phase) {
+  case 0: // return transposition table move, if legal
+    move = m->trans_move;
+    if (move && Legal(m->p, move)) {
+      m->phase = 1;
+      *flag = MV_HASH;
+      return move;
+    }
 
-	case 1: // helper phase: generate captures
-		m->last = GenerateCaptures(m->p, m->move);
-		ScoreCaptures(m);
-		m->next = m->move;
-		m->badp = m->bad;
-		m->phase = 2;
+  case 1: // helper phase: generate captures
+    m->last = GenerateCaptures(m->p, m->move);
+    ScoreCaptures(m);
+    m->next = m->move;
+    m->badp = m->bad;
+    m->phase = 2;
 
-	case 2: // return good captures, save bad ones on the separate list
-		while (m->next < m->last) {
-			move = SelectBest(m);
+  case 2: // return good captures, save bad ones on the separate list
+    while (m->next < m->last) {
+      move = SelectBest(m);
 
-			if (move == m->trans_move)
-				continue;
+      if (move == m->trans_move)
+        continue;
 
-			if (BadCapture(m->p, move)) {
-				*m->badp++ = move;
-				continue;
-			}
-			*flag = MV_CAPTURE;
-			return move;
-		}
+      if (BadCapture(m->p, move)) {
+        *m->badp++ = move;
+        continue;
+      }
+      *flag = MV_CAPTURE;
+      return move;
+    }
 
-	case 3:  // first killer move
-		move = m->killer1;
-		if (move && move != m->trans_move &&
-			m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
-			m->phase = 4;
-			*flag = MV_KILLER;
-			return move;
-		}
+  case 3:  // first killer move
+    move = m->killer1;
+    if (move && move != m->trans_move &&
+      m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
+      m->phase = 4;
+      *flag = MV_KILLER;
+      return move;
+    }
 
-	case 4:  // second killer move
-		move = m->killer2;
-		if (move && move != m->trans_move &&
-			m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
-			m->phase = 5;
-			*flag = MV_KILLER;
-			return move;
-		}
+  case 4:  // second killer move
+    move = m->killer2;
+    if (move && move != m->trans_move &&
+      m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
+      m->phase = 5;
+      *flag = MV_KILLER;
+      return move;
+    }
 
-	case 5:  // helper phase: generate quiet moves
-		m->last = GenerateQuiet(m->p, m->move);
-		ScoreQuiet(m);
-		m->next = m->move;
-		m->phase = 6;
+  case 5:  // helper phase: generate quiet moves
+    m->last = GenerateQuiet(m->p, m->move);
+    ScoreQuiet(m);
+    m->next = m->move;
+    m->phase = 6;
 
-	case 6:  // return quiet moves
-		while (m->next < m->last) {
-			move = SelectBest(m);
-			if (move == m->trans_move ||
-				move == m->killer1 ||
-				move == m->killer2)
-				continue;
-			*flag = MV_NORMAL;
-			return move;
-		}
+  case 6:  // return quiet moves
+    while (m->next < m->last) {
+      move = SelectBest(m);
+      if (move == m->trans_move ||
+        move == m->killer1 ||
+        move == m->killer2)
+        continue;
+      *flag = MV_NORMAL;
+      return move;
+    }
 
-		m->next = m->bad;
-		m->phase = 7;
+    m->next = m->bad;
+    m->phase = 7;
 
-	case 7: // return bad captures
-		if (m->next < m->badp) {
-			*flag = MV_BADCAPT;
-			return *m->next++;
-		}
-	}
-	return 0;
+  case 7: // return bad captures
+    if (m->next < m->badp) {
+      *flag = MV_BADCAPT;
+      return *m->next++;
+    }
+  }
+  return 0;
 }
 
 void InitCaptures(POS *p, MOVES *m)
@@ -213,9 +213,9 @@ void UpdateHistory(POS *p, int move, int depth, int ply)
   // Prevent history counters from growing too high
 
   if (history[p->pc[Fsq(move)]][Tsq(move)] > (1 << 15)) {
-	  for (int i = 0; i < 12; i++)
-		  for (int j = 0; j < 64; j++)
-			  history[i][j] /= 2;
+    for (int i = 0; i < 12; i++)
+      for (int j = 0; j < 64; j++)
+        history[i][j] /= 2;
   }
 
   // Update killer moves, taking care that they are different

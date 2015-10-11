@@ -1,7 +1,7 @@
 // bench: 1143881
 // bench 12: 14531178 24,1 s 1.398
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2398 lines
+// 2407 lines
 // 40,5/100 vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
@@ -130,38 +130,38 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define RelSqBb(sq,cl)  ( SqBb(REL_SQ(sq,cl) ) )
 
 typedef struct {
-	int ttp;
-	int castle_flags;
-	int ep_sq;
-	int rev_moves;
-	U64 hash_key;
-	U64 pawn_key;
+  int ttp;
+  int castle_flags;
+  int ep_sq;
+  int rev_moves;
+  U64 hash_key;
+  U64 pawn_key;
 } UNDO;
 
 typedef class {
 public:
-	U64 cl_bb[2];
-	U64 tp_bb[6];
-	int pc[64];
-	int king_sq[2];
-	int mat[2];
-	int mg_pst[2];
-	int eg_pst[2];
-	int cnt[2][6];
-	int phase;
-	int side;
-	int castle_flags;
-	int ep_sq;
-	int rev_moves;
-	int head;
-	U64 hash_key;
-	U64 pawn_key;
-	U64 rep_list[256];
+  U64 cl_bb[2];
+  U64 tp_bb[6];
+  int pc[64];
+  int king_sq[2];
+  int mat[2];
+  int mg_pst[2];
+  int eg_pst[2];
+  int cnt[2][6];
+  int phase;
+  int side;
+  int castle_flags;
+  int ep_sq;
+  int rev_moves;
+  int head;
+  U64 hash_key;
+  U64 pawn_key;
+  U64 rep_list[256];
 
-	void DoMove(int move, UNDO * u);
-	void DoNull(UNDO * u);
-	void UndoMove(int move, UNDO * u);
-	void UndoNull(UNDO * u);
+  void DoMove(int move, UNDO * u);
+  void DoNull(UNDO * u);
+  void UndoMove(int move, UNDO * u);
+  void UndoNull(UNDO * u);
 } POS;
 
 typedef struct {
@@ -196,6 +196,7 @@ int BadCapture(POS *p, int move);
 void Bench(int depth);
 void BuildPv(int *dst, int *src, int move);
 void Check(void);
+void ClearEvalHash(void);
 void ClearHist(void);
 void ClearTrans(void);
 void DisplayPv(int score, int *pv);

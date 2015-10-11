@@ -30,13 +30,13 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
 
   while ((move = NextCapture(m))) {
 
-	// Delta pruning
+  // Delta pruning
 
-	if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
+  if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
 
-	// Pruning of bad captures
+  // Pruning of bad captures
 
-	if (BadCapture(p, move)) continue;
+  if (BadCapture(p, move)) continue;
 
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
@@ -44,12 +44,12 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
     p->UndoMove(move, u);
     if (abort_search) return 0;
 
-	// Beta cutoff
+  // Beta cutoff
 
     if (score >= beta)
       return score;
 
-	// Adjust alpha and score
+  // Adjust alpha and score
 
     if (score > best) {
       best = score;

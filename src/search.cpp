@@ -8,48 +8,48 @@ double lmrSize[2][MAX_PLY][MAX_MOVES];
 
 void InitSearch(void)
 {
-	// Set depth of late move reduction using modified Stockfish formula
+  // Set depth of late move reduction using modified Stockfish formula
 
-	for (int depth = 0; depth < MAX_PLY; depth++)
-		for (int moves = 0; moves < MAX_MOVES; moves++) {
-			lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zw node
-			lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // pv node
+  for (int depth = 0; depth < MAX_PLY; depth++)
+    for (int moves = 0; moves < MAX_MOVES; moves++) {
+      lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zw node
+      lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // pv node
 
-			for (int node = 0; node <= 1; node++) {
-				if (lmrSize[node][depth][moves] < 1) lmrSize[node][depth][moves] = 0; // ultra-small reductions make no sense
-				else lmrSize[node][depth][moves] += 0.5;
+      for (int node = 0; node <= 1; node++) {
+        if (lmrSize[node][depth][moves] < 1) lmrSize[node][depth][moves] = 0; // ultra-small reductions make no sense
+        else lmrSize[node][depth][moves] += 0.5;
 
-				if (lmrSize[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
-					lmrSize[node][depth][moves] = depth - 1;
-			}
-		}
+        if (lmrSize[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
+          lmrSize[node][depth][moves] = depth - 1;
+      }
+    }
 }
 
 
 void Think(POS *p, int *pv)
 {
-	ClearHist();
-	tt_date = (tt_date + 1) & 255;
-	nodes = 0;
-	abort_search = 0;
-	Timer.SetStartTime();
-	Iterate(p, pv);
+  ClearHist();
+  tt_date = (tt_date + 1) & 255;
+  nodes = 0;
+  abort_search = 0;
+  Timer.SetStartTime();
+  Iterate(p, pv);
 }
 
 void Iterate(POS *p, int *pv)
 {
-	int val = 0;
-	U64 nps = 0;
-	int cur_val = 0;
-	Timer.SetIterationTiming();
-	for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
-		int elapsed = Timer.GetElapsedTime();
-		if (elapsed) nps = nodes * 1000 / elapsed;
-		printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
-		cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
-		if (abort_search || Timer.FinishIteration()) break;
-		val = cur_val;
-	}
+  int val = 0;
+  U64 nps = 0;
+  int cur_val = 0;
+  Timer.SetIterationTiming();
+  for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
+    int elapsed = Timer.GetElapsedTime();
+    if (elapsed) nps = nodes * 1000 / elapsed;
+    printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
+    cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
+    if (abort_search || Timer.FinishIteration()) break;
+    val = cur_val;
+  }
 }
 
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv)
@@ -84,7 +84,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   move = 0;
   if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply)) {
-	  
+    
     // For move ordering purposes, a cutoff from hash is treated
     // exactly like a cutoff from search
 
@@ -118,8 +118,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && MayNull(p)) {
     int eval = Evaluate(p);
     if (eval > beta) {
-	  reduction = 3;
-	  if (depth > 8) reduction += depth / 4;
+    reduction = 3;
+    if (depth > 8) reduction += depth / 4;
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
       p->UndoNull(u);
@@ -127,7 +127,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
       if (score >= beta)
         return score;
-	  }
+    }
   } 
   
   // end of null move code
@@ -161,46 +161,46 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-	// Update move statistics (needed for reduction/pruning decisions)
+  // Update move statistics (needed for reduction/pruning decisions)
 
-	mv_tried++;
-	if (mv_type == MV_NORMAL) quiet_tried++;
+  mv_tried++;
+  if (mv_type == MV_NORMAL) quiet_tried++;
 
-	// Set new search depth
+  // Set new search depth
 
     new_depth = depth - 1 + InCheck(p);
 
-	// Late move pruning
+  // Late move pruning
 
-	if (fl_prunable_node
-	&& quiet_tried > 4 * depth
-	&& !InCheck(p)
-	&& depth <= 3
-	&& MoveType(move) != CASTLE
-	&& mv_type == MV_NORMAL) {
-		p->UndoMove(move, u); continue;
-	}
+  if (fl_prunable_node
+  && quiet_tried > 4 * depth
+  && !InCheck(p)
+  && depth <= 3
+  && MoveType(move) != CASTLE
+  && mv_type == MV_NORMAL) {
+    p->UndoMove(move, u); continue;
+  }
 
-	// Late move reduction
+  // Late move reduction
 
-	reduction = 0;
+  reduction = 0;
 
-	if (depth >= 2 
-	&& mv_tried > 3 
-	&& !fl_check 
-	&& !InCheck(p) 
-	&& lmrSize[is_pv][depth][mv_tried] > 0
-	&& MoveType(move) != CASTLE 
-	&&  mv_type == MV_NORMAL) {
-		//reduction = 1;
-		//if (!is_pv && mv_tried > 6) reduction = 2;
-		reduction = lmrSize[is_pv][depth][mv_tried];
-		new_depth -= reduction;
-	}
+  if (depth >= 2 
+  && mv_tried > 3 
+  && !fl_check 
+  && !InCheck(p) 
+  && lmrSize[is_pv][depth][mv_tried] > 0
+  && MoveType(move) != CASTLE 
+  &&  mv_type == MV_NORMAL) {
+    //reduction = 1;
+    //if (!is_pv && mv_tried > 6) reduction = 2;
+    reduction = lmrSize[is_pv][depth][mv_tried];
+    new_depth -= reduction;
+  }
 
     re_search:
 
-	// PVS
+  // PVS
 
     if (best == -INF)
       score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
@@ -210,18 +210,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
         score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
     }
 
-	// Reduced move scored above alpha - we need to re-search it
+  // Reduced move scored above alpha - we need to re-search it
 
-	if (reduction && score > alpha) {
-		new_depth += reduction;
-		reduction = 0;
-		goto re_search;
-	}
+  if (reduction && score > alpha) {
+    new_depth += reduction;
+    reduction = 0;
+    goto re_search;
+  }
 
     p->UndoMove(move, u);
     if (abort_search) return 0;
 
-	// Beta cutoff
+  // Beta cutoff
 
     if (score >= beta) {
       UpdateHistory(p, move, depth, ply);
@@ -229,7 +229,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
       return score;
     }
 
-	// Updating score and alpha
+  // Updating score and alpha
 
     if (score > best) {
       best = score;
@@ -260,24 +260,24 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
 int IsDraw(POS *p)
 {
-	// Draw by 50 move rule
+  // Draw by 50 move rule
 
-	if (p->rev_moves > 100) return 1;
+  if (p->rev_moves > 100) return 1;
 
-	// Draw by repetition
+  // Draw by repetition
 
-	for (int i = 4; i <= p->rev_moves; i += 2)
-		if (p->hash_key == p->rep_list[p->head - i])
-			return 1;
+  for (int i = 4; i <= p->rev_moves; i += 2)
+    if (p->hash_key == p->rep_list[p->head - i])
+      return 1;
 
-	// Draw by insufficient material (bare kings or Km vs K)
+  // Draw by insufficient material (bare kings or Km vs K)
 
-	if (!Illegal(p)) {
-		if (p->cnt[WC][P] + p->cnt[BC][P] + p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0
-		&&  p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0;
-	}
+  if (!Illegal(p)) {
+    if (p->cnt[WC][P] + p->cnt[BC][P] + p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0
+    &&  p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0;
+  }
 
-	return 0; // default: no draw
+  return 0; // default: no draw
 }
 
 void DisplayPv(int score, int *pv)
@@ -317,5 +317,5 @@ void Check(void)
 
 int Timeout()
 {
-	return (!pondering && !Timer.IsInfiniteMode() && Timer.TimeHasElapsed());
+  return (!pondering && !Timer.IsInfiniteMode() && Timer.TimeHasElapsed());
 }

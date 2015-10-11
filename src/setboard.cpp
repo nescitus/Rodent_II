@@ -25,15 +25,15 @@ void SetPosition(POS *p, char *epd)
   for (int i = 0; i < 2; i++) {
     p->cl_bb[i] = 0;
     p->mg_pst[i] = 0;
-	p->eg_pst[i] = 0;
+  p->eg_pst[i] = 0;
   }
 
   p->phase = 0;
 
   for (int i = 0; i < 6; i++) {
-	  p->tp_bb[i] = 0;
-	  p->cnt[WC][i] = 0;
-	  p->cnt[BC][i] = 0;
+    p->tp_bb[i] = 0;
+    p->cnt[WC][i] = 0;
+    p->cnt[BC][i] = 0;
   }
 
   p->castle_flags = 0;
@@ -54,13 +54,13 @@ void SetPosition(POS *p, char *epd)
         p->cl_bb[Cl(pc)] ^= SqBb(i + j);
         p->tp_bb[Tp(pc)] ^= SqBb(i + j);
         
-		if (Tp(pc) == K)
+    if (Tp(pc) == K)
           p->king_sq[Cl(pc)] = i + j;
 
         p->phase += phase_value[Tp(pc)];
         p->mg_pst[Cl(pc)] += mg_pst_data[Cl(pc)][Tp(pc)][i + j];
-		p->eg_pst[Cl(pc)] += eg_pst_data[Cl(pc)][Tp(pc)][i + j];
-		p->cnt[Cl(pc)][Tp(pc)]++;
+    p->eg_pst[Cl(pc)] += eg_pst_data[Cl(pc)][Tp(pc)][i + j];
+    p->cnt[Cl(pc)][Tp(pc)]++;
         j++;
       }
       epd++;

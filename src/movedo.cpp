@@ -44,7 +44,7 @@ void POS::DoMove(int move, UNDO *u)
   // Update pawn hash
 
   if (ftp == P || ftp == K)
-	  pawn_key ^= zob_piece[Pc(sd, ftp)][fsq] ^ zob_piece[Pc(sd, ftp)][tsq];
+    pawn_key ^= zob_piece[Pc(sd, ftp)][fsq] ^ zob_piece[Pc(sd, ftp)][tsq];
 
   // Update castling rights
 
@@ -77,15 +77,15 @@ void POS::DoMove(int move, UNDO *u)
   if (ttp != NO_TP) {
     hash_key ^= zob_piece[Pc(op, ttp)][tsq];
 
-	if (ttp == P)
-		pawn_key ^= zob_piece[Pc(op, ttp)][tsq];
+  if (ttp == P)
+    pawn_key ^= zob_piece[Pc(op, ttp)][tsq];
 
     cl_bb[op] ^= SqBb(tsq);
     tp_bb[ttp] ^= SqBb(tsq);
     phase -= phase_value[ttp];
     mg_pst[op] -= mg_pst_data[op][ttp][tsq];
-	eg_pst[op] -= eg_pst_data[op][ttp][tsq];
-	cnt[op][ttp]--;
+  eg_pst[op] -= eg_pst_data[op][ttp][tsq];
+  cnt[op][ttp]--;
   }
 
   switch (MoveType(move)) {
@@ -94,41 +94,41 @@ void POS::DoMove(int move, UNDO *u)
     break;
 
   case CASTLE:
-	
+  
     // define complementary rook move
 
-	switch (tsq) {
-	  case C1: { fsq = A1; tsq = D1; break; }
-	  case G1: { fsq = H1; tsq = F1; break; }
-	  case C8: { fsq = A8; tsq = D8; break; }
-	  case G8: { fsq = H8; tsq = F8; break; }
-	}
-	
+  switch (tsq) {
+    case C1: { fsq = A1; tsq = D1; break; }
+    case G1: { fsq = H1; tsq = F1; break; }
+    case C8: { fsq = A8; tsq = D8; break; }
+    case G8: { fsq = H8; tsq = F8; break; }
+  }
+  
     pc[fsq] = NO_PC;
     pc[tsq] = Pc(sd, R);
     hash_key ^= zob_piece[Pc(sd, R)][fsq] ^ zob_piece[Pc(sd, R)][tsq];
     cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
     tp_bb[R]  ^= SqBb(fsq) | SqBb(tsq);
     mg_pst[sd] += mg_pst_data[sd][R][tsq] - mg_pst_data[sd][R][fsq];
-	eg_pst[sd] += eg_pst_data[sd][R][tsq] - eg_pst_data[sd][R][fsq];
+  eg_pst[sd] += eg_pst_data[sd][R][tsq] - eg_pst_data[sd][R][fsq];
     break;
 
   case EP_CAP:
     tsq ^= 8;
     pc[tsq] = NO_PC;
     hash_key ^= zob_piece[Pc(op, P)][tsq];
-	pawn_key ^= zob_piece[Pc(op, P)][tsq];
+  pawn_key ^= zob_piece[Pc(op, P)][tsq];
     cl_bb[op] ^= SqBb(tsq);
     tp_bb[P] ^= SqBb(tsq);
     phase -= phase_value[P];
     mg_pst[op] -= mg_pst_data[op][P][tsq];
-	eg_pst[op] -= eg_pst_data[op][P][tsq];
-	cnt[op][P]--;
+  eg_pst[op] -= eg_pst_data[op][P][tsq];
+  cnt[op][P]--;
     break;
 
   case EP_SET:
     tsq ^= 8;
-	if (p_attacks[sd][tsq] & (cl_bb[op] & tp_bb[P]) ) {
+  if (p_attacks[sd][tsq] & (cl_bb[op] & tp_bb[P]) ) {
       ep_sq = tsq;
       hash_key ^= zob_ep[File(tsq)];
     }
@@ -138,14 +138,14 @@ void POS::DoMove(int move, UNDO *u)
     ftp = PromType(move);
     pc[tsq] = Pc(sd, ftp);
     hash_key ^= zob_piece[Pc(sd, P)][tsq] ^ zob_piece[Pc(sd, ftp)][tsq];
-	pawn_key ^= zob_piece[Pc(sd, P)][tsq];
+  pawn_key ^= zob_piece[Pc(sd, P)][tsq];
     tp_bb[P] ^= SqBb(tsq);
     tp_bb[ftp] ^= SqBb(tsq);
     phase += phase_value[ftp] - phase_value[P];
     mg_pst[sd] += mg_pst_data[sd][ftp][tsq] - mg_pst_data[sd][P][tsq];
-	eg_pst[sd] += eg_pst_data[sd][ftp][tsq] - eg_pst_data[sd][P][tsq];
-	cnt[sd][P]--;
-	cnt[sd][ftp]++;
+  eg_pst[sd] += eg_pst_data[sd][ftp][tsq] - eg_pst_data[sd][P][tsq];
+  cnt[sd][P]--;
+  cnt[sd][ftp]++;
     break;
   }
   side ^= 1;

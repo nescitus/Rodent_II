@@ -24,34 +24,42 @@ int eg[2];
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
+void ClearEvalHash(void)
+{
+  for (int e = 0; e < EVAL_HASH_SIZE; e++) {
+    EvalTT[e].key = 0;
+    EvalTT[e].score = 0;
+  }
+}
+
 void InitEval(void)
 {
-	for (int sq = 0; sq < 64; sq++) {
-		for (int sd = 0; sd < 2; sd++) {
-			mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
-			eg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnEg[sq] + tp_value[P];
-			mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + tp_value[N];
-			eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + tp_value[N];
-			mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
-			eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
-			mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
-			eg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookEg[sq] + tp_value[R];
-			mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
-			eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
-			mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-			eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
-		}
-	}
+  for (int sq = 0; sq < 64; sq++) {
+    for (int sd = 0; sd < 2; sd++) {
+      mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
+      eg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnEg[sq] + tp_value[P];
+      mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + tp_value[N];
+      eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + tp_value[N];
+      mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
+      eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
+      mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookEg[sq] + tp_value[R];
+      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
+      eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
+      mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
+      eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+    }
+  }
 
-	// Init support mask (for detecting weak pawns)
+  // Init support mask (for detecting weak pawns)
 
-	for (int sq = 0; sq < 64; sq++) {
-		support_mask[WC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
-		support_mask[WC][sq] |= FillSouth(support_mask[WC][sq]);
+  for (int sq = 0; sq < 64; sq++) {
+    support_mask[WC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+    support_mask[WC][sq] |= FillSouth(support_mask[WC][sq]);
 
-		support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
-		support_mask[BC][sq] |= FillNorth(support_mask[BC][sq]);
-	}
+    support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+    support_mask[BC][sq] |= FillNorth(support_mask[BC][sq]);
+  }
 }
 
 int EvaluatePieces(POS *p, int sd)
@@ -83,14 +91,14 @@ int EvaluatePieces(POS *p, int sd)
   bbPieces = PcBb(p, sd, N);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
-	  
-	// Knight mobility
+    
+  // Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
     Add(sd, 4*cnt, 4*cnt);
 
-	// Knight attacks on enemy king zone
+  // Knight attacks on enemy king zone
 
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
@@ -98,11 +106,11 @@ int EvaluatePieces(POS *p, int sd)
       att += 5 * PopCnt(bbAtt & bbZone);
     }
 
-	// Knight outpost
+  // Knight outpost
 
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op]) 
-	   Add(sd, tmp, tmp);
+  if (SqBb(sq) & ~bbPawnCanTake[op]) 
+     Add(sd, tmp, tmp);
   }
 
   // Bishop
@@ -110,26 +118,26 @@ int EvaluatePieces(POS *p, int sd)
   bbPieces = PcBb(p, sd, B);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
-	
-	// Bishop mobility
+  
+  // Bishop mobility
 
-	bbMob = BAttacks(OccBb(p), sq);
-	cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
-	Add(sd, 5 * cnt, 5 * cnt);
+  bbMob = BAttacks(OccBb(p), sq);
+  cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
+  Add(sd, 5 * cnt, 5 * cnt);
 
-	// Bishop attacks on enemy king zone
+  // Bishop attacks on enemy king zone
 
-	bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
-	if (bbAtt & bbZone) {
-	  wood++;
-	  att += 4 * PopCnt(bbAtt & bbZone);
-	}
+  bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
+  if (bbAtt & bbZone) {
+    wood++;
+    att += 4 * PopCnt(bbAtt & bbZone);
+  }
 
-	// Bishop outpost
+  // Bishop outpost
 
-	tmp = pstBishopOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op])
-		Add(sd, tmp, tmp);
+  tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+  if (SqBb(sq) & ~bbPawnCanTake[op])
+    Add(sd, tmp, tmp);
   }
 
   // Rook
@@ -137,28 +145,28 @@ int EvaluatePieces(POS *p, int sd)
   bbPieces = PcBb(p, sd, R);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
-	
-	// Rook mobility
+  
+  // Rook mobility
 
-	bbMob = RAttacks(OccBb(p), sq);
-	cnt = PopCnt(bbMob) - 7;
-	Add(sd, 2 * cnt, 4 * cnt);
+  bbMob = RAttacks(OccBb(p), sq);
+  cnt = PopCnt(bbMob) - 7;
+  Add(sd, 2 * cnt, 4 * cnt);
 
-	// Rook attacks on enemy king zone
+  // Rook attacks on enemy king zone
 
-	bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
-	if (bbAtt & bbZone) {
-	  wood++;
-	  att += 8 * PopCnt(bbAtt & bbZone);
-	}
+  bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
+  if (bbAtt & bbZone) {
+    wood++;
+    att += 8 * PopCnt(bbAtt & bbZone);
+  }
 
-	// Rook on (half) open file
+  // Rook on (half) open file
 
-	bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-	if (!(bbFile & PcBb(p, sd, P))) {
-		if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
-		else                            Add(sd,  5,  5);
-	}
+  bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+  if (!(bbFile & PcBb(p, sd, P))) {
+    if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
+    else                            Add(sd,  5,  5);
+  }
   }
 
   // Queen
@@ -167,20 +175,20 @@ int EvaluatePieces(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Queen mobility
+  // Queen mobility
 
-	bbMob = QAttacks(OccBb(p), sq);
-	cnt = PopCnt(bbMob) - 14;
-	Add(sd, 1 * cnt, 2 * cnt);
+  bbMob = QAttacks(OccBb(p), sq);
+  cnt = PopCnt(bbMob) - 14;
+  Add(sd, 1 * cnt, 2 * cnt);
 
-	// Queen attacks on enemy king zone
-	 
-	bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-	bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-	if (bbAtt & bbZone) {
-	  wood++;
-	  att += 16 * PopCnt(bbAtt & bbZone);
-	}
+  // Queen attacks on enemy king zone
+   
+  bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+  bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+  if (bbAtt & bbZone) {
+    wood++;
+    att += 16 * PopCnt(bbAtt & bbZone);
+  }
   }
 
   // Score king attacks if own queen is present
@@ -205,81 +213,81 @@ void EvaluatePawns(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Passed pawn
+  // Passed pawn
 
-	if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
-		Add(sd, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
+  if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
+    Add(sd, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
 
-	// Isolated pawn
+  // Isolated pawn
 
-	if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-		Add(sd, -20, -20);
+  if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
+    Add(sd, -20, -20);
 
-	// Backward pawn
+  // Backward pawn
 
-	else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-		Add(sd, -16, -8);
+  else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+    Add(sd, -16, -8);
   }
 }
 
 void EvaluateKing(POS *p, int sd)
 {
-	const int startSq[2] = { E1, E8 };
-	const int qCastle[2] = { B1, B8 };
-	const int kCastle[2] = { G1, G8 };
+  const int startSq[2] = { E1, E8 };
+  const int qCastle[2] = { B1, B8 };
+  const int kCastle[2] = { G1, G8 };
 
-	U64 bbKingFile, bbNextFile;
-	int result = 0;
-	int sq = KingSq(p, sd);
+  U64 bbKingFile, bbNextFile;
+  int result = 0;
+  int sq = KingSq(p, sd);
 
-	// Normalize king square for pawn shield evaluation,
-	// to discourage shuffling the king between g1 and h1.
+  // Normalize king square for pawn shield evaluation,
+  // to discourage shuffling the king between g1 and h1.
 
-	if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
-	if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
+  if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
+  if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
 
-	// Evaluate shielding and storming pawns on each file.
+  // Evaluate shielding and storming pawns on each file.
 
-	bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-	result += EvalKingFile(p, sd, bbKingFile);
+  bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+  result += EvalKingFile(p, sd, bbKingFile);
 
-	bbNextFile = ShiftEast(bbKingFile);
-	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  bbNextFile = ShiftEast(bbKingFile);
+  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-	bbNextFile = ShiftWest(bbKingFile);
-	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  bbNextFile = ShiftWest(bbKingFile);
+  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-	mg[sd] += result;
+  mg[sd] += result;
 
 }
 
 int EvalKingFile(POS * p, int sd, U64 bbFile)
 {
-	int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
-	int storm   = EvalFileStorm  (bbFile & PcBb(p, Opp(sd), P), sd);
-	if (bbFile & bbCentralFile) return (shelter / 2) + storm;
-	else return shelter + storm;
+  int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
+  int storm   = EvalFileStorm  (bbFile & PcBb(p, Opp(sd), P), sd);
+  if (bbFile & bbCentralFile) return (shelter / 2) + storm;
+  else return shelter + storm;
 }
 
 int EvalFileShelter(U64 bbOwnPawns, int sd)
 {
-	if (!bbOwnPawns) return -36;
-	if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
-	if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
-	if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
-	if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
-	if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
-	if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
-	return 0;
+  if (!bbOwnPawns) return -36;
+  if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
+  if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
+  if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
+  if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
+  if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
+  if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
+  return 0;
 }
 
 int EvalFileStorm(U64 bbOppPawns, int sd)
 {
-	if (!bbOppPawns) return -16;
-	if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
-	if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
-	if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
-	return 0;
+  if (!bbOppPawns) return -16;
+  if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
+  if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
+  if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
+  return 0;
 }
  
 int Evaluate(POS *p)
@@ -289,8 +297,8 @@ int Evaluate(POS *p)
 
   int addr = p->hash_key % EVAL_HASH_SIZE;
   if (EvalTT[addr].key == p->hash_key) {
-	int hashScore = EvalTT[addr].score;
-	return p->side == WC ? hashScore : -hashScore;
+  int hashScore = EvalTT[addr].score;
+  return p->side == WC ? hashScore : -hashScore;
   }
 
   // Init eval with incrementally updated stuff
@@ -353,6 +361,6 @@ int Evaluate(POS *p)
 
 void Add(int sd, int mg_bonus, int eg_bonus)
 {
-	mg[sd] += mg_bonus;
-	eg[sd] += eg_bonus;
+  mg[sd] += mg_bonus;
+  eg[sd] += eg_bonus;
 }

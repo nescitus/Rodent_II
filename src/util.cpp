@@ -73,14 +73,14 @@ U64 InitHashKey(POS *p)
 
 U64 InitPawnKey(POS *p)
 {
-	U64 key = 0;
+  U64 key = 0;
 
-	for (int i = 0; i < 64; i++) {
-		if ((p->tp_bb[P] & SqBb(i)) || (p->tp_bb[K] & SqBb(i)))
-			key ^= zob_piece[p->pc[i]][i];
-	}
+  for (int i = 0; i < 64; i++) {
+    if ((p->tp_bb[P] & SqBb(i)) || (p->tp_bb[K] & SqBb(i)))
+      key ^= zob_piece[p->pc[i]][i];
+  }
 
-	return key;
+  return key;
 }
 
 void MoveToStr(int move, char *move_str)
@@ -99,7 +99,7 @@ void MoveToStr(int move, char *move_str)
   // (needed if a GUI forces the engine to analyse in checkmate/stalemate position)
 
   if (strcmp(move_str, "a1a1") == 0) {
-	  strcpy(move_str, "0000");
+    strcpy(move_str, "0000");
   }
 
   // Add promoted piece, if any

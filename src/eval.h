@@ -183,18 +183,18 @@ static const int pstBishopOutpost[64] =
 };
 
 static const int passed_bonus_mg[2][8] = {
-	{ 0, 12, 12, 30, 50, 80, 130, 0 },
-	{ 0, 120, 80, 50, 30, 12, 12, 0 }
+  { 0, 12, 12, 30, 50, 80, 130, 0 },
+  { 0, 120, 80, 50, 30, 12, 12, 0 }
 };
 
 const int passed_bonus_eg[2][8] = {
-	{ 0, 16, 16, 39, 65, 104, 156, 0 },
-	{ 0, 156, 104, 65, 39, 16, 16, 0 }
+  { 0, 16, 16, 39, 65, 104, 156, 0 },
+  { 0, 156, 104, 65, 39, 16, 16, 0 }
 };
 
 struct sEvalHashEntry {
-	U64 key;
-	int score;
+  U64 key;
+  int score;
 };
 
 #define EVAL_HASH_SIZE 512*512

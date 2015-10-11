@@ -21,7 +21,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to - 7);
     }
 
-	// White pawn promotions with capture
+  // White pawn promotions with capture
 
     bbMoves = ((PcBb(p, WC, P) & ~FILE_H_BB & RANK_7_BB) << 9) & p->cl_bb[BC];
     while (bbMoves) {
@@ -32,7 +32,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to - 9);
     }
 
-	// White pawn promotions without capture
+  // White pawn promotions without capture
 
     bbMoves = ((PcBb(p, WC, P) & RANK_7_BB) << 8) & UnoccBb(p);
     while (bbMoves) {
@@ -43,7 +43,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to - 8);
     }
 
-	// White pawn captures
+  // White pawn captures
 
     bbMoves = ((PcBb(p, WC, P) & ~FILE_A_BB & ~RANK_7_BB) << 7) & p->cl_bb[BC];
     while (bbMoves) {
@@ -51,7 +51,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (to << 6) | (to - 7);
     }
 
-	// White pawn captures
+  // White pawn captures
 
     bbMoves = ((PcBb(p, WC, P) & ~FILE_H_BB & ~RANK_7_BB) << 9) & p->cl_bb[BC];
     while (bbMoves) {
@@ -59,7 +59,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (to << 6) | (to - 9);
     }
 
-	// White en passant capture
+  // White en passant capture
 
     if ((to = p->ep_sq) != NO_SQ) {
       if (((PcBb(p, WC, P) & ~FILE_A_BB) << 7) & SqBb(to))
@@ -80,7 +80,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to + 9);
     }
 
-	// Black pawn promotions with capture
+  // Black pawn promotions with capture
 
     bbMoves = ((PcBb(p, BC, P) & ~FILE_H_BB & RANK_2_BB) >> 7) & p->cl_bb[WC];
     while (bbMoves) {
@@ -91,7 +91,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to + 7);
     }
 
-	// Black pawn promotions
+  // Black pawn promotions
 
     bbMoves = ((PcBb(p, BC, P) & RANK_2_BB) >> 8) & UnoccBb(p);
     while (bbMoves) {
@@ -102,7 +102,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (N_PROM << 12) | (to << 6) | (to + 8);
     }
 
-	// Black pawn captures, excluding promotions
+  // Black pawn captures, excluding promotions
 
     bbMoves = ((PcBb(p, BC, P) & ~FILE_A_BB & ~RANK_2_BB) >> 9) & bbEnemy;
     while (bbMoves) { 
@@ -110,7 +110,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (to << 6) | (to + 9);
     }
 
-	// Black pawn captures, excluding promotions
+  // Black pawn captures, excluding promotions
 
     bbMoves = ((PcBb(p, BC, P) & ~FILE_H_BB & ~RANK_2_BB) >> 7) & bbEnemy;
     while (bbMoves) {
@@ -118,7 +118,7 @@ int *GenerateCaptures(POS *p, int *list)
       *list++ = (to << 6) | (to + 7);
     }
 
-	// Black en passant capture
+  // Black en passant capture
 
     if ((to = p->ep_sq) != NO_SQ) {
       if (((PcBb(p, BC, P) & ~FILE_A_BB) >> 9) & SqBb(to))
@@ -201,13 +201,13 @@ int *GenerateQuiet(POS *p, int *list)
       if (!Attacked(p, E1, BC) && !Attacked(p, F1, BC))
         *list++ = (CASTLE << 12) | (G1 << 6) | E1;
 
-	// White long castle
+  // White long castle
 
     if ((p->castle_flags & 2) && !(OccBb(p) & (U64)0x000000000000000E))
       if (!Attacked(p, E1, BC) && !Attacked(p, D1, BC))
         *list++ = (CASTLE << 12) | (C1 << 6) | E1;
 
-	// White double pawn moves
+  // White double pawn moves
 
     bbMoves = ((((PcBb(p, WC, P) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
     while (bbMoves) {
@@ -215,7 +215,7 @@ int *GenerateQuiet(POS *p, int *list)
       *list++ = (EP_SET << 12) | (to << 6) | (to - 16);
     }
 
-	// White normal pawn moves
+  // White normal pawn moves
 
     bbMoves = ((PcBb(p, WC, P) & ~RANK_7_BB) << 8) & UnoccBb(p);
     while (bbMoves) {
@@ -230,13 +230,13 @@ int *GenerateQuiet(POS *p, int *list)
       if (!Attacked(p, E8, WC) && !Attacked(p, F8, WC))
         *list++ = (CASTLE << 12) | (G8 << 6) | E8;
 
-	// Black long castle
+  // Black long castle
 
     if ((p->castle_flags & 8) && !(OccBb(p) & (U64)0x0E00000000000000))
       if (!Attacked(p, E8, WC) && !Attacked(p, D8, WC))
         *list++ = (CASTLE << 12) | (C8 << 6) | E8;
 
-	// Black double pawn moves
+  // Black double pawn moves
 
     bbMoves = ((((PcBb(p, BC, P) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
     while (bbMoves) {
@@ -244,7 +244,7 @@ int *GenerateQuiet(POS *p, int *list)
       *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
     }
 
-	// Black single pawn moves
+  // Black single pawn moves
 
     bbMoves = ((PcBb(p, BC, P) & ~RANK_2_BB) >> 8) & UnoccBb(p);
     while (bbMoves) {
@@ -259,7 +259,7 @@ int *GenerateQuiet(POS *p, int *list)
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = n_attacks[from] & UnoccBb(p);
-	while (bbMoves) {
+  while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
     }
