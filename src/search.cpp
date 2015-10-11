@@ -59,6 +59,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0;
   int quiet_tried = 0;
+  int fl_futility = 0;
 
   MOVES m[1];
   UNDO u[1];
@@ -150,7 +151,16 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   
   // end of razoring code
 
-  // None of the attempts at an early cutoff worked, we need a real search
+  // Set futility pruning flag
+
+  if (depth <= 6
+  && fl_prunable_node
+  && alpha > -MAX_EVAL
+  && beta < MAX_EVAL) {
+    if (Evaluate(p) + 50 + 50 * depth < beta) fl_futility = 1;
+  }
+
+  // Init moves and variables before entering main loop
   
   best = -INF;
   InitMoves(p, m, move, ply);
@@ -168,7 +178,16 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   // Set new search depth
 
-    new_depth = depth - 1 + InCheck(p);
+  new_depth = depth - 1 + InCheck(p);
+
+  // Futility pruning
+
+  if (fl_futility
+  && !InCheck(p)
+  && mv_type == MV_NORMAL
+  && mv_tried > 1) {
+    p->UndoMove(move, u); continue;
+  }
 
   // Late move pruning
 
