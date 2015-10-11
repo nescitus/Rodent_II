@@ -150,7 +150,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   
   // end of razoring code
 
-  // None of the attempts at an early cutoff worked, we need a real search.
+  // None of the attempts at an early cutoff worked, we need a real search
   
   best = -INF;
   InitMoves(p, m, move, ply);

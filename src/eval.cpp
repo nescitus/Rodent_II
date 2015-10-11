@@ -43,7 +43,7 @@ void InitEval(void)
       mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
       eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
       mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
-      eg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookEg[sq] + tp_value[R];
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = 0 + tp_value[R];
       mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
       eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
       mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
@@ -92,13 +92,13 @@ int EvaluatePieces(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
     
-  // Knight mobility
+    // Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
     Add(sd, 4*cnt, 4*cnt);
 
-  // Knight attacks on enemy king zone
+    // Knight attacks on enemy king zone
 
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
@@ -106,11 +106,11 @@ int EvaluatePieces(POS *p, int sd)
       att += 5 * PopCnt(bbAtt & bbZone);
     }
 
-  // Knight outpost
+    // Knight outpost
 
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-  if (SqBb(sq) & ~bbPawnCanTake[op]) 
-     Add(sd, tmp, tmp);
+    if (SqBb(sq) & ~bbPawnCanTake[op]) 
+      Add(sd, tmp, tmp);
   }
 
   // Bishop
@@ -119,25 +119,25 @@ int EvaluatePieces(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
   
-  // Bishop mobility
+    // Bishop mobility
 
-  bbMob = BAttacks(OccBb(p), sq);
-  cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
-  Add(sd, 5 * cnt, 5 * cnt);
+    bbMob = BAttacks(OccBb(p), sq);
+    cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
+    Add(sd, 5 * cnt, 5 * cnt);
 
-  // Bishop attacks on enemy king zone
+    // Bishop attacks on enemy king zone
 
-  bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
-  if (bbAtt & bbZone) {
-    wood++;
-    att += 4 * PopCnt(bbAtt & bbZone);
-  }
+    bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
+    if (bbAtt & bbZone) {
+      wood++;
+      att += 4 * PopCnt(bbAtt & bbZone);
+    }
 
-  // Bishop outpost
+    // Bishop outpost
 
-  tmp = pstBishopOutpost[REL_SQ(sq, sd)];
-  if (SqBb(sq) & ~bbPawnCanTake[op])
-    Add(sd, tmp, tmp);
+    tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+    if (SqBb(sq) & ~bbPawnCanTake[op])
+      Add(sd, tmp, tmp);
   }
 
   // Rook
@@ -146,27 +146,36 @@ int EvaluatePieces(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
   
-  // Rook mobility
+    // Rook mobility
 
-  bbMob = RAttacks(OccBb(p), sq);
-  cnt = PopCnt(bbMob) - 7;
-  Add(sd, 2 * cnt, 4 * cnt);
+    bbMob = RAttacks(OccBb(p), sq);
+    cnt = PopCnt(bbMob) - 7;
+    Add(sd, 2 * cnt, 4 * cnt);
 
-  // Rook attacks on enemy king zone
+    // Rook attacks on enemy king zone
 
-  bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
-  if (bbAtt & bbZone) {
-    wood++;
-    att += 8 * PopCnt(bbAtt & bbZone);
-  }
+    bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
+    if (bbAtt & bbZone) {
+      wood++;
+      att += 8 * PopCnt(bbAtt & bbZone);
+    }
 
-  // Rook on (half) open file
+    // Rook on (half) open file
 
-  bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-  if (!(bbFile & PcBb(p, sd, P))) {
-    if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
-    else                            Add(sd,  5,  5);
-  }
+    bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+    if (!(bbFile & PcBb(p, sd, P))) {
+      if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
+      else                            Add(sd,  5,  5);
+    }
+
+    // Rook on 7th rank attacking pawns or cutting off enemy king
+
+    if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
+      if (PcBb(p, op, P) & bbRelRank[sd][RANK_7]
+      ||  PcBb(p, op, K) & bbRelRank[sd][RANK_8]) {
+          Add(sd, 16, 32);
+      }
+    }
   }
 
   // Queen
@@ -175,20 +184,20 @@ int EvaluatePieces(POS *p, int sd)
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-  // Queen mobility
+    // Queen mobility
 
-  bbMob = QAttacks(OccBb(p), sq);
-  cnt = PopCnt(bbMob) - 14;
-  Add(sd, 1 * cnt, 2 * cnt);
+    bbMob = QAttacks(OccBb(p), sq);
+    cnt = PopCnt(bbMob) - 14;
+    Add(sd, 1 * cnt, 2 * cnt);
 
-  // Queen attacks on enemy king zone
+    // Queen attacks on enemy king zone
    
-  bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-  bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-  if (bbAtt & bbZone) {
-    wood++;
-    att += 16 * PopCnt(bbAtt & bbZone);
-  }
+    bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+    bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+    if (bbAtt & bbZone) {
+      wood++;
+      att += 16 * PopCnt(bbAtt & bbZone);
+    }
   }
 
   // Score king attacks if own queen is present
