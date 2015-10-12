@@ -2,7 +2,7 @@
 // bench 12: 10998832 20,6 s 1.238
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 2416 lines
-// 40,5/100 vs Fruit 2.1
+// 48,7% vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};

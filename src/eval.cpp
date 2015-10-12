@@ -43,7 +43,7 @@ void InitEval(void)
       mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
       eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
       mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
-      eg_pst_data[sd][R][REL_SQ(sq, sd)] = 0 + tp_value[R];
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R]; // no value from the table
       mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
       eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
       mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
@@ -209,7 +209,7 @@ int EvaluatePieces(POS *p, int sd)
 
 void EvaluatePawns(POS *p, int sd)
 {
-  U64 bbPieces;
+  U64 bbPieces, bbSpan;
   int sq;
 
   // Is color OK?
@@ -221,6 +221,12 @@ void EvaluatePawns(POS *p, int sd)
   bbPieces = PcBb(p, sd, P);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
+
+  // Doubled pawn
+
+  bbSpan = FillNorth(ShiftNorth(SqBb(sq)));
+  if (bbSpan & PcBb(p, sd, P))
+	  Add(sd, -10, -20);
 
   // Passed pawn
 
