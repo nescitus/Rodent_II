@@ -55,7 +55,7 @@ void Iterate(POS *p, int *pv)
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv)
 {
   int best, score, move, new_depth, new_pv[MAX_PLY];
-  int fl_check, fl_prunable_node, mv_type, reduction;
+  int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0;
   int quiet_tried = 0;
@@ -175,6 +175,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   mv_tried++;
   if (mv_type == MV_NORMAL) quiet_tried++;
+  fl_prunable_move = !InCheck(p) & (mv_type == MV_NORMAL);
 
   // Set new search depth
 
@@ -183,9 +184,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Futility pruning
 
   if (fl_futility
-  && !InCheck(p)
-  && mv_type == MV_NORMAL
-  && mv_tried > 1) {
+  &&  fl_prunable_move
+  &&  mv_tried > 1) {
     p->UndoMove(move, u); continue;
   }
 
@@ -193,10 +193,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   if (fl_prunable_node
   && quiet_tried > 4 * depth
-  && !InCheck(p)
+  && fl_prunable_move
   && depth <= 3
-  && MoveType(move) != CASTLE
-  && mv_type == MV_NORMAL) {
+  && MoveType(move) != CASTLE ) {
     p->UndoMove(move, u); continue;
   }
 
@@ -207,10 +206,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   if (depth >= 2 
   && mv_tried > 3 
   && !fl_check 
-  && !InCheck(p) 
+  &&  fl_prunable_move
   && lmrSize[is_pv][depth][mv_tried] > 0
-  && MoveType(move) != CASTLE 
-  &&  mv_type == MV_NORMAL) {
+  && MoveType(move) != CASTLE ) {
     //reduction = 1;
     //if (!is_pv && mv_tried > 6) reduction = 2;
     reduction = lmrSize[is_pv][depth][mv_tried];
