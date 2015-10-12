@@ -19,10 +19,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
   // (exiting if eval exceeds beta)
 
   best = Evaluate(p); 
-  if (best >= beta)
-    return best;
-  if (best > alpha)
-    alpha = best;
+  if (best >= beta) return best;
+  if (best > alpha) alpha = best;
 
   InitCaptures(p, m);
 

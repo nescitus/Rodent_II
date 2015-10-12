@@ -322,6 +322,7 @@ void Check(void)
 
   if (nodes & 4095 || root_depth == 1)
     return;
+
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));
     if (strcmp(command, "stop") == 0)
@@ -329,6 +330,7 @@ void Check(void)
     else if (strcmp(command, "ponderhit") == 0)
       pondering = 0;
   }
+
   if (Timeout()) abort_search = 1;
 }
 

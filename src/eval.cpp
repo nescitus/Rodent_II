@@ -312,8 +312,8 @@ int Evaluate(POS *p)
 
   int addr = p->hash_key % EVAL_HASH_SIZE;
   if (EvalTT[addr].key == p->hash_key) {
-  int hashScore = EvalTT[addr].score;
-  return p->side == WC ? hashScore : -hashScore;
+    int hashScore = EvalTT[addr].score;
+    return p->side == WC ? hashScore : -hashScore;
   }
 
   // Init eval with incrementally updated stuff

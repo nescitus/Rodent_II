@@ -1,8 +1,7 @@
 #pragma once
 
-enum eTimeData { W_TIME, B_TIME, W_INC, B_INC, OLD_TIME, TIME, INC,
-                 MOVES_TO_GO, MOVE_TIME, MAX_NODES, MAX_DEPTH,
-                 FLAG_INFINITE, SIZE_OF_DATA };
+enum eTimeData { W_TIME, B_TIME, W_INC, B_INC, TIME, INC, MOVES_TO_GO, MOVE_TIME, 
+	             MAX_NODES, MAX_DEPTH, FLAG_INFINITE, SIZE_OF_DATA };
 
 struct sTimer {
 private:
