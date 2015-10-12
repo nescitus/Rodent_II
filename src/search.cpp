@@ -119,8 +119,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && MayNull(p)) {
     int eval = Evaluate(p);
     if (eval > beta) {
-    reduction = 3;
-    if (depth > 8) reduction += depth / 4;
+      reduction = 3;
+      if (depth > 8) reduction += depth / 4;
+
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
       p->UndoNull(u);
@@ -136,10 +137,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Razoring based on Toga II 3.0
 
   if (fl_prunable_node
-  &&  !move
-  &&  !was_null
-  &&  !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-  &&   depth <= 3) {
+  && !move
+  && !was_null
+  && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
+  &&  depth <= 3) {
     int threshold = beta - 300 - (depth - 1) * 60;
     int eval = Evaluate(p);
 

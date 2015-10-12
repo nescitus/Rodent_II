@@ -22,6 +22,9 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
+  if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
+	  return score;
+
   InitCaptures(p, m);
 
   // Main loop
@@ -44,8 +47,10 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
 
   // Beta cutoff
 
-    if (score >= beta)
-      return score;
+	if (score >= beta) {
+		TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
+		return score;
+	}
 
   // Adjust alpha and score
 
@@ -57,5 +62,9 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
       }
     }
   }
+
+  if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
+  else 	   TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+
   return best;
 }

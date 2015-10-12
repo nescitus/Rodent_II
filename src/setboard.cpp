@@ -55,12 +55,12 @@ void SetPosition(POS *p, char *epd)
         p->tp_bb[Tp(pc)] ^= SqBb(i + j);
         
     if (Tp(pc) == K)
-          p->king_sq[Cl(pc)] = i + j;
+      p->king_sq[Cl(pc)] = i + j;
 
         p->phase += phase_value[Tp(pc)];
         p->mg_pst[Cl(pc)] += mg_pst_data[Cl(pc)][Tp(pc)][i + j];
-    p->eg_pst[Cl(pc)] += eg_pst_data[Cl(pc)][Tp(pc)][i + j];
-    p->cnt[Cl(pc)][Tp(pc)]++;
+        p->eg_pst[Cl(pc)] += eg_pst_data[Cl(pc)][Tp(pc)][i + j];
+        p->cnt[Cl(pc)][Tp(pc)]++;
         j++;
       }
       epd++;

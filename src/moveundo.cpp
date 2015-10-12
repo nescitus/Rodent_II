@@ -62,22 +62,21 @@ void POS::UndoMove(int move, UNDO *u)
 
   case CASTLE:
 
-  // define complementary rook move
+    // define complementary rook move
 
-  switch (tsq) {
-    case C1: { fsq = A1; tsq = D1; break; }
-    case G1: { fsq = H1; tsq = F1; break; }
-    case C8: { fsq = A8; tsq = D8; break; }
-    case G8: { fsq = H8; tsq = F8; break; }
-  }
+    switch (tsq) {
+      case C1: { fsq = A1; tsq = D1; break; }
+      case G1: { fsq = H1; tsq = F1; break; }
+      case C8: { fsq = A8; tsq = D8; break; }
+      case G8: { fsq = H8; tsq = F8; break; }
+    }
 
     pc[tsq] = NO_PC;
     pc[fsq] = Pc(sd, R);
     cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
     tp_bb[R] ^= SqBb(fsq) | SqBb(tsq);
     mg_pst[sd] += mg_pst_data[sd][R][fsq] - mg_pst_data[sd][R][tsq];
-  eg_pst[sd] += eg_pst_data[sd][R][fsq] - eg_pst_data[sd][R][tsq];
-
+    eg_pst[sd] += eg_pst_data[sd][R][fsq] - eg_pst_data[sd][R][tsq];
     break;
 
   case EP_CAP:
@@ -87,8 +86,8 @@ void POS::UndoMove(int move, UNDO *u)
     tp_bb[P] ^= SqBb(tsq);
     phase += phase_value[P];
     mg_pst[op] += mg_pst_data[op][P][tsq];
-  eg_pst[op] += eg_pst_data[op][P][tsq];
-  cnt[op][P]++;
+    eg_pst[op] += eg_pst_data[op][P][tsq];
+    cnt[op][P]++;
     break;
 
   case EP_SET:
@@ -100,9 +99,9 @@ void POS::UndoMove(int move, UNDO *u)
     tp_bb[ftp] ^= SqBb(fsq);
     phase += phase_value[P] - phase_value[ftp];
     mg_pst[sd] += mg_pst_data[sd][P][fsq] - mg_pst_data[sd][ftp][fsq];
-  eg_pst[sd] += eg_pst_data[sd][P][fsq] - eg_pst_data[sd][ftp][fsq];
-  cnt[sd][P]++;
-  cnt[sd][ftp]--;
+    eg_pst[sd] += eg_pst_data[sd][P][fsq] - eg_pst_data[sd][ftp][fsq];
+    cnt[sd][P]++;
+    cnt[sd][ftp]--;
     break;
   }
   side ^= 1;

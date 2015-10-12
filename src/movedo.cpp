@@ -148,6 +148,9 @@ void POS::DoMove(int move, UNDO *u)
   cnt[sd][ftp]++;
     break;
   }
+
+  // Invert side to move
+
   side ^= 1;
   hash_key ^= SIDE_RANDOM;
 }
@@ -157,12 +160,20 @@ void POS::DoNull(UNDO *u)
   u->ep_sq = ep_sq;
   u->hash_key = hash_key;
 
+  // Update repetition list
+
   rep_list[head++] = hash_key;
   rev_moves++;
+  
+  // Clear en passant square
+
   if (ep_sq != NO_SQ) {
     hash_key ^= zob_ep[File(ep_sq)];
     ep_sq = NO_SQ;
   }
+
+  // Invert side to move
+
   side ^= 1;
   hash_key ^= SIDE_RANDOM;
 }
