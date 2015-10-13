@@ -1,7 +1,7 @@
 // bench: 826323
 // bench 12: 11369331 22,7 s 1.158
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2341 lines
+// 2358 lines
 // 48,7% vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
@@ -213,6 +213,7 @@ int *GenerateQuiet(POS *p, int *list);
 int GetMS(void);
 U64 GetWPControl(U64 bb);
 U64 GetBPControl(U64 bb);
+int GetDrawFactor(POS *p, int sd);
 void UpdateHistory(POS *p, int move, int depth, int ply);
 void Init(void);
 void InitEval(void);

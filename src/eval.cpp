@@ -312,6 +312,27 @@ int EvalFileStorm(U64 bbOppPawns, int sd) {
   return 0;
 }
  
+int GetDrawFactor(POS *p, int sd) {
+
+  int op = Opp(sd);
+
+  if (p->cnt[sd][P] == 0) {
+
+    // K(m) vs K(m) or Km vs Kp(p)
+    if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2) return 0;
+
+    // KR vs Km(p)
+    if (p->cnt[sd][Q] + p->cnt[sd][B] + p->cnt[sd][N] == 0 && p->cnt[sd][R] == 1
+    &&  p->cnt[op][Q] + p->cnt[op][R] == 0 && p->cnt[op][B] + p->cnt[op][N] == 1) return 32; // 1/2
+
+    // KRm vs KR(p)
+    if (p->cnt[sd][Q] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1 && p->cnt[sd][R] == 1
+    &&  p->cnt[op][Q] + p->cnt[op][B] + p->cnt[op][N] == 0 && p->cnt[op][R] == 1) return 32; // 1/2
+  }
+
+  return 64; // default: no scaling
+}
+
 int Evaluate(POS *p) {
 
   // Try to retrieve score from eval hashtable
@@ -362,6 +383,14 @@ int Evaluate(POS *p) {
   int mg_score = mg[WC] - mg[BC];
   int eg_score = eg[WC] - eg[BC];
   score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
+
+  // Scale down drawish endgames
+
+  int draw_factor = 64;
+  if (score > 0) draw_factor = GetDrawFactor(p, WC);
+  else           draw_factor = GetDrawFactor(p, BC);
+  score *= draw_factor;
+  score /= 64;
 
   // Make sure eval doesn't exceed mate score
 
