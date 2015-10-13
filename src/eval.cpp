@@ -24,16 +24,16 @@ int eg[2];
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
-void ClearEvalHash(void)
-{
+void ClearEvalHash(void) {
+
   for (int e = 0; e < EVAL_HASH_SIZE; e++) {
     EvalTT[e].key = 0;
     EvalTT[e].score = 0;
   }
 }
 
-void InitEval(void)
-{
+void InitEval(void) {
+
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
       mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
@@ -51,6 +51,14 @@ void InitEval(void)
     }
   }
 
+  // Init adjacent mask (for detecting isolated pawns)
+
+  for (int i = 0; i < 8; i++) {
+	  adjacent_mask[i] = 0;
+	  if (i > 0) adjacent_mask[i] |= FILE_A_BB << (i - 1);
+	  if (i < 7) adjacent_mask[i] |= FILE_A_BB << (i + 1);
+  }
+
   // Init support mask (for detecting weak pawns)
 
   for (int sq = 0; sq < 64; sq++) {
@@ -62,8 +70,8 @@ void InitEval(void)
   }
 }
 
-int EvaluatePieces(POS *p, int sd)
-{
+int EvaluatePieces(POS *p, int sd) {
+
   U64 bbPieces, bbMob, bbAtt, bbFile;
   int op, sq, cnt, ksq, att, wood, mob, tmp;
 
@@ -207,8 +215,8 @@ int EvaluatePieces(POS *p, int sd)
   return mob;
 }
 
-void EvaluatePawns(POS *p, int sd)
-{
+void EvaluatePawns(POS *p, int sd) {
+
   U64 bbPieces, bbSpan;
   int sq;
 
@@ -245,8 +253,8 @@ void EvaluatePawns(POS *p, int sd)
   }
 }
 
-void EvaluateKing(POS *p, int sd)
-{
+void EvaluateKing(POS *p, int sd) {
+
   const int startSq[2] = { E1, E8 };
   const int qCastle[2] = { B1, B8 };
   const int kCastle[2] = { G1, G8 };
@@ -273,19 +281,18 @@ void EvaluateKing(POS *p, int sd)
   if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
   mg[sd] += result;
-
 }
 
-int EvalKingFile(POS * p, int sd, U64 bbFile)
-{
+int EvalKingFile(POS * p, int sd, U64 bbFile) {
+
   int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
   int storm   = EvalFileStorm  (bbFile & PcBb(p, Opp(sd), P), sd);
   if (bbFile & bbCentralFile) return (shelter / 2) + storm;
   else return shelter + storm;
 }
 
-int EvalFileShelter(U64 bbOwnPawns, int sd)
-{
+int EvalFileShelter(U64 bbOwnPawns, int sd) {
+
   if (!bbOwnPawns) return -36;
   if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
   if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
@@ -296,8 +303,8 @@ int EvalFileShelter(U64 bbOwnPawns, int sd)
   return 0;
 }
 
-int EvalFileStorm(U64 bbOppPawns, int sd)
-{
+int EvalFileStorm(U64 bbOppPawns, int sd) {
+
   if (!bbOppPawns) return -16;
   if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
   if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
@@ -305,8 +312,7 @@ int EvalFileStorm(U64 bbOppPawns, int sd)
   return 0;
 }
  
-int Evaluate(POS *p)
-{
+int Evaluate(POS *p) {
 
   // Try to retrieve score from eval hashtable
 
@@ -374,8 +380,8 @@ int Evaluate(POS *p)
   return p->side == WC ? score : -score;
 }
 
-void Add(int sd, int mg_bonus, int eg_bonus)
-{
+void Add(int sd, int mg_bonus, int eg_bonus) {
+
   mg[sd] += mg_bonus;
   eg[sd] += eg_bonus;
 }

@@ -7,8 +7,8 @@
 #endif
 #include "rodent.h"
 
-int InputAvailable(void)
-{
+int InputAvailable(void) {
+
 #if defined(_WIN32) || defined(_WIN64)
   static int init = 0, pipe;
   static HANDLE inh;
@@ -44,16 +44,16 @@ int InputAvailable(void)
 #endif
 }
 
-U64 Random64(void)
-{
+U64 Random64(void) {
+
   static U64 next = 1;
 
   next = next * 1103515245 + 12345;
   return next;
 }
 
-U64 InitHashKey(POS *p)
-{
+U64 InitHashKey(POS *p) {
+
   U64 key = 0;
 
   for (int i = 0; i < 64; i++)
@@ -71,8 +71,7 @@ U64 InitHashKey(POS *p)
   return key;
 }
 
-U64 InitPawnKey(POS *p)
-{
+U64 InitPawnKey(POS *p) {
   U64 key = 0;
 
   for (int i = 0; i < 64; i++) {
@@ -83,8 +82,8 @@ U64 InitPawnKey(POS *p)
   return key;
 }
 
-void MoveToStr(int move, char *move_str)
-{
+void MoveToStr(int move, char *move_str) {
+
   static const char prom_char[5] = "nbrq";
 
   // Move coordinates
@@ -110,8 +109,8 @@ void MoveToStr(int move, char *move_str)
   }
 }
 
-int StrToMove(POS *p, char *move_str)
-{
+int StrToMove(POS *p, char *move_str) {
+
   int from, to, type;
 
   from = Sq(move_str[0] - 'a', move_str[1] - '1');
@@ -143,8 +142,8 @@ int StrToMove(POS *p, char *move_str)
   return (type << 12) | (to << 6) | from;
 }
 
-void PvToStr(int *pv, char *pv_str)
-{
+void PvToStr(int *pv, char *pv_str) {
+
   int *movep;
   char move_str[6];
 
@@ -156,8 +155,8 @@ void PvToStr(int *pv, char *pv_str)
   }
 }
 
-void BuildPv(int *dst, int *src, int move)
-{
+void BuildPv(int *dst, int *src, int move) {
+
   *dst++ = move;
   while ((*dst++ = *src++))
     ;

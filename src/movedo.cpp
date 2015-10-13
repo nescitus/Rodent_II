@@ -17,8 +17,8 @@
 
 #include "rodent.h"
 
-void POS::DoMove(int move, UNDO *u)
-{
+void POS::DoMove(int move, UNDO *u) {
+
   int sd = side;          // moving side
   int op = Opp(sd);       // side not to move
   int fsq = Fsq(move);    // start square
@@ -155,8 +155,8 @@ void POS::DoMove(int move, UNDO *u)
   hash_key ^= SIDE_RANDOM;
 }
 
-void POS::DoNull(UNDO *u)
-{
+void POS::DoNull(UNDO *u) {
+
   u->ep_sq = ep_sq;
   u->hash_key = hash_key;
 

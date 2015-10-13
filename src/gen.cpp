@@ -1,11 +1,11 @@
 #include "rodent.h"
 
-int *GenerateCaptures(POS *p, int *list)
-{
-  U64 bbPieces, bbMoves, bbEnemy;
-  int side, from, to;
+int *GenerateCaptures(POS *p, int *list) {
 
-  side = p->side;
+  U64 bbPieces, bbMoves, bbEnemy;
+  int from, to;
+  int side = p->side;
+
   bbEnemy = p->cl_bb[Opp(side)];
 
   if (side == WC) {
@@ -186,12 +186,11 @@ int *GenerateCaptures(POS *p, int *list)
   return list;
 }
 
-int *GenerateQuiet(POS *p, int *list)
-{
-  U64 bbPieces, bbMoves;
-  int side, from, to;
+int *GenerateQuiet(POS *p, int *list) {
 
-  side = p->side;
+  U64 bbPieces, bbMoves;
+  int from, to;
+  int side = p->side;
 
   if (side == WC) {
 

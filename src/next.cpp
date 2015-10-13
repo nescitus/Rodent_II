@@ -1,8 +1,8 @@
 #include "rodent.h"
 #include <assert.h>
 
-void InitMoves(POS *p, MOVES *m, int trans_move, int ply)
-{
+void InitMoves(POS *p, MOVES *m, int trans_move, int ply) {
+
   m->p = p;
   m->phase = 0;
   m->trans_move = trans_move;
@@ -10,8 +10,8 @@ void InitMoves(POS *p, MOVES *m, int trans_move, int ply)
   m->killer2 = killer[ply][1];
 }
 
-int NextMove(MOVES *m, int *flag)
-{
+int NextMove(MOVES *m, int *flag) {
+
   int move;
 
   switch (m->phase) {
@@ -92,16 +92,16 @@ int NextMove(MOVES *m, int *flag)
   return 0;
 }
 
-void InitCaptures(POS *p, MOVES *m)
-{
+void InitCaptures(POS *p, MOVES *m) {
+
   m->p = p;
   m->last = GenerateCaptures(m->p, m->move);
   ScoreCaptures(m);
   m->next = m->move;
 }
 
-int NextCapture(MOVES *m)
-{
+int NextCapture(MOVES *m) {
+
   int move;
 
   while (m->next < m->last) {
@@ -111,8 +111,8 @@ int NextCapture(MOVES *m)
   return 0;
 }
 
-void ScoreCaptures(MOVES *m)
-{
+void ScoreCaptures(MOVES *m) {
+
   int *movep, *valuep;
 
   valuep = m->value;
@@ -120,8 +120,8 @@ void ScoreCaptures(MOVES *m)
     *valuep++ = MvvLva(m->p, *movep);
 }
 
-void ScoreQuiet(MOVES *m)
-{
+void ScoreQuiet(MOVES *m) {
+
   int *movep, *valuep;
 
   valuep = m->value;
@@ -129,8 +129,8 @@ void ScoreQuiet(MOVES *m)
     *valuep++ = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
 }
 
-int SelectBest(MOVES *m)
-{
+int SelectBest(MOVES *m) {
+
   int *movep, *valuep, aux;
 
   valuep = m->value + (m->last - m->move) - 1;
@@ -148,8 +148,8 @@ int SelectBest(MOVES *m)
   return *m->next++;
 }
 
-int BadCapture(POS *p, int move)
-{
+int BadCapture(POS *p, int move) {
+
   int fsq = Fsq(move);
   int tsq = Tsq(move);
 
@@ -168,8 +168,8 @@ int BadCapture(POS *p, int move)
   return Swap(p, fsq, tsq) < 0;
 }
 
-int MvvLva(POS *p, int move)
-{
+int MvvLva(POS *p, int move) {
+
   if (p->pc[Tsq(move)] != NO_PC)
     return TpOnSq(p, Tsq(move)) * 6 + 5 - TpOnSq(p, Fsq(move));
 
@@ -179,8 +179,8 @@ int MvvLva(POS *p, int move)
   return 5;
 }
 
-void ClearHist(void)
-{
+void ClearHist(void) {
+
   for (int i = 0; i < 12; i++)
     for (int j = 0; j < 64; j++)
       history[i][j] = 0;
@@ -191,8 +191,7 @@ void ClearHist(void)
   }
 }
 
-void UpdateHistory(POS *p, int move, int depth, int ply)
-{
+void UpdateHistory(POS *p, int move, int depth, int ply) {
 
   // Don't update stuff used for move ordering if a move changes material balance
 

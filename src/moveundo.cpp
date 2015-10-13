@@ -17,8 +17,8 @@
 
 #include "rodent.h"
 
-void POS::UndoMove(int move, UNDO *u)
-{
+void POS::UndoMove(int move, UNDO *u) {
+
   int sd  = Opp(side);
   int op  = side;
   int fsq = Fsq(move);
@@ -107,8 +107,8 @@ void POS::UndoMove(int move, UNDO *u)
   side ^= 1;
 }
 
-void POS::UndoNull(UNDO *u)
-{
+void POS::UndoNull(UNDO *u) {
+
   ep_sq = u->ep_sq;
   hash_key = u->hash_key;
   head--;

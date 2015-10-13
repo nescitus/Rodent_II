@@ -6,8 +6,8 @@
 
 double lmrSize[2][MAX_PLY][MAX_MOVES];
 
-void InitSearch(void)
-{
+void InitSearch(void) {
+
   // Set depth of late move reduction using modified Stockfish formula
 
   for (int depth = 0; depth < MAX_PLY; depth++)
@@ -25,9 +25,8 @@ void InitSearch(void)
     }
 }
 
+void Think(POS *p, int *pv) {
 
-void Think(POS *p, int *pv)
-{
   ClearHist();
   tt_date = (tt_date + 1) & 255;
   nodes = 0;
@@ -36,8 +35,8 @@ void Think(POS *p, int *pv)
   Iterate(p, pv);
 }
 
-void Iterate(POS *p, int *pv)
-{
+void Iterate(POS *p, int *pv) {
+
   int val = 0;
   U64 nps = 0;
   int cur_val = 0;
@@ -52,8 +51,8 @@ void Iterate(POS *p, int *pv)
   }
 }
 
-int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv)
-{
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv) {
+
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
   int is_pv = (beta > alpha + 1);
@@ -276,8 +275,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   return best;
 }
 
-int IsDraw(POS *p)
-{
+int IsDraw(POS *p) {
+
   // Draw by 50 move rule
 
   if (p->rev_moves > 100) return 1;
@@ -298,8 +297,8 @@ int IsDraw(POS *p)
   return 0; // default: no draw
 }
 
-void DisplayPv(int score, int *pv)
-{
+void DisplayPv(int score, int *pv) {
+
   char *type, pv_str[512];
   U64 nps = 0;
   int elapsed = Timer.GetElapsedTime();
@@ -317,8 +316,8 @@ void DisplayPv(int score, int *pv)
       root_depth, elapsed, nodes, nps, type, score, pv_str);
 }
 
-void Check(void)
-{
+void Check(void) {
+
   char command[80];
 
   if (nodes & 4095 || root_depth == 1)
@@ -335,7 +334,7 @@ void Check(void)
   if (Timeout()) abort_search = 1;
 }
 
-int Timeout()
-{
+int Timeout() {
+
   return (!pondering && !Timer.IsInfiniteMode() && Timer.TimeHasElapsed());
 }

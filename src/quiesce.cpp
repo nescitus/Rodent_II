@@ -1,7 +1,7 @@
 #include "rodent.h"
 
-int Quiesce(POS *p, int ply, int alpha, int beta, int *pv)
-{
+int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
+
   int best, score, move, new_pv[MAX_PLY];
   MOVES m[1];
   UNDO u[1];

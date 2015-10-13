@@ -1,7 +1,7 @@
 #include "rodent.h"
 
-void Init(void)
-{
+void Init(void) {
+
   int i, j, k, l, x, y;
   static const int dirs[4][2] = {{1, -1}, {16, -16}, {17, -17}, {15, -15}};
   static const int p_moves[2][2] = {{15, 17}, {-17, -15}};
@@ -12,16 +12,14 @@ void Init(void)
   for (i = 0; i < 64; i++) {
     line_mask[0][i] = RANK_1_BB << (i & 070);
     line_mask[1][i] = FILE_A_BB << (i & 007);
+
     j = File(i) - Rank(i);
-    if (j > 0)
-      line_mask[2][i] = DIAG_A1H8_BB >> (j * 8);
-    else
-      line_mask[2][i] = DIAG_A1H8_BB << (-j * 8);
+    if (j > 0) line_mask[2][i] = DIAG_A1H8_BB >> (j * 8);
+    else       line_mask[2][i] = DIAG_A1H8_BB << (-j * 8);
+
     j = File(i) - (RANK_8 - Rank(i));
-    if (j > 0)
-      line_mask[3][i] = DIAG_A8H1_BB << (j * 8);
-    else
-      line_mask[3][i] = DIAG_A8H1_BB >> (-j * 8);
+    if (j > 0) line_mask[3][i] = DIAG_A8H1_BB << (j * 8);
+    else       line_mask[3][i] = DIAG_A8H1_BB >> (-j * 8);
   }
 
   for (i = 0; i < 4; i++)
@@ -68,6 +66,8 @@ void Init(void)
     }
   }
 
+  // TODO: move to eval init
+
   for (i = 0; i < 64; i++) {
     passed_mask[WC][i] = 0;
     for (j = File(i) - 1; j <= File(i) + 1; j++) {
@@ -90,16 +90,9 @@ void Init(void)
     }
   }
 
-  for (i = 0; i < 8; i++) {
-    adjacent_mask[i] = 0;
-    if (i > 0)
-      adjacent_mask[i] |= FILE_A_BB << (i - 1);
-    if (i < 7)
-      adjacent_mask[i] |= FILE_A_BB << (i + 1);
-  }
-
   for (i = 0; i < 64; i++)
     castle_mask[i] = 15;
+
   castle_mask[A1] = 13;
   castle_mask[E1] = 12;
   castle_mask[H1] = 14;

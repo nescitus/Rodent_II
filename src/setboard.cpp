@@ -17,8 +17,8 @@
 
 #include "rodent.h"
 
-void SetPosition(POS *p, char *epd)
-{
+void SetPosition(POS *p, char *epd) {
+
   int j, pc;
   static const char pc_char[13] = "PpNnBbRrQqKk";
 

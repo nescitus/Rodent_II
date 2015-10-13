@@ -10,8 +10,8 @@
 #  include <sys/time.h>
 #endif
 
-void sTimer::Clear(void)
-{
+void sTimer::Clear(void) {
+
   iterationTime = MAX_INT;
   SetData(MAX_DEPTH, 64);
   moveTime = -1;
@@ -29,8 +29,8 @@ void sTimer::SetStartTime(void) {
   startTime = GetMS();
 }
 
-void sTimer::SetMoveTiming(void)
-{
+void sTimer::SetMoveTiming(void) {
+
   // User-defined time per move, no tricks available
 
   if ( data[MOVE_TIME] ) {
@@ -61,19 +61,18 @@ void sTimer::SetMoveTiming(void)
   }
 }
 
-void sTimer::SetIterationTiming(void)
-{
+void sTimer::SetIterationTiming(void) {
+
   if (moveTime > 0) iterationTime = ( (moveTime * 3) / 4 );
   else              iterationTime = 999999000;
 }
 
-int sTimer::FinishIteration(void)
-{
+int sTimer::FinishIteration(void) {
   return (GetElapsedTime() >= iterationTime && !pondering && !data[FLAG_INFINITE]);
 }
 
-int sTimer::GetMS(void)
-{
+int sTimer::GetMS(void) {
+
 #if defined(_WIN32) || defined(_WIN64)
   return GetTickCount(); // bugbug:drc GetTickCount() wraps once every 50 days, causeing time control to go insane.  Don't use this.
 #else
@@ -104,8 +103,7 @@ void sTimer::SetData(int slot, int val) {
   data[slot] = val;
 }
 
-void sTimer::SetSideData(int side)
-{
+void sTimer::SetSideData(int side) {
   data[TIME] = side == WC ? GetData(W_TIME) : GetData(B_TIME);
   data[INC]  = side == WC ? GetData(W_INC)  : GetData(B_INC);
 }

@@ -1,7 +1,7 @@
 #include "rodent.h"
 
-int PopCnt(U64 bb)
-{
+int PopCnt(U64 bb) {
+
   U64 k1 = (U64)0x5555555555555555;
   U64 k2 = (U64)0x3333333333333333;
   U64 k3 = (U64)0x0F0F0F0F0F0F0F0F;
@@ -13,8 +13,8 @@ int PopCnt(U64 bb)
   return (bb * k4) >> 56;
 }
 
-int PopFirstBit(U64 * bb)
-{
+int PopFirstBit(U64 * bb) {
+
   U64 bbLocal = *bb;
   *bb &= (*bb - 1);
   return FirstOne(bbLocal);

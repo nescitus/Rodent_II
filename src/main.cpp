@@ -1,10 +1,9 @@
 #include "rodent.h"
 #include "timer.h"
 
-sTimer Timer;        // setting and observing time limits
+sTimer Timer; // class for setting and observing time limits
 
-int main()
-{
+int main() {
   Init();
   InitEval();
   InitSearch();

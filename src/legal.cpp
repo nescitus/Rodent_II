@@ -1,7 +1,7 @@
 #include "rodent.h"
 
-int Legal(POS *p, int move)
-{
+int Legal(POS *p, int move) {
+
   int side = p->side;
   int fsq = Fsq(move);
   int tsq = Tsq(move);
