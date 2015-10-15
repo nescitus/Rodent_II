@@ -1,7 +1,7 @@
 // bench: 791761
 // bench 12: 10216290 21,8 s 1.086
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2372 lines
+// 2396 lines
 // 48,7% vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
@@ -23,6 +23,7 @@ enum eSquare{
   A8, B8, C8, D8, E8, F8, G8, H8,
   NO_SQ
 };
+enum eFactor { F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS };
 
 typedef unsigned long long U64;
 
@@ -221,6 +222,7 @@ void InitEval(void);
 void InitSearch(void);
 void InitCaptures(POS *p, MOVES *m);
 void InitMoves(POS *p, MOVES *m, int trans_move, int ply);
+void InitWeights(void);
 int InputAvailable(void);
 U64 InitHashKey(POS * p);
 U64 InitPawnKey(POS * p);
@@ -283,3 +285,4 @@ extern ENTRY *tt;
 extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
+extern int weights[N_OF_FACTORS];

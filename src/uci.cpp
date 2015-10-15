@@ -36,10 +36,14 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Mini Rodent 0.1.16\n");
+      printf("id name Mini Rodent 0.2\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
+	  printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
+	  printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
+	  printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
+	  printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -86,6 +90,18 @@ void ParseSetoption(char *ptr) {
   if (strcmp(name, "Hash") == 0) {
     AllocTrans(atoi(value));
   } else if (strcmp(name, "Clear Hash") == 0) {
+    ResetEngine();
+  } else if (strcmp(name, "Attack") == 0) {
+    weights[F_ATT] = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "Mobility") == 0) {
+    weights[F_MOB] = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "PassedPawns") == 0) {
+    weights[F_PASSERS] = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "PawnStructure") == 0) {
+    weights[F_PAWNS] = atoi(value);
     ResetEngine();
   }
 }

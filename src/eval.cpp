@@ -2,8 +2,6 @@
 #include "rodent.h"
 #include "eval.h"
 
-enum eFactor {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS};
-
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
@@ -32,6 +30,12 @@ void ClearEvalHash(void) {
     EvalTT[e].key = 0;
     EvalTT[e].score = 0;
   }
+}
+
+void InitWeights(void) {
+
+  for (int fc = 0; fc < N_OF_FACTORS; fc++)
+    weights[fc] = 100;
 }
 
 void InitEval(void) {
@@ -117,7 +121,7 @@ void EvaluatePieces(POS *p, int sd) {
     // Knight outpost
 
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-    if (SqBb(sq) & ~bbPawnCanTake[op]) 
+	if (SqBb(sq) & ~bbPawnCanTake[op])
       Add(sd, F_OUTPOST, tmp, tmp);
   }
 
@@ -396,8 +400,8 @@ int Evaluate(POS *p) {
   int eg_phase = max_phase - mg_phase;
 
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-	  mg_score += mg[WC][fc] - mg[BC][fc];
-	  eg_score += eg[WC][fc] - eg[BC][fc];
+	  mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
+	  eg_score += (eg[WC][fc] - eg[BC][fc]) * weights[fc] / 100;
   }
 
   score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);

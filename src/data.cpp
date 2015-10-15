@@ -35,3 +35,4 @@ ENTRY *tt;
 int tt_size;
 int tt_mask;
 int tt_date;
+int weights[N_OF_FACTORS];
