@@ -2,6 +2,8 @@
 #include "rodent.h"
 #include "eval.h"
 
+enum eFactor {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS};
+
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
@@ -19,8 +21,8 @@ U64 bbPawnCanTake[2];
 U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
-int mg[2];
-int eg[2];
+int mg[2][N_OF_FACTORS];
+int eg[2][N_OF_FACTORS];
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -104,7 +106,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
-    Add(sd, 4*cnt, 4*cnt);
+    Add(sd, F_MOB, 4*cnt, 4*cnt);
 
     // Knight attacks on enemy king zone
 
@@ -118,7 +120,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op]) 
-      Add(sd, tmp, tmp);
+      Add(sd, F_OUTPOST, tmp, tmp);
   }
 
   // Bishop
@@ -131,7 +133,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
-    Add(sd, 5 * cnt, 5 * cnt);
+    Add(sd, F_MOB, 5 * cnt, 5 * cnt);
 
     // Bishop attacks on enemy king zone
 
@@ -145,7 +147,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     tmp = pstBishopOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op])
-      Add(sd, tmp, tmp);
+      Add(sd, F_OUTPOST, tmp, tmp);
   }
 
   // Rook
@@ -158,7 +160,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob) - 7;
-    Add(sd, 2 * cnt, 4 * cnt);
+    Add(sd, F_MOB, 2 * cnt, 4 * cnt);
 
     // Rook attacks on enemy king zone
 
@@ -172,8 +174,8 @@ int EvaluatePieces(POS *p, int sd) {
 
     bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
     if (!(bbFile & PcBb(p, sd, P))) {
-      if (!(bbFile & PcBb(p, op, P))) Add(sd, 10, 10);
-      else                            Add(sd,  5,  5);
+      if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 10, 10);
+	  else                            Add(sd, F_LINES,  5,  5);
     }
 
     // Rook on 7th rank attacking pawns or cutting off enemy king
@@ -181,7 +183,7 @@ int EvaluatePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (PcBb(p, op, P) & bbRelRank[sd][RANK_7]
       ||  PcBb(p, op, K) & bbRelRank[sd][RANK_8]) {
-          Add(sd, 16, 32);
+		  Add(sd, F_LINES, 16, 32);
       }
     }
   }
@@ -196,7 +198,7 @@ int EvaluatePieces(POS *p, int sd) {
 
     bbMob = QAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob) - 14;
-    Add(sd, 1 * cnt, 2 * cnt);
+    Add(sd, F_MOB, 1 * cnt, 2 * cnt);
 
     // Queen attacks on enemy king zone
    
@@ -234,22 +236,22 @@ void EvaluatePawns(POS *p, int sd) {
 
   bbSpan = FillNorth(ShiftNorth(SqBb(sq)));
   if (bbSpan & PcBb(p, sd, P))
-	  Add(sd, -10, -20);
+	  Add(sd, F_PAWNS, -10, -20);
 
   // Passed pawn
 
   if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
-    Add(sd, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
+    Add(sd, F_PASSERS, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
 
   // Isolated pawn
 
   if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-    Add(sd, -20, -20);
+    Add(sd, F_PAWNS, -20, -20);
 
   // Backward pawn
 
   else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-    Add(sd, -16, -8);
+    Add(sd, F_PAWNS, -16, -8);
   }
 }
 
@@ -280,7 +282,7 @@ void EvaluateKing(POS *p, int sd) {
   bbNextFile = ShiftWest(bbKingFile);
   if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-  mg[sd] += result;
+  mg[sd][F_OTHERS] += result;
 }
 
 int EvalKingFile(POS * p, int sd, U64 bbFile) {
@@ -343,13 +345,25 @@ int Evaluate(POS *p) {
     return p->side == WC ? hashScore : -hashScore;
   }
 
-  // Init eval with incrementally updated stuff
+  // Clear eval
 
   int score = 0;
-  mg[WC] = p->mg_pst[WC];
-  mg[BC] = p->mg_pst[BC];
-  eg[WC] = p->eg_pst[WC];
-  eg[BC] = p->eg_pst[BC];
+  int mg_score = 0;
+  int eg_score = 0;
+
+  for (int sd = 0; sd < 2; sd++) {
+    for (int fc = 0; fc < N_OF_FACTORS; fc++) {
+      mg[sd][fc] = 0;
+      eg[sd][fc] = 0;
+    }
+  }
+
+  // Init eval with incrementally updated stuff
+
+  mg[WC][F_PST] = p->mg_pst[WC];
+  mg[BC][F_PST] = p->mg_pst[BC];
+  eg[WC][F_PST] = p->eg_pst[WC];
+  eg[BC][F_PST] = p->eg_pst[BC];
 
   // Calculate variables used during evaluation
 
@@ -360,8 +374,8 @@ int Evaluate(POS *p) {
 
   // Tempo bonus
 
-  mg[p->side] += 10;
-  eg[p->side] += 5;
+  mg[p->side][F_OTHERS] += 10;
+  eg[p->side][F_OTHERS] += 5;
 
   // Bishop pair
 
@@ -380,8 +394,12 @@ int Evaluate(POS *p) {
 
   int mg_phase = Min(max_phase, p->phase);
   int eg_phase = max_phase - mg_phase;
-  int mg_score = mg[WC] - mg[BC];
-  int eg_score = eg[WC] - eg[BC];
+
+  for (int fc = 0; fc < N_OF_FACTORS; fc++) {
+	  mg_score += mg[WC][fc] - mg[BC][fc];
+	  eg_score += eg[WC][fc] - eg[BC][fc];
+  }
+
   score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
 
   // Scale down drawish endgames
@@ -409,8 +427,8 @@ int Evaluate(POS *p) {
   return p->side == WC ? score : -score;
 }
 
-void Add(int sd, int mg_bonus, int eg_bonus) {
+void Add(int sd, int factor, int mg_bonus, int eg_bonus) {
 
-  mg[sd] += mg_bonus;
-  eg[sd] += eg_bonus;
+  mg[sd][factor] += mg_bonus;
+  eg[sd][factor] += eg_bonus;
 }

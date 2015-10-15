@@ -1,7 +1,7 @@
 // bench: 826323
 // bench 12: 11369331 22,7 s 1.158
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2358 lines
+// 2369 lines
 // 48,7% vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
@@ -187,7 +187,7 @@ typedef struct {
   unsigned char depth;
 } ENTRY;
 
-void Add(int sd, int mg_bonus, int eg_bonus);
+void Add(int sd, int factor, int mg_bonus, int eg_bonus);
 void AllocTrans(int mbsize);
 int Attacked(POS *p, int sq, int side);
 U64 AttacksFrom(POS *p, int sq);
