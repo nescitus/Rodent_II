@@ -1,7 +1,7 @@
-// bench: 826323
-// bench 12: 11369331 22,7 s 1.158
+// bench: 791761
+// bench 12: 10216290 21,8 s 1.086
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2369 lines
+// 2372 lines
 // 48,7% vs Fruit 2.1
 
 enum eColor{WC, BC, NO_CL};
@@ -205,6 +205,7 @@ void EvaluateKing(POS *p, int sd);
 int EvalKingFile(POS * p, int sd, U64 bbFile);
 int EvalFileShelter(U64 bbOwnPawns, int sd);
 int EvalFileStorm(U64 bbOppPawns, int sd);
+void EvaluatePieces(POS * p, int sd);
 void EvaluatePawns(POS * p, int sd);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);

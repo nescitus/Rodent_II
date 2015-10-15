@@ -72,10 +72,10 @@ void InitEval(void) {
   }
 }
 
-int EvaluatePieces(POS *p, int sd) {
+void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile;
-  int op, sq, cnt, ksq, att, wood, mob, tmp;
+  int op, sq, cnt, ksq, att, wood, tmp;
 
   // Is color OK?
 
@@ -93,8 +93,6 @@ int EvaluatePieces(POS *p, int sd) {
   U64 bbZone = k_attacks[ksq];
   if (sd == WC) bbZone |= ShiftSouth(bbZone);
   else          bbZone |= ShiftNorth(bbZone);
-
-  mob = 0;
 
   // Knight
 
@@ -212,9 +210,10 @@ int EvaluatePieces(POS *p, int sd) {
 
   // Score king attacks if own queen is present
 
-  if (wood > 1 && p->cnt[sd][Q]) mob += att * (wood-1);
-  
-  return mob;
+  if (wood > 1 && p->cnt[sd][Q]) {
+    tmp = att * (wood - 1);
+    Add(sd, F_ATT, tmp, tmp);
+  }
 }
 
 void EvaluatePawns(POS *p, int sd) {
@@ -384,7 +383,8 @@ int Evaluate(POS *p) {
 
   // Evaluate pieces and pawns
 
-  score += EvaluatePieces(p, WC) - EvaluatePieces(p, BC);
+  EvaluatePieces(p, WC);
+  EvaluatePieces(p, BC);
   EvaluatePawns(p, WC); 
   EvaluatePawns(p, BC);
   EvaluateKing(p, WC);
