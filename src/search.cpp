@@ -45,10 +45,29 @@ void Iterate(POS *p, int *pv) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
-    cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
+	cur_val = Widen(p, root_depth, pv, cur_val);
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
   }
+}
+
+int Widen(POS *p, int depth, int * pv, int lastScore)
+{
+  int cur_val = lastScore, alpha, beta;
+
+  if (depth > 6 && lastScore < MAX_EVAL) {
+    for (int margin = 10; margin < 500; margin *= 2) {
+      alpha = lastScore - margin;
+      beta = lastScore + margin;
+      cur_val = Search(p, 0, alpha, beta, depth, 0, pv);
+      if (abort_search) break;
+      if (cur_val > alpha && cur_val < beta) return cur_val;
+	  if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
+    }
+  }
+
+  cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
+  return cur_val;
 }
 
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv) {
@@ -56,9 +75,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
   int is_pv = (beta > alpha + 1);
-  int mv_tried = 0;
-  int quiet_tried = 0;
-  int fl_futility = 0;
+  int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
 
   MOVES m[1];
   UNDO u[1];

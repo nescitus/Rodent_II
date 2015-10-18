@@ -40,6 +40,11 @@ void InitWeights(void) {
 
 void InitEval(void) {
 
+  // Init piece/square values together with material value of the pieces.
+  // Middgame queen table (-5 on the first rank, othewise 0) and endgame
+  // rook table (all zeroes) are initialized by a formula rather than
+  // by reading a set of constants.
+
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
       mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
@@ -49,8 +54,8 @@ void InitEval(void) {
       mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
       eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
       mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
-      eg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R]; // no value from the table
-      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenMg[sq] + tp_value[Q];
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R];
+      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = tp_value[Q] - (5 * (Rank(sq) == RANK_1));
       eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
       mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
       eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
@@ -79,7 +84,7 @@ void InitEval(void) {
 void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile;
-  int op, sq, cnt, ksq, att, wood, tmp;
+  int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
 
   // Is color OK?
 
@@ -89,8 +94,6 @@ void EvaluatePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
-  att = 0;
-  wood = 0;
 
   // Init enemy king zone for attack evaluation
 
@@ -394,15 +397,17 @@ int Evaluate(POS *p) {
   EvaluateKing(p, WC);
   EvaluateKing(p, BC);
   
+  // Sum all the eval factors
+
+  for (int fc = 0; fc < N_OF_FACTORS; fc++) {
+      mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
+      eg_score += (eg[WC][fc] - eg[BC][fc]) * weights[fc] / 100;
+  }
+
   // Merge mg/eg scores
 
   int mg_phase = Min(max_phase, p->phase);
   int eg_phase = max_phase - mg_phase;
-
-  for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-	  mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
-	  eg_score += (eg[WC][fc] - eg[BC][fc]) * weights[fc] / 100;
-  }
 
   score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
 

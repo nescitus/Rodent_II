@@ -1,8 +1,7 @@
-// bench: 791761
-// bench 12: 10216290 21,8 s 1.086
+// bench: 848868
+// bench 12: 10806347 22,6 s 1.105
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2396 lines
-// 48,7% vs Fruit 2.1
+// 2399 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -247,6 +246,7 @@ void ResetEngine(void);
 int IsDraw(POS * p);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
+int Widen(POS *p, int depth, int * pv, int lastScore);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);

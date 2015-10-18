@@ -95,18 +95,8 @@ static const int pstRookMg[64] = {
 
 // rook endgame table is filled with zeroes in InitEval()
 
-static const int pstQueenMg[64] = {
-//A1                                H1
- -5,  -5,  -5,  -5,  -5,  -5,  -5,  -5,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0,
-  0,   0,   0,   0,   0,   0,   0,   0
-//A8                                H8
- };
+// queen midgame table is initialized in InitEval:
+// -5 for the first rank, otherwise 0
 
 static const int pstQueenEg[64] = {
 //A1                                H1
