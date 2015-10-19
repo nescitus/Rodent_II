@@ -226,8 +226,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   &&  fl_prunable_move
   && lmrSize[is_pv][depth][mv_tried] > 0
   && MoveType(move) != CASTLE ) {
-    //reduction = 1;
-    //if (!is_pv && mv_tried > 6) reduction = 2;
     reduction = lmrSize[is_pv][depth][mv_tried];
     new_depth -= reduction;
   }
@@ -260,6 +258,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     if (score >= beta) {
       UpdateHistory(p, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
+	  if (!ply) {
+		  BuildPv(pv, new_pv, move);
+		  DisplayPv(score, pv);
+	  }
       return score;
     }
 
