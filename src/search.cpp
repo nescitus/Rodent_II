@@ -258,10 +258,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     if (score >= beta) {
       UpdateHistory(p, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
+
+	  // If beta cutoff occurs at the root, change the best move
+
 	  if (!ply) {
 		  BuildPv(pv, new_pv, move);
 		  DisplayPv(score, pv);
 	  }
+
       return score;
     }
 
@@ -330,6 +334,7 @@ void DisplayPv(int score, int *pv) {
     score = (MATE - score + 1) / 2;
   else
     type = "cp";
+
   PvToStr(pv, pv_str);
   printf("info depth %d time %d nodes %I64d nps %I64d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
@@ -344,6 +349,7 @@ void Check(void) {
 
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));
+
     if (strcmp(command, "stop") == 0)
       abort_search = 1;
     else if (strcmp(command, "ponderhit") == 0)

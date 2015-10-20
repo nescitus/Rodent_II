@@ -22,6 +22,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
+  // Transposition table read
+
   if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
 	  return score;
 

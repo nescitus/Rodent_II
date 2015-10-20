@@ -36,7 +36,7 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Mini Rodent 0.2.1\n");
+      printf("id name Mini Rodent 0.2.3\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
@@ -153,25 +153,25 @@ void ParseGo(POS *p, char *ptr) {
       pondering = 1;
     } else if (strcmp(token, "wtime") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(W_TIME, atoi(token));
+      Timer.SetData(W_TIME, atoi(token));
     } else if (strcmp(token, "btime") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(B_TIME, atoi(token));
+      Timer.SetData(B_TIME, atoi(token));
     } else if (strcmp(token, "winc") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(W_INC, atoi(token));
+      Timer.SetData(W_INC, atoi(token));
     } else if (strcmp(token, "binc") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(B_INC, atoi(token));
+      Timer.SetData(B_INC, atoi(token));
     } else if (strcmp(token, "movestogo") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(MOVES_TO_GO, atoi(token));
+      Timer.SetData(MOVES_TO_GO, atoi(token));
     } else if (strcmp(token, "depth") == 0) {
       ptr = ParseToken(ptr, token);
-    Timer.SetData(FLAG_INFINITE, 1);
-    Timer.SetData(MAX_DEPTH, atoi(token));
-  } else if (strcmp(token, "infinite") == 0) {
-   Timer.SetData(FLAG_INFINITE, 1);
+      Timer.SetData(FLAG_INFINITE, 1);
+      Timer.SetData(MAX_DEPTH, atoi(token));
+    } else if (strcmp(token, "infinite") == 0) {
+      Timer.SetData(FLAG_INFINITE, 1);
     }
   }
 
