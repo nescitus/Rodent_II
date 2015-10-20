@@ -18,7 +18,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   // Get a stand-pat score and adjust bounds
   // (exiting if eval exceeds beta)
 
-  best = Evaluate(p); 
+  best = Evaluate(p);
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
