@@ -1,7 +1,7 @@
 // bench: 876622
 // bench 12: 10164601 22,6 s 1.057
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2414 lines
+// 2450 lines
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -236,6 +236,7 @@ void ParseGo(POS *, char *);
 void ParseMoves(POS *p, char *ptr);
 void ParsePosition(POS *, char *);
 void ParseSetoption(char *);
+void PrintBoard(POS *p);
 char *ParseToken(char *, char *);
 int PopCnt(U64);
 int PopFirstBit(U64 * bb);

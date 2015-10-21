@@ -124,7 +124,7 @@ void EvaluatePieces(POS *p, int sd) {
     // Knight outpost
 
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op])
+	if (SqBb(sq) & ~bbPawnCanTake[op]) 
       Add(sd, F_OUTPOST, tmp, tmp);
   }
 

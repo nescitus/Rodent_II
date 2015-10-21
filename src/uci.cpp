@@ -51,6 +51,8 @@ void UciLoop(void) {
       ParseSetoption(ptr);
     } else if (strcmp(token, "position") == 0) {
       ParsePosition(p, ptr);
+    } else if (strcmp(token, "print") == 0) {
+	  PrintBoard(p);
     } else if (strcmp(token, "step") == 0) {
       ParseMoves(p, ptr);
     } else if (strcmp(token, "go") == 0) {
