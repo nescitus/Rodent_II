@@ -51,6 +51,13 @@ void UciLoop(void) {
       ParseSetoption(ptr);
     } else if (strcmp(token, "position") == 0) {
       ParsePosition(p, ptr);
+    } else if (strcmp(token, "perft") == 0) {
+      ptr = ParseToken(ptr, token);
+	  int depth = atoi(token);
+	  if (depth == 0) depth = 5;
+	  Timer.SetStartTime();
+	  nodes = Perft(p, 0, depth);
+	  printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
     } else if (strcmp(token, "print") == 0) {
 	  PrintBoard(p);
     } else if (strcmp(token, "step") == 0) {

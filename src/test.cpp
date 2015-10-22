@@ -2,6 +2,32 @@
 #include "rodent.h"
 #include "timer.h"
 
+
+int Perft(POS *p, int ply, int depth) {
+
+  int move = 0;
+  int mv_type;
+  MOVES m[1];
+  UNDO u[1];
+  int mv_cnt = 0;
+
+  InitMoves(p, m, 0, ply);
+
+  while ( move = NextMove(m, &mv_type) ) {
+
+    p->DoMove(move, u);
+
+    if (Illegal(p)) { p->UndoMove(move, u); continue; }
+
+    if (depth == 1) mv_cnt++;
+    else            mv_cnt += Perft(p, ply+1, depth-1);
+    p->UndoMove(move, u);
+  }
+  
+  return mv_cnt;
+}
+
+
 void PrintBoard(POS *p) {
 
   printf("--------------------------------------------\n");
