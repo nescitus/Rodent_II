@@ -6,30 +6,18 @@ void PrintBoard(POS *p) {
 
   printf("--------------------------------------------\n");
   for (int sq = 0; sq < 64; sq++) {
-    if (p->tp_bb[P] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("P ");
-      else printf("p ");
-    }
-    else if (p->tp_bb[N] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("N ");
-      else printf("n ");
-    }
-    else if (p->tp_bb[B] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("B ");
-      else printf("b ");
-    }
-    else if (p->tp_bb[R] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("R ");
-      else printf("r ");
-    }
-    else if (p->tp_bb[Q] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("Q ");
-      else printf("q ");
-    }
-    else if (p->tp_bb[K] & RelSqBb(sq, BC)) {
-      if (p->cl_bb[WC] & RelSqBb(sq, BC)) printf("K ");
-	  else printf("k ");
-    }
+    if (p->tp_bb[P] & RelSqBb(sq, BC))
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("P ") : printf("p ");
+    else if (p->tp_bb[N] & RelSqBb(sq, BC))
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("N ") : printf("n ");
+    else if (p->tp_bb[B] & RelSqBb(sq, BC))
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("B ") : printf("b ");
+    else if (p->tp_bb[R] & RelSqBb(sq, BC))
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("R ") : printf("r ");
+    else if (p->tp_bb[Q] & RelSqBb(sq, BC))
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("Q ") : printf("q ");
+    else if (p->tp_bb[K] & RelSqBb(sq, BC)) 
+      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("K ") : printf("k ");
     else printf(". ");
 		
     if ((sq + 1) % 8 == 0) printf(" %d\n", 9 - ((sq + 1) / 8));
