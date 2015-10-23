@@ -125,7 +125,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // to pruning/reduction decisions
 
   fl_check = InCheck(p);
-  fl_prunable_node = !fl_check & !is_pv;
+  fl_prunable_node = !fl_check & !is_pv && alpha > -MAX_EVAL && beta < MAX_EVAL;
 
   // Null move
 
@@ -171,9 +171,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Set futility pruning flag
 
   if (depth <= 6
-  && fl_prunable_node
-  && alpha > -MAX_EVAL
-  && beta < MAX_EVAL) {
+  && fl_prunable_node) {
     if (Evaluate(p) + 50 + 50 * depth < beta) fl_futility = 1;
   }
 
