@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include "rodent.h"
 #include "eval.h"
 
@@ -21,6 +22,9 @@ int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
+
+char *factor_name[] = { "Pst:       ", "Pawns:     ", "Passers:   ", "Attack:    ", "Mobility : ", "Outposts : ", "Lines :    ", "Others   : "};
+
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -330,12 +334,12 @@ int EvalFileStorm(U64 bbOppPawns, int sd) {
   return 0;
 } 
 
-int Evaluate(POS *p) {
+int Evaluate(POS *p, int use_hash) {
 
   // Try to retrieve score from eval hashtable
 
   int addr = p->hash_key % EVAL_HASH_SIZE;
-  if (EvalTT[addr].key == p->hash_key) {
+  if (EvalTT[addr].key == p->hash_key && use_hash) {
     int hashScore = EvalTT[addr].score;
     return p->side == WC ? hashScore : -hashScore;
   }
@@ -429,4 +433,14 @@ void Add(int sd, int factor, int mg_bonus, int eg_bonus) {
 
   mg[sd][factor] += mg_bonus;
   eg[sd][factor] += eg_bonus;
+}
+
+void PrintEval(POS * p) {
+
+  printf("Total score: %d\n", -Evaluate(p, 0));
+  for (int fc = 0; fc < N_OF_FACTORS; fc++) {
+	  printf(factor_name[fc]);
+	  printf("%4d (%4d, %4d), %4d (%4d, %4d) ", mg[WC][fc] - mg[BC][fc], mg[WC][fc], mg[BC][fc], eg[WC][fc] - eg[BC][fc], eg[WC][fc], eg[BC][fc]);
+	  printf("\n");
+  }
 }

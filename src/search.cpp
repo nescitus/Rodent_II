@@ -119,7 +119,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Safeguard against exceeding ply limit
   
   if (ply >= MAX_PLY - 1)
-    return Evaluate(p);
+    return Evaluate(p, 1);
 
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
@@ -133,7 +133,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && fl_prunable_node
   && !was_null
   && MayNull(p)) {
-    int eval = Evaluate(p);
+    int eval = Evaluate(p, 1);
     if (eval > beta) {
       reduction = 3;
       if (depth > 8) reduction += depth / 4;
@@ -158,7 +158,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
   &&  depth <= 3) {
     int threshold = beta - 300 - (depth - 1) * 60;
-    int eval = Evaluate(p);
+    int eval = Evaluate(p, 1);
 
     if (eval < threshold) {
       score = Quiesce(p, ply, alpha, beta, pv);
@@ -172,7 +172,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   if (depth <= 6
   && fl_prunable_node) {
-    if (Evaluate(p) + 50 + 50 * depth < beta) fl_futility = 1;
+    if (Evaluate(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
   }
 
   // Init moves and variables before entering main loop

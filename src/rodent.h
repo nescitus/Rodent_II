@@ -1,7 +1,7 @@
 // bench: 790309
 // bench 12: 10889471 23,1 s 1.092
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2466 lines
+// 2479 lines
 // 47.4% vs Rodent 1.4, ca. 2720 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -201,7 +201,7 @@ void ClearEvalHash(void);
 void ClearHist(void);
 void ClearTrans(void);
 void DisplayPv(int score, int *pv);
-int Evaluate(POS * p);
+int Evaluate(POS * p, int use_hash);
 void EvaluateKing(POS *p, int sd);
 int EvalKingFile(POS * p, int sd, U64 bbFile);
 int EvalFileShelter(U64 bbOwnPawns, int sd);
@@ -239,6 +239,7 @@ void ParsePosition(POS *, char *);
 void ParseSetoption(char *);
 int Perft(POS *p, int ply, int depth);
 void PrintBoard(POS *p);
+void PrintEval(POS *p);
 char *ParseToken(char *, char *);
 int PopCnt(U64);
 int PopFirstBit(U64 * bb);

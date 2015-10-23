@@ -59,7 +59,9 @@ void UciLoop(void) {
 	  nodes = Perft(p, 0, depth);
 	  printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
     } else if (strcmp(token, "print") == 0) {
-	  PrintBoard(p);
+      PrintBoard(p);
+    } else if (strcmp(token, "eval") == 0) {
+      PrintEval(p);
     } else if (strcmp(token, "step") == 0) {
       ParseMoves(p, ptr);
     } else if (strcmp(token, "go") == 0) {

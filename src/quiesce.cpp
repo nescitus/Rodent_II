@@ -13,12 +13,12 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (abort_search) return 0;
   *pv = 0;
   if (IsDraw(p)) return 0;
-  if (ply >= MAX_PLY - 1) return Evaluate(p);
+  if (ply >= MAX_PLY - 1) return Evaluate(p, 1);
 
   // Get a stand-pat score and adjust bounds
   // (exiting if eval exceeds beta)
 
-  best = Evaluate(p);
+  best = Evaluate(p, 1);
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
