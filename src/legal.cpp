@@ -8,8 +8,12 @@ int Legal(POS *p, int move) {
   int ftp = TpOnSq(p, fsq);
   int ttp = TpOnSq(p, tsq);
 
+  // moving no piece or opponent's piece is illegal
+
   if (ftp == NO_TP || Cl(p->pc[fsq]) != side)
     return 0;
+
+  // capturing own piece is illegal
 
   if (ttp != NO_TP && Cl(p->pc[tsq]) == side)
     return 0;
@@ -17,10 +21,14 @@ int Legal(POS *p, int move) {
   switch (MoveType(move)) {
   case NORMAL:
     break;
+  
   case CASTLE:
     if (side == WC) {
-      if (fsq != E1)
-        return 0;
+
+      // wrong starting square
+
+      if (fsq != E1) return 0;
+
       if (tsq > fsq) {
         if ((p->castle_flags & 1) && !(OccBb(p) & (U64)0x0000000000000060))
           if (!Attacked(p, E1, BC) && !Attacked(p, F1, BC))
@@ -31,8 +39,11 @@ int Legal(POS *p, int move) {
             return 1;
       }
     } else {
-      if (fsq != E8)
-        return 0;
+
+      // wrong starting square
+
+      if (fsq != E8) return 0;
+
       if (tsq > fsq) {
         if ((p->castle_flags & 4) && !(OccBb(p) & (U64)0x6000000000000000))
           if (!Attacked(p, E8, WC) && !Attacked(p, F8, WC))
@@ -44,10 +55,12 @@ int Legal(POS *p, int move) {
       }
     }
     return 0;
+  
   case EP_CAP:
     if (ftp == P && tsq == p->ep_sq)
       return 1;
     return 0;
+
   case EP_SET:
     if (ftp == P && ttp == NO_TP && p->pc[tsq ^ 8] == NO_PC)
       if ((tsq > fsq && side == WC) ||
@@ -79,7 +92,10 @@ int Legal(POS *p, int move) {
     }
     return 0;
   }
-  if (IsProm(move))
-    return 0;
+  
+  if (IsProm(move)) return 0;
+
+  // can the move actually be made?
+
   return (AttacksFrom(p, fsq) & SqBb(tsq)) != 0;
 }

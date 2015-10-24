@@ -41,6 +41,7 @@ void Iterate(POS *p, int *pv) {
   U64 nps = 0;
   int cur_val = 0;
   Timer.SetIterationTiming();
+
   for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
@@ -51,22 +52,26 @@ void Iterate(POS *p, int *pv) {
   }
 }
 
-int Widen(POS *p, int depth, int * pv, int lastScore)
-{
+int Widen(POS *p, int depth, int * pv, int lastScore) {
+  
+  // Function performs aspiration search, progressively widening the window.
+  // Code structere modelled after Senpai 1.0.
+
   int cur_val = lastScore, alpha, beta;
 
   if (depth > 6 && lastScore < MAX_EVAL) {
     for (int margin = 10; margin < 500; margin *= 2) {
       alpha = lastScore - margin;
-      beta = lastScore + margin;
+      beta  = lastScore + margin;
       cur_val = Search(p, 0, alpha, beta, depth, 0, pv);
       if (abort_search) break;
-      if (cur_val > alpha && cur_val < beta) return cur_val;
+      if (cur_val > alpha && cur_val < beta) 
+		  return cur_val;            // we have finished within the window
 	  if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
     }
   }
 
-  cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);
+  cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);      // full window search
   return cur_val;
 }
 
@@ -219,7 +224,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   reduction = 0;
 
   if (depth >= 2 
-  && mv_tried > 3 
+  && mv_tried > 3
+  && alpha > -MAX_EVAL && beta < MAX_EVAL // Testing
   && !fl_check 
   &&  fl_prunable_move
   && lmrSize[is_pv][depth][mv_tried] > 0
