@@ -15,19 +15,6 @@ static const int pstPawnMg[64] = {
 //A8                                H8
  };
 
-static const int pstPawnEg[64] = {
-//A1                                H1
-  0,   0,   0,   0,   0,   0,   0,   0,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  3,   1,  -1,  -3,  -3,  -1,   1,   3,
-  0,   0,   0,   0,   0,   0,   0,   0
-//A8                                H8
- };
-
 static const int pstKnightMg[64] = {
 //A1                                H1
 -50, -40, -30, -25, -25, -30, -40, -50,
@@ -178,3 +165,5 @@ struct sEvalHashEntry {
 
 #define EVAL_HASH_SIZE 512*512
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
+
+const int file_bonus[8] = { -3, -1, 1, 3, 3, 1, -1, -3 };

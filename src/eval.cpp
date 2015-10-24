@@ -52,7 +52,7 @@ void InitEval(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
       mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
-      eg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnEg[sq] + tp_value[P];
+      eg_pst_data[sd][P][REL_SQ(sq, sd)] = -file_bonus[File(sq)] + tp_value[P];
       mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + tp_value[N];
       eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + tp_value[N];
       mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
