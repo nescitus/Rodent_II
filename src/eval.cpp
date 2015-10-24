@@ -51,18 +51,26 @@ void InitEval(void) {
 
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
-      mg_pst_data[sd][P][REL_SQ(sq, sd)] = pstPawnMg[sq] + tp_value[P];
-      eg_pst_data[sd][P][REL_SQ(sq, sd)] = -file_bonus[File(sq)] + tp_value[P];
-      mg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightMg[sq] + tp_value[N];
-      eg_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightEg[sq] + tp_value[N];
-      mg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopMg[sq] + tp_value[B];
-      eg_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopEg[sq] + tp_value[B];
-      mg_pst_data[sd][R][REL_SQ(sq, sd)] = pstRookMg[sq] + tp_value[R];
+
+	  // Midgame pawn pst uses correction for pawn center
+		 
+	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5 * file_bonus[File(sq)];
+	  if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 25;
+	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 10;
+	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 0;
+	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5;
+
+	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] - file_bonus[File(sq)];
+	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + pstKnightMg[sq];
+	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + 5 * (knightEg[Rank(sq)] + knightEg[File(sq)]);
+	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopMg[sq];
+	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopEg[sq];
+	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R] + file_bonus[File(sq)];
       eg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R];
       mg_pst_data[sd][Q][REL_SQ(sq, sd)] = tp_value[Q] - (5 * (Rank(sq) == RANK_1));
-      eg_pst_data[sd][Q][REL_SQ(sq, sd)] = pstQueenEg[sq] + tp_value[Q];
-      mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-      eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = tp_value[Q] + (4 * (biased[Rank(sq)] + biased[File(sq)]));
+	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
+	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
     }
   }
 
