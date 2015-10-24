@@ -23,7 +23,7 @@ int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst:       ", "Pawns:     ", "Passers:   ", "Attack:    ", "Mobility : ", "Outposts : ", "Lines :    ", "Others   : "};
+char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Outposts  ", "Lines     ", "Others    "};
 
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
@@ -437,10 +437,21 @@ void Add(int sd, int factor, int mg_bonus, int eg_bonus) {
 
 void PrintEval(POS * p) {
 
-  printf("Total score: %d\n", -Evaluate(p, 0));
+  int mg_score, eg_score, total;
+  int mg_phase = Min(max_phase, p->phase);
+  int eg_phase = max_phase - mg_phase;
+
+  printf("Total score: %d\n", Evaluate(p, 0));
+  printf("-----------------------------------------------------------------\n");
+  printf("Factor     | Val (perc) |   Mg (  WC,   BC) |   Eg (  WC,   BC) |\n");
+  printf("-----------------------------------------------------------------\n");
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-	  printf(factor_name[fc]);
-	  printf("%4d (%4d, %4d), %4d (%4d, %4d) ", mg[WC][fc] - mg[BC][fc], mg[WC][fc], mg[BC][fc], eg[WC][fc] - eg[BC][fc], eg[WC][fc], eg[BC][fc]);
-	  printf("\n");
+	mg_score = mg[WC][fc] - mg[BC][fc];
+	eg_score = eg[WC][fc] - eg[BC][fc];
+	total = (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
+
+    printf(factor_name[fc]);
+    printf(" | %4d (%3d) | %4d (%4d, %4d) | %4d (%4d, %4d) |\n", total, weights[fc], mg_score, mg[WC][fc], mg[BC][fc], eg_score, eg[WC][fc], eg[BC][fc]);
   }
+  printf("-----------------------------------------------------------------\n");
 }

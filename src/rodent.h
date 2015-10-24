@@ -1,7 +1,7 @@
 // bench: 790309
 // bench 12: 10889471 23,1 s 1.092
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2479 lines
+// 2488 lines
 // 47.4% vs Rodent 1.4, ca. 2720 Elo
 
 enum eColor{WC, BC, NO_CL};
