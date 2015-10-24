@@ -1,7 +1,7 @@
-// bench: 926817
+// bench: 10210579
 // bench 12: 9587574 23,1 s 1.092
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2425 lines (75 free)
+// 2414 lines (86 free)
 // 47.4% vs Rodent 1.4, ca. 2720 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -12,6 +12,7 @@ enum eRank {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
 enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
 enum eHashEntry{NONE, UPPER, LOWER, EXACT};
 enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
+enum eFactor   {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS};
 enum eSquare{
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
@@ -23,7 +24,6 @@ enum eSquare{
   A8, B8, C8, D8, E8, F8, G8, H8,
   NO_SQ
 };
-enum eFactor { F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS };
 
 typedef unsigned long long U64;
 

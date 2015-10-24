@@ -27,32 +27,19 @@ int Perft(POS *p, int ply, int depth) {
   return mv_cnt;
 }
 
-
 void PrintBoard(POS *p) {
 
+  char *piece_name[] = { "P ", "p ", "N ", "n ", "B ", "b ", "R ", "r ", "Q ", "q ", "K ", "k ", ". " };
+
   printf("--------------------------------------------\n");
-  for (int sq = 0; sq < 64; sq++) {
-    if (p->tp_bb[P] & RelSqBb(sq, BC))
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("P ") : printf("p ");
-    else if (p->tp_bb[N] & RelSqBb(sq, BC))
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("N ") : printf("n ");
-    else if (p->tp_bb[B] & RelSqBb(sq, BC))
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("B ") : printf("b ");
-    else if (p->tp_bb[R] & RelSqBb(sq, BC))
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("R ") : printf("r ");
-    else if (p->tp_bb[Q] & RelSqBb(sq, BC))
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("Q ") : printf("q ");
-    else if (p->tp_bb[K] & RelSqBb(sq, BC)) 
-      (p->cl_bb[WC] & RelSqBb(sq, BC)) ? printf("K ") : printf("k ");
-    else printf(". ");
-		
+  for (int sq = 0; sq < 64; sq++) { 
+    printf(piece_name[p->pc[sq ^ (BC * 56)]]);
     if ((sq + 1) % 8 == 0) printf(" %d\n", 9 - ((sq + 1) / 8));
   }
 
   printf("\na b c d e f g h\n");
   printf("\n--------------------------------------------\n");
 }
-
 
 void Bench(int depth) {
 
