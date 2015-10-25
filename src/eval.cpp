@@ -347,6 +347,7 @@ int Evaluate(POS *p, int use_hash) {
   // Try to retrieve score from eval hashtable
 
   int addr = p->hash_key % EVAL_HASH_SIZE;
+
   if (EvalTT[addr].key == p->hash_key && use_hash) {
     int hashScore = EvalTT[addr].score;
     return p->side == WC ? hashScore : -hashScore;

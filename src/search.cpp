@@ -146,10 +146,17 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
       p->UndoNull(u);
-      if (abort_search) return 0;
 
-      if (score >= beta)
-        return score;
+      if (abort_search ) return 0;
+
+	  // Verification search
+
+	  if (depth >= 12 && new_depth > 2 && score >= beta) {
+		  score = Search(p, ply + 1, alpha, beta, new_depth, 0, new_pv);
+		  if (abort_search) return 0;
+	  }
+
+      if (score >= beta) return score;
     }
   } 
   
@@ -234,8 +241,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     new_depth -= reduction;
   }
 
-    re_search:
-
+  re_search:
+   
   // PVS
 
     if (best == -INF)

@@ -36,7 +36,7 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Mini Rodent 0.2.10\n");
+      printf("id name Mini Rodent 0.2.11\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
@@ -125,12 +125,20 @@ void ParseMoves(POS *p, char *ptr) {
   UNDO u[1];
 
   for (;;) {
+
+    // Get next move to parse
+
     ptr = ParseToken(ptr, token);
-    if (*token == '\0')
-      break;
+
+	// No more moves!
+
+    if (*token == '\0') break;
+
     p->DoMove(StrToMove(p, token), u);
-    if (p->rev_moves == 0)
-      p->head = 0;
+
+	// We won't be taking back moves beyond this point:
+
+    if (p->rev_moves == 0) p->head = 0;
   }
 }
 
@@ -143,8 +151,10 @@ void ParsePosition(POS *p, char *ptr) {
     fen[0] = '\0';
     for (;;) {
       ptr = ParseToken(ptr, token);
+
       if (*token == '\0' || strcmp(token, "moves") == 0)
         break;
+
       strcat(fen, token);
       strcat(fen, " ");
     }
@@ -153,8 +163,9 @@ void ParsePosition(POS *p, char *ptr) {
     ptr = ParseToken(ptr, token);
     SetPosition(p, START_POS);
   }
+
   if (strcmp(token, "moves") == 0)
-	 ParseMoves(p, ptr);
+    ParseMoves(p, ptr);
 }
 
 void ParseGo(POS *p, char *ptr) {
@@ -207,6 +218,7 @@ void ParseGo(POS *p, char *ptr) {
 }
 
 void ResetEngine(void) {
+
   ClearHist();
   ClearTrans();
   ClearEvalHash();
