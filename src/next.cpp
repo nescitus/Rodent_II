@@ -170,11 +170,14 @@ int BadCapture(POS *p, int move) {
 
 int MvvLva(POS *p, int move) {
 
+  // Captures
+
   if (p->pc[Tsq(move)] != NO_PC)
     return TpOnSq(p, Tsq(move)) * 6 + 5 - TpOnSq(p, Fsq(move));
 
-  if (IsProm(move))
-    return PromType(move) - 5;
+  // Non-capturing promotions
+  
+  if (IsProm(move)) return PromType(move) - 5;
 
   return 5;
 }

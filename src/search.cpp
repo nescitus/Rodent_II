@@ -148,14 +148,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
       p->UndoNull(u);
 
       if (abort_search ) return 0;
-
-	  // Verification search
-
-	  if (depth >= 12 && new_depth > 2 && score >= beta) {
-		  score = Search(p, ply + 1, alpha, beta, new_depth, 0, new_pv);
-		  if (abort_search) return 0;
-	  }
-
       if (score >= beta) return score;
     }
   } 

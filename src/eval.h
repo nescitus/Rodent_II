@@ -2,19 +2,6 @@
 // (http://members.aon.at/josefd/Toga%20LOG.html)
 // and modified slightly.
 
-static const int pstKnightMg[64] = {
-//A1                                H1
--50, -40, -30, -25, -25, -30, -40, -50,
--35, -25, -15,  -5,  -5, -15, -25, -35,
--20, -10,   0,   5,   5,   0, -10, -20,
--10,   0,  10,  15,  15,  10,   0, -10,
--5,    5,  15,  20,  20,  15,   5,  -5,
--5,    5,  15,  20,  20,  15,   5,  -5,
--20, -10,   0,   5,   5,   0, -10, -20,
--135,-25, -15, -10, -10, -15, -25, -135
-//A8                                H8
-};
-
 static const int pstBishopMg[64] = {
 //A1                                H1
  -2,  -5, -16,  -5,  -5, -16,  -5,  -2,
@@ -83,8 +70,9 @@ struct sEvalHashEntry {
 #define EVAL_HASH_SIZE 512*512
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
-const int file_bonus[8] = { -3, -1,  1,  3,  3,  1, -1, -3 };
-const int biased[8]     = { -3, -1,  0,  1,  1,  0, -1, -3 };
-const int knightEg[8]   = { -4, -2,  0,  1,  1,  0, -2, -4 };
-const int kingFile[8]   = {  4,  5,  3,  1,  1,  3,  5,  4 };
-const int kingRank[8]   = {  0, -1, -3, -4, -5, -6, -7, -8 };
+static const int file_bonus[8] = { -3, -1,  1,  3,  3,  1, -1, -3 };
+static const int biased[8]     = { -3, -1,  0,  1,  1,  0, -1, -3 };
+static const int kingFile[8]   = { +4, +5, +3, +1, +1, +3, +5, +4 };
+static const int kingRank[8]   = { +0, -1, -3, -4, -5, -6, -7, -8 };
+static const int knightLine[8] = { -4, -2, +0, +1, +1, +0, -2, -4 }; // mg: file only, eg: both rank and file
+static const int knightRank[8] = { -6, -3, +0, +2, +3, +3, +0, -3 };

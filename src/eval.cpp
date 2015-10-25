@@ -51,9 +51,7 @@ void InitEval(void) {
 
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
-
-	  // Midgame pawn pst uses correction for pawn center
-		 
+ 
 	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5 * file_bonus[File(sq)];
 	  if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 25;
 	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 10;
@@ -61,8 +59,12 @@ void InitEval(void) {
 	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5;
 
 	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] - file_bonus[File(sq)];
-	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + pstKnightMg[sq];
-	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + 5 * (knightEg[Rank(sq)] + knightEg[File(sq)]);
+
+	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
+	  if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] +(5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
+	  if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] +(5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) -100;
+
+	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
 	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopMg[sq];
 	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopEg[sq];
 	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R] + file_bonus[File(sq)];

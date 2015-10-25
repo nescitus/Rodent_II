@@ -91,6 +91,7 @@ void ParseSetoption(char *ptr) {
   name[strlen(name) - 1] = '\0';
   if (strcmp(token, "value") == 0) {
     value[0] = '\0';
+
     for (;;) {
       ptr = ParseToken(ptr, token);
       if (*token == '\0')
@@ -100,6 +101,7 @@ void ParseSetoption(char *ptr) {
     }
     value[strlen(value) - 1] = '\0';
   }
+
   if (strcmp(name, "Hash") == 0) {
     AllocTrans(atoi(value));
   } else if (strcmp(name, "Clear Hash") == 0) {

@@ -37,8 +37,7 @@ void PrintBoard(POS *p) {
     if ((sq + 1) % 8 == 0) printf(" %d\n", 9 - ((sq + 1) / 8));
   }
 
-  printf("\na b c d e f g h\n");
-  printf("\n--------------------------------------------\n");
+  printf("\na b c d e f g h\n\n--------------------------------------------\n");
 }
 
 void Bench(int depth) {
