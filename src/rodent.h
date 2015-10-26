@@ -334,6 +334,7 @@ extern U64 n_attacks[64];
 extern U64 k_attacks[64];
 extern U64 passed_mask[2][64];
 extern U64 adjacent_mask[8];
+extern U64 support_mask[2][64];
 extern int mg_pst_data[2][6][64];
 extern int eg_pst_data[2][6][64];
 extern int castle_mask[64];
