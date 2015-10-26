@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "rodent.h"
+#include "magicmoves.h"
 #include "eval.h"
 
 static const int max_phase = 24;

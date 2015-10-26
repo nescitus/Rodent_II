@@ -1,4 +1,5 @@
 #include "rodent.h"
+#include "magicmoves.h"
 
 int Swap(POS *p, int from, int to) {
 

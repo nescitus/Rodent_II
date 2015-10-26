@@ -37,10 +37,11 @@ void Think(POS *p, int *pv) {
 
 void Iterate(POS *p, int *pv) {
 
-  int val = 0;
+  int val = 0, cur_val = 0;
   U64 nps = 0;
-  int cur_val = 0;
   Timer.SetIterationTiming();
+
+  // TODO: use Perft() to reduce max depth if only one move is available
 
   for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
     int elapsed = Timer.GetElapsedTime();

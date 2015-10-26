@@ -1,4 +1,5 @@
 #include "rodent.h"
+#include "magicmoves.h"
 
 int *GenerateCaptures(POS *p, int *list) {
 

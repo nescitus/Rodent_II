@@ -1,7 +1,6 @@
 // bench: 811618
-// bench 12: 10210579 22,2 s 1.061
+// bench 12: 10210579 20,3 s 1.171
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 2402 lines (98 free)
 // 47.4% vs Rodent 1.4, ca. 2720 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -117,15 +116,80 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define DiagIndex(o, x) ((((o) & line_mask[2][x]) * FILE_B_BB) >> 58)
 #define AntiIndex(o, x) ((((o) & line_mask[3][x]) * FILE_B_BB) >> 58)
 
-#define L1Attacks(o, x) attacks[0][x][RankIndex(o, x)]
-#define L2Attacks(o, x) attacks[1][x][FileIndex(o, x)]
-#define L3Attacks(o, x) attacks[2][x][DiagIndex(o, x)]
-#define L4Attacks(o, x) attacks[3][x][AntiIndex(o, x)]
-#define RAttacks(o, x)  (L1Attacks(o, x) | L2Attacks(o, x))
-#define BAttacks(o, x)  (L3Attacks(o, x) | L4Attacks(o, x))
+#define RAttacks(o, x)  Rmagic(x,o)
+#define BAttacks(o, x)  Bmagic(x,o)
 #define QAttacks(o, x)  (RAttacks(o, x) | BAttacks(o, x))
 
-#define FirstOne(x)     bit_table[(((x) & (~(x) + 1)) * (U64)0x0218A392CD3D5DBF) >> 58]
+#ifdef _WIN32
+#define FORCEINLINE __forceinline
+#else
+#define FORCEINLINE __inline
+#endif
+
+#define USE_FIRST_ONE_INTRINSICS
+
+// Compiler and architecture dependent versions of FirstOne() function,
+// triggered by defines at the top of this file.
+#ifdef USE_FIRST_ONE_INTRINSICS
+#ifdef _WIN32
+#include <intrin.h>
+#ifdef _WIN64
+#pragma intrinsic(_BitScanForward64)
+#endif
+
+#ifdef _MSC_VER
+#ifndef _WIN64
+const int lsb_64_table[64] =
+{
+	63, 30, 3, 32, 59, 14, 11, 33,
+	60, 24, 50, 9, 55, 19, 21, 34,
+	61, 29, 2, 53, 51, 23, 41, 18,
+	56, 28, 1, 43, 46, 27, 0, 35,
+	62, 31, 58, 4, 5, 49, 54, 6,
+	15, 52, 12, 40, 7, 42, 45, 16,
+	25, 57, 48, 13, 10, 39, 8, 44,
+	20, 47, 38, 22, 17, 37, 36, 26
+};
+
+/**
+* bitScanForward
+* @author Matt Taylor (2003)
+* @param bb bitboard to scan
+* @precondition bb != 0
+* @return index (0..63) of least significant one bit
+*/
+static int FORCEINLINE  bitScanForward(U64 bb) {
+	unsigned int folded;
+	bb ^= bb - 1;
+	folded = (int)bb ^ (bb >> 32);
+	return lsb_64_table[folded * 0x78291ACF >> 26];
+}
+#endif
+#endif
+static int FORCEINLINE FirstOne(U64 x) {
+#ifndef _WIN64
+	return bitScanForward(x);
+#else
+	unsigned long index = -1;
+	_BitScanForward64(&index, x);
+	return index;
+#endif
+}
+
+#elif defined(__GNUC__)
+
+static int FORCEINLINE FirstOne(U64 x) {
+	int tmp = __builtin_ffsll(x);
+	if (tmp == 0) return -1;
+	else return tmp - 1;
+}
+
+#endif
+
+#else
+#define FirstOne(x)     bit_table[(((x) & (~(x) + 1)) * (U64)0x0218A392CD3D5DBF) >> 58] // first "1" in a bitboard
+#endif
+
 
 #define REL_SQ(sq,cl)   ( sq ^ (cl * 56) )
 #define RelSqBb(sq,cl)  ( SqBb(REL_SQ(sq,cl) ) )
