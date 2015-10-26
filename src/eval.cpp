@@ -265,7 +265,7 @@ void EvaluateKing(POS *p, int sd) {
   bbNextFile = ShiftWest(bbKingFile);
   if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-  mg[sd][F_OTHERS] += result;
+  mg[sd][F_PAWNS] += result;
 }
 
 int EvalKingFile(POS * p, int sd, U64 bbFile) {
@@ -349,11 +349,8 @@ int Evaluate(POS *p, int use_hash) {
 
   EvaluatePieces(p, WC);
   EvaluatePieces(p, BC);
-  EvaluatePawns(p, WC); 
-  EvaluatePawns(p, BC);
-  EvaluateKing(p, WC);
-  EvaluateKing(p, BC);
-  
+  FullPawnEval(p, use_hash);
+
   // Sum all the eval factors
 
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {

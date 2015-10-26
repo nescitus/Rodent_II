@@ -272,6 +272,7 @@ int EvalFileShelter(U64 bbOwnPawns, int sd);
 int EvalFileStorm(U64 bbOppPawns, int sd);
 void EvaluatePieces(POS * p, int sd);
 void EvaluatePawns(POS * p, int sd);
+void FullPawnEval(POS * p, int use_hash);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
 int *GenerateCaptures(POS *p, int *list);

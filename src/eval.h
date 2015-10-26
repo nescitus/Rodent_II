@@ -67,8 +67,21 @@ struct sEvalHashEntry {
   int score;
 };
 
+struct sPawnHashEntry {
+	U64 key;
+	int mg_pawns;
+	int eg_pawns;
+	int mg_passers;
+	int eg_passers;
+};
+
+extern int mg[2][N_OF_FACTORS];
+extern int eg[2][N_OF_FACTORS];
+
 #define EVAL_HASH_SIZE 512*512
+#define PAWN_HASH_SIZE 512*512
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
+extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
 static const int file_bonus[8] = { -3, -1,  1,  3,  3,  1, -1, -3 };
 static const int biased[8]     = { -3, -1,  0,  1,  1,  0, -1, -3 };
