@@ -1,7 +1,5 @@
 #include "rodent.h"
 
-U64 line_mask[4][64];
-U64 attacks[4][64][64];
 U64 p_attacks[2][64];
 U64 n_attacks[64];
 U64 k_attacks[64];

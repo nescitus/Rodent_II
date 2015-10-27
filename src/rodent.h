@@ -1,6 +1,7 @@
 // bench: 811618
 // bench 12: 10210579 20,3 s 1.171
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
+// 3107 lines of code
 // 47.4% vs Rodent 1.4, ca. 2720 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -110,11 +111,6 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define UnoccBb(p)      (~OccBb(p))
 #define TpOnSq(p, x)    (Tp((p)->pc[x]))
 #define KingSq(p, x)    ((p)->king_sq[x])
-
-#define RankIndex(o, x) (((o) >> ((070 & (x)) + 1)) & 63)
-#define FileIndex(o, x) (((FILE_A_BB & ((o) >> File(x))) * DIAG_B8H2_BB) >> 58)
-#define DiagIndex(o, x) ((((o) & line_mask[2][x]) * FILE_B_BB) >> 58)
-#define AntiIndex(o, x) ((((o) & line_mask[3][x]) * FILE_B_BB) >> 58)
 
 #define RAttacks(o, x)  Rmagic(x,o)
 #define BAttacks(o, x)  Bmagic(x,o)
@@ -328,8 +324,6 @@ int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth
 void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
 
-extern U64 line_mask[4][64];
-extern U64 attacks[4][64][64];
 extern U64 p_attacks[2][64];
 extern U64 n_attacks[64];
 extern U64 k_attacks[64];
