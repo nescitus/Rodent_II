@@ -224,4 +224,5 @@ void ResetEngine(void) {
   ClearHist();
   ClearTrans();
   ClearEvalHash();
+  ClearPawnHash();
 }

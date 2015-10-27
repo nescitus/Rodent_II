@@ -258,6 +258,7 @@ void Bench(int depth);
 void BuildPv(int *dst, int *src, int move);
 void Check(void);
 void ClearEvalHash(void);
+void ClearPawnHash(void);
 void ClearHist(void);
 void ClearTrans(void);
 void DisplayPv(int score, int *pv);

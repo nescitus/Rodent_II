@@ -5,15 +5,26 @@
 #include "eval.h"
 
 static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
-SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
+                                   SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
 };
 static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | SqBb(G2) | SqBb(H2),
-SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
+                                   SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
 };
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 
 sPawnHashEntry PawnTT[EVAL_HASH_SIZE];
+
+void ClearPawnHash(void) {
+
+  for (int e = 0; e < PAWN_HASH_SIZE; e++) {
+    PawnTT[e].key = 0;
+    PawnTT[e].mg_pawns = 0;
+    PawnTT[e].eg_pawns = 0;
+    PawnTT[e].mg_passers = 0;
+    PawnTT[e].eg_passers = 0;
+  }
+}
 
 void FullPawnEval(POS * p, int use_hash) {
 
@@ -50,9 +61,10 @@ void FullPawnEval(POS * p, int use_hash) {
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan;
+  U64 bbPieces, bbSpan, fl_phalanx1, fl_phalanx2;
   int sq, fl_unopposed;
   int op = Opp(sd);
+  U64 bbOwnPawns = PcBb(p, sd, P);
 
   // Is color OK?
 
@@ -69,6 +81,8 @@ void EvaluatePawns(POS *p, int sd) {
     if (sd == WC) bbSpan = FillNorth(ShiftNorth(SqBb(sq)));
     else          bbSpan = FillSouth(ShiftSouth(SqBb(sq)));
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
+	fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
+	fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
 
     // Doubled pawn
 
