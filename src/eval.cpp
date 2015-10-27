@@ -7,15 +7,6 @@
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
-static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
-                                   SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
-                                 };
-static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | SqBb(G2) | SqBb(H2),
-                                   SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
-                                 };
-
-static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
-
 U64 bbPawnTakes[2];
 U64 bbPawnCanTake[2];
 U64 support_mask[2][64];
@@ -237,65 +228,6 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_ATT, tmp, tmp);
   }
 }
-
-void EvaluateKing(POS *p, int sd) {
-
-  const int startSq[2] = { E1, E8 };
-  const int qCastle[2] = { B1, B8 };
-  const int kCastle[2] = { G1, G8 };
-
-  U64 bbKingFile, bbNextFile;
-  int result = 0;
-  int sq = KingSq(p, sd);
-
-  // Normalize king square for pawn shield evaluation,
-  // to discourage shuffling the king between g1 and h1.
-
-  if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
-  if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
-
-  // Evaluate shielding and storming pawns on each file.
-
-  bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-  result += EvalKingFile(p, sd, bbKingFile);
-
-  bbNextFile = ShiftEast(bbKingFile);
-  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
-
-  bbNextFile = ShiftWest(bbKingFile);
-  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
-
-  mg[sd][F_PAWNS] += result;
-}
-
-int EvalKingFile(POS * p, int sd, U64 bbFile) {
-
-  int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
-  int storm   = EvalFileStorm  (bbFile & PcBb(p, Opp(sd), P), sd);
-  if (bbFile & bbCentralFile) return (shelter / 2) + storm;
-  else return shelter + storm;
-}
-
-int EvalFileShelter(U64 bbOwnPawns, int sd) {
-
-  if (!bbOwnPawns) return -36;
-  if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
-  if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
-  if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
-  if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
-  if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
-  if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
-  return 0;
-}
-
-int EvalFileStorm(U64 bbOppPawns, int sd) {
-
-  if (!bbOppPawns) return -16;
-  if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
-  if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
-  if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
-  return 0;
-} 
 
 int Evaluate(POS *p, int use_hash) {
 
