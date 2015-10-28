@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include "rodent.h"
 #include "magicmoves.h"
 #include "eval.h"
@@ -150,7 +151,8 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
-    Add(sd, F_MOB, 4*cnt, 4*cnt);
+    Add(sd, F_MOB, 4*cnt, 4*cnt);                          // mobility bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3; // check threat bonus
 
     // Knight attacks on enemy king zone
 
@@ -159,10 +161,6 @@ void EvaluatePieces(POS *p, int sd) {
       wood++;
       att += 6 * PopCnt(bbAtt & bbZone); // old formula 5
     }
-
-	// Knight check threats
-
-	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3;
 
     // Knight outpost
 
@@ -185,7 +183,8 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
-    Add(sd, F_MOB, 5 * cnt, 5 * cnt);
+    Add(sd, F_MOB, 5 * cnt, 5 * cnt);                    // mobility bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
 
     // Bishop attacks on enemy king zone
 
@@ -194,10 +193,6 @@ void EvaluatePieces(POS *p, int sd) {
       wood++;
       att += 6 * PopCnt(bbAtt & bbZone); // old formula 4
     }
-
-	// Bishop check threats
-
-	if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3;
 
     // Bishop outpost
 
@@ -220,7 +215,8 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob) - 7;
-    Add(sd, F_MOB, 2 * cnt, 4 * cnt);
+    Add(sd, F_MOB, 2 * cnt, 4 * cnt);                    // mobility bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9; // check threat bonus
 
     // Rook attacks on enemy king zone
 
@@ -229,8 +225,6 @@ void EvaluatePieces(POS *p, int sd) {
       wood++;
       att += 9 * PopCnt(bbAtt & bbZone); // old formula 8
     }
-
-	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9;
 
     // Rook on (half) open file
 
@@ -264,7 +258,8 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = QAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob) - 14;
-    Add(sd, F_MOB, 1 * cnt, 2 * cnt);
+    Add(sd, F_MOB, 1 * cnt, 2 * cnt);                      // mobility bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) att += 12; // check threat bonus
 
     // Queen attacks on enemy king zone
    
@@ -275,10 +270,6 @@ void EvaluatePieces(POS *p, int sd) {
       att += 15 * PopCnt(bbAtt & bbZone); // old formula 16
     }
   }
-
-  // Queen check threats
-
-  if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) att += 12;
 
   // Score king attacks if own queen is present
 
