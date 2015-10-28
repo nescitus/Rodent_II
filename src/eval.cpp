@@ -4,8 +4,15 @@
 #include "magicmoves.h"
 #include "eval.h"
 
+static const int maxAttUnit = 399;
+static const double maxAttStep = 7.5;
+static const double maxAttScore = 1280;
+static const double attCurveMult = 0.025;
+int danger[512];
+
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+int dist[64][64];
 
 U64 bbPawnTakes[2];
 U64 bbPawnCanTake[2];
@@ -32,14 +39,13 @@ void InitWeights(void) {
 
   for (int fc = 0; fc < N_OF_FACTORS; fc++)
     weights[fc] = 100;
+
+  weights[F_TROPISM] = 20;
 }
 
 void InitEval(void) {
 
   // Init piece/square values together with material value of the pieces.
-  // Middgame queen table (-5 on the first rank, othewise 0) and endgame
-  // rook table (all zeroes) are initialized by a formula rather than
-  // by reading a set of constants.
 
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
@@ -68,6 +74,13 @@ void InitEval(void) {
     }
   }
 
+  // Init king attack table
+
+  for (int t = 0, i = 1; i < 512; ++i) {
+	  t = Min(maxAttScore, Min(int(attCurveMult * i * i), t + maxAttStep));
+	  danger[i] = (t * 100) / 256; // rescale to centipawns
+  }
+
   // Init adjacent mask (for detecting isolated pawns)
 
   for (int i = 0; i < 8; i++) {
@@ -85,6 +98,15 @@ void InitEval(void) {
     support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
     support_mask[BC][sq] |= FillNorth(support_mask[BC][sq]);
   }
+
+  // Init distance table (for evaluating king tropism)
+
+  for (int i = 0; i < 64; ++i) {
+	  for (int j = 0; j < 64; ++j) {
+		  dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
+	  }
+  }
+
 }
 
 void EvaluatePieces(POS *p, int sd) {
@@ -106,12 +128,23 @@ void EvaluatePieces(POS *p, int sd) {
 
   U64 bbZone = k_attacks[ksq];
   (sd == WC) ? bbZone |= ShiftSouth(bbZone) : bbZone |= ShiftNorth(bbZone);
+
+  // Init bitboards to detect check threats
+
+  U64 bbKnightChk = n_attacks[ksq];
+  U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
+  U64 bbDiagChk = BAttacks(OccBb(p), ksq);
+  U64 bbQueenChk = bbStr8Chk | bbDiagChk;
   
   // Knight
 
   bbPieces = PcBb(p, sd, N);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
+
+	// Knight tropism to enemy king
+
+	Add(sd, F_TROPISM, 3 * dist[sq][ksq], 3 * dist[sq][ksq]);
     
     // Knight mobility
 
@@ -124,8 +157,12 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
       wood++;
-      att += 5 * PopCnt(bbAtt & bbZone);
+      att += 6 * PopCnt(bbAtt & bbZone); // old formula 5
     }
+
+	// Knight check threats
+
+	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3;
 
     // Knight outpost
 
@@ -139,6 +176,10 @@ void EvaluatePieces(POS *p, int sd) {
   bbPieces = PcBb(p, sd, B);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
+
+	// Bishop tropism to enemy king
+
+	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
   
     // Bishop mobility
 
@@ -151,8 +192,12 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
     if (bbAtt & bbZone) {
       wood++;
-      att += 4 * PopCnt(bbAtt & bbZone);
+      att += 6 * PopCnt(bbAtt & bbZone); // old formula 4
     }
+
+	// Bishop check threats
+
+	if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3;
 
     // Bishop outpost
 
@@ -166,6 +211,10 @@ void EvaluatePieces(POS *p, int sd) {
   bbPieces = PcBb(p, sd, R);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
+
+	// Rook tropism to enemy king
+
+	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
   
     // Rook mobility
 
@@ -178,8 +227,10 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
     if (bbAtt & bbZone) {
       wood++;
-      att += 8 * PopCnt(bbAtt & bbZone);
+      att += 9 * PopCnt(bbAtt & bbZone); // old formula 8
     }
+
+	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9;
 
     // Rook on (half) open file
 
@@ -205,6 +256,10 @@ void EvaluatePieces(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
+	// Queen tropism to enemy king
+
+	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 4 * dist[sq][ksq]);
+
     // Queen mobility
 
     bbMob = QAttacks(OccBb(p), sq);
@@ -217,14 +272,21 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
     if (bbAtt & bbZone) {
       wood++;
-      att += 16 * PopCnt(bbAtt & bbZone);
+      att += 15 * PopCnt(bbAtt & bbZone); // old formula 16
     }
   }
+
+  // Queen check threats
+
+  if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) att += 12;
 
   // Score king attacks if own queen is present
 
   if (wood > 1 && p->cnt[sd][Q]) {
-    tmp = att * (wood - 1);
+    //tmp = att * (wood - 1);
+    if (att > 399) att = 399;
+	tmp = danger[att];
+
     Add(sd, F_ATT, tmp, tmp);
   }
 }

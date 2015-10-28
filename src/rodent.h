@@ -1,8 +1,8 @@
 // bench: 811618
 // bench 12: 10210579 20,3 s 1.171
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 3107 lines of code
-// 47.4% vs Rodent 1.4, ca. 2720 Elo
+// 3150 lines of code
+// 48% vs Rodent 1.4, ca. 2725 Elo
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -12,7 +12,7 @@ enum eRank {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
 enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
 enum eHashEntry{NONE, UPPER, LOWER, EXACT};
 enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
-enum eFactor   {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS};
+enum eFactor   {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_TROPISM, F_OUTPOST, F_LINES, F_OTHERS, N_OF_FACTORS};
 enum eSquare{
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
@@ -328,6 +328,7 @@ void UciLoop(void);
 extern U64 p_attacks[2][64];
 extern U64 n_attacks[64];
 extern U64 k_attacks[64];
+extern int dist[64][64];
 extern U64 passed_mask[2][64];
 extern U64 adjacent_mask[8];
 extern U64 support_mask[2][64];
