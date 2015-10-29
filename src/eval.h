@@ -83,6 +83,9 @@ extern int eg[2][N_OF_FACTORS];
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
+#define bbWhiteSq		(U64)0x55AA55AA55AA55AA
+#define bbBlackSq		(U64)0xAA55AA55AA55AA55
+
 static const int file_bonus[8] = { -3, -1,  1,  3,  3,  1, -1, -3 };
 static const int biased[8]     = { -3, -1,  0,  1,  1,  0, -1, -3 };
 static const int kingFile[8]   = { +4, +5, +3, +1, +1, +3, +5, +4 };

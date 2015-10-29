@@ -23,7 +23,7 @@ int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Outposts  ", "Lines     ", "Others    "};
+char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Others    "};
 
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
@@ -392,8 +392,8 @@ void PrintEval(POS * p) {
   printf("Factor     | Val (perc) |   Mg (  WC,   BC) |   Eg (  WC,   BC) |\n");
   printf("-----------------------------------------------------------------\n");
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-	mg_score = mg[WC][fc] - mg[BC][fc];
-	eg_score = eg[WC][fc] - eg[BC][fc];
+	mg_score = ((mg[WC][fc] - mg[BC][fc]) * weights[fc]) / 100;
+	eg_score = ((eg[WC][fc] - eg[BC][fc]) * weights[fc]) / 100;
 	total = (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
 
     printf(factor_name[fc]);
