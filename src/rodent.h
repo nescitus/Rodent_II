@@ -55,6 +55,9 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define FILE_G_BB       (U64)0x4040404040404040
 #define FILE_H_BB       (U64)0x8080808080808080
 
+#define bbWhiteSq		(U64)0x55AA55AA55AA55AA
+#define bbBlackSq		(U64)0xAA55AA55AA55AA55
+
 #define DIAG_A1H8_BB    (U64)0x8040201008040201
 #define DIAG_A8H1_BB    (U64)0x0102040810204080
 #define DIAG_B8H2_BB    (U64)0x0204081020408000
@@ -353,3 +356,11 @@ extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
 extern int weights[N_OF_FACTORS];
+
+int DifferentBishops(POS * p);
+int PcMat1Minor(POS *p, int sd);
+int PcMat2Minors(POS *p, int sd);
+int PcMatBN(POS *p, int sd);
+int PcMatB(POS *p, int sd);
+int PcMatQ(POS *p, int sd);
+int PcMatR(POS *p, int sd);
