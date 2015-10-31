@@ -36,15 +36,18 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Rodent II 0.2.15\n");
+      printf("id name Rodent II 0.2.16\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
+	  printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
 	  printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
 	  printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
 	  printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
 	  printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
 	  printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
+	  printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
+	  printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -107,6 +110,10 @@ void ParseSetoption(char *ptr) {
     AllocTrans(atoi(value));
   } else if (strcmp(name, "Clear Hash") == 0) {
     ResetEngine();
+  } else if (strcmp(name, "Material") == 0) {
+	  mat_perc = atoi(value);
+	  ResetEngine();
+	  InitEval();
   } else if (strcmp(name, "Attack") == 0) {
     weights[F_ATT] = atoi(value);
     ResetEngine();
@@ -122,7 +129,15 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "PawnStructure") == 0) {
     weights[F_PAWNS] = atoi(value);
     ResetEngine();
+  } else if (strcmp(name, "Lines") == 0) {
+	 weights[F_LINES] = atoi(value);
+	 ResetEngine();
+  } else if (strcmp(name, "Outposts") == 0) {
+	  weights[F_OUTPOST] = atoi(value);
+	  ResetEngine();
   }
+
+
 }
 
 void ParseMoves(POS *p, char *ptr) {

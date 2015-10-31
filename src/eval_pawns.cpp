@@ -96,17 +96,13 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Isolated pawn
 
-    if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P))) {
-	  Add(sd, F_PAWNS, -10, -20);
-	  if (fl_unopposed) Add(sd, F_PAWNS, -10, 0);
-    }
+    if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
+	  Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
 
     // Backward pawn
 
-    else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0) {
-      Add(sd, F_PAWNS, -8, -8);
-      if (fl_unopposed) Add(sd, F_PAWNS, -8, 0);
-    }
+    else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+      Add(sd, F_PAWNS, -8 - 8*fl_unopposed, -8);
   }
 }
 

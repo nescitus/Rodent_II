@@ -5,6 +5,8 @@
 #include "magicmoves.h"
 #include "eval.h"
 
+#define SCALE(x,y) ((x*y)/100)
+
 static const int maxAttUnit = 399;
 static const double maxAttStep = 7.5;
 static const double maxAttScore = 1280;
@@ -42,6 +44,7 @@ void InitWeights(void) {
     weights[fc] = 100;
 
   weights[F_TROPISM] = 20;
+  mat_perc = 100;
 }
 
 void InitEval(void) {
@@ -51,25 +54,25 @@ void InitEval(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5 * file_bonus[File(sq)];
-	  if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 25;
-	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 10;
-	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 0;
-	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] + 5;
+	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5 * file_bonus[File(sq)];
+	  if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 25;
+	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 10;
+	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 0;
+	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
 
-	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = tp_value[P] - file_bonus[File(sq)];
+	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
 
-	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
-	  if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] +(5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
-	  if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] +(5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) -100;
+	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
+	  if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
+	  if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100;
 
-	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = tp_value[N] + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
-	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopMg[sq];
-	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = tp_value[B] + pstBishopEg[sq];
-	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R] + file_bonus[File(sq)];
-      eg_pst_data[sd][R][REL_SQ(sq, sd)] = tp_value[R];
-      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = tp_value[Q] - (5 * (Rank(sq) == RANK_1));
-	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = tp_value[Q] + (4 * (biased[Rank(sq)] + biased[File(sq)]));
+	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
+	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopMg[sq];
+	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopEg[sq];
+	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc) + file_bonus[File(sq)];
+	  eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc);
+	  mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) - (5 * (Rank(sq) == RANK_1));
+	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
 	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
 	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
     }

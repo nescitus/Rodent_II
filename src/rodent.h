@@ -1,5 +1,5 @@
 // bench: 775533
-// bench 12: 10105977 20,3 s 1.171
+// bench 12: 9742764 18,3 s 1.230 1.241
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 3150 lines of code
 // 48% vs Rodent 1.4, ca. 2725 Elo
@@ -356,6 +356,7 @@ extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
 extern int weights[N_OF_FACTORS];
+extern int mat_perc;
 
 int DifferentBishops(POS * p);
 int PcMat1Minor(POS *p, int sd);
