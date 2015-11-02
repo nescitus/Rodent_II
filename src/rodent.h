@@ -1,7 +1,7 @@
-// bench: 775533
-// bench 12: 9742764 18,3 s 1.230 1.241
+// bench: 928349
+// bench 12: 9317680 18,8 s 1.145
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 3150 lines of code
+// 3256 lines of code
 // 48% vs Rodent 1.4, ca. 2725 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -114,6 +114,7 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define UnoccBb(p)      (~OccBb(p))
 #define TpOnSq(p, x)    (Tp((p)->pc[x]))
 #define KingSq(p, x)    ((p)->king_sq[x])
+#define IsOnSq(p, sd, pc, sq) ( PcBb(p, sd, pc) & SqBb(sq) )
 
 #define RAttacks(o, x)  Rmagic(x,o)
 #define BAttacks(o, x)  Bmagic(x,o)
@@ -272,6 +273,7 @@ int EvalFileShelter(U64 bbOwnPawns, int sd);
 int EvalFileStorm(U64 bbOppPawns, int sd);
 void EvaluatePieces(POS * p, int sd);
 void EvaluatePawns(POS * p, int sd);
+void EvalPatterns(POS * p);
 void FullPawnEval(POS * p, int use_hash);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);

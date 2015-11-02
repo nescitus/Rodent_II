@@ -48,6 +48,7 @@ int GetDrawFactor(POS *p, int sd)
 }
 
 int DifferentBishops(POS * p) {
+
 	if ((bbWhiteSq & PcBb(p, WC, B)) && (bbBlackSq & PcBb(p, BC, B))) return 1;
 	if ((bbBlackSq & PcBb(p, WC, B)) && (bbWhiteSq & PcBb(p, BC, B))) return 1;
 	return 0;
