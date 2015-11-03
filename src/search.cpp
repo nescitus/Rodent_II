@@ -41,7 +41,7 @@ void Iterate(POS *p, int *pv) {
   U64 nps = 0;
   Timer.SetIterationTiming();
 
-  // TODO: use Perft() to reduce max depth if only one move is available
+  // TODO: only single move available
 
   for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
     int elapsed = Timer.GetElapsedTime();

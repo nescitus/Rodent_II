@@ -1,7 +1,5 @@
 #include <assert.h>
-#include <stdio.h>
 #include "rodent.h"
-#include "magicmoves.h"
 #include "eval.h"
 
 static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
