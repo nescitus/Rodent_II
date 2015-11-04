@@ -271,6 +271,7 @@ void EvaluateKing(POS *p, int sd);
 int EvalKingFile(POS * p, int sd, U64 bbFile);
 int EvalFileShelter(U64 bbOwnPawns, int sd);
 int EvalFileStorm(U64 bbOppPawns, int sd);
+void EvalHanging(POS *p, int sd);
 void EvaluatePieces(POS * p, int sd);
 void EvaluatePawns(POS * p, int sd);
 void EvalPatterns(POS * p);
