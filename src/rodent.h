@@ -1,5 +1,5 @@
-// bench: 928349
-// bench 12: 9317680 18,8 s 1.145
+// bench: 824667
+// bench 12: 11424570 22,1 s 1.197
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 3256 lines of code
 // 48% vs Rodent 1.4, ca. 2725 Elo
