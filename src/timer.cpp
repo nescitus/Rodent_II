@@ -29,6 +29,14 @@ void sTimer::SetStartTime(void) {
   startTime = GetMS();
 }
 
+int sTimer::BulletCorrection(int time) {
+
+  if (time < 200)       return (time * 23) / 32;
+  else if (time <  400) return (time * 26) / 32;
+  else if (time < 1200) return (time * 29) / 32;
+  else return time;
+}
+
 void sTimer::SetMoveTiming(void) {
 
   // User-defined time per move, no tricks available
@@ -46,6 +54,9 @@ void sTimer::SetMoveTiming(void) {
   if (data[TIME] >= 0) {
     if (data[MOVES_TO_GO] == 1) data[TIME] -= Min(1000, data[TIME] / 10);
     moveTime = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
+
+	// assign less time per move on extremely short time controls
+	moveTime = BulletCorrection(moveTime);
 
     // while in time trouble, try to save a bit on increment
     if (moveTime < data[INC] ) moveTime -= ( (data[INC] * 4) / 5);
@@ -65,6 +76,9 @@ void sTimer::SetIterationTiming(void) {
 
   if (moveTime > 0) iterationTime = ( (moveTime * 3) / 4 );
   else              iterationTime = 999999000;
+
+  // assign less time per iteration on extremely short time controls
+  iterationTime = BulletCorrection(iterationTime);
 }
 
 int sTimer::FinishIteration(void) {

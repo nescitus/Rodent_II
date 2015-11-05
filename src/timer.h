@@ -9,6 +9,7 @@ private:
     int startTime;          // when we have begun searching
     int iterationTime;      // when we are allowed to start new iteration
     int moveTime;           // basic time allocated for a move
+	int sTimer::BulletCorrection(int time);
 public:
     void Clear(void);
     void SetStartTime();

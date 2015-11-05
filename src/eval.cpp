@@ -61,7 +61,7 @@ void InitEval(void) {
 	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 0;
 	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
 
-	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
+	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)]; // TODO: test 0, test increasing pawn value
 
 	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
 	  if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
