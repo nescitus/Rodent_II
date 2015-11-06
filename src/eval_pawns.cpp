@@ -76,8 +76,7 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Get front span
 
-    if (sd == WC) bbSpan = FillNorth(ShiftNorth(SqBb(sq)));
-    else          bbSpan = FillSouth(ShiftSouth(SqBb(sq)));
+	bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
 	fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
 	fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;

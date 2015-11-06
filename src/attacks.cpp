@@ -1,4 +1,5 @@
 #include "rodent.h"
+#include "magicmoves.h"
 
 U64 AttacksFrom(POS *p, int sq) {
 

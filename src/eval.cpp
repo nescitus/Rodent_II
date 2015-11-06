@@ -235,7 +235,7 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Rook on (half) open file
 
-    bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+	bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
     if (!(bbFile & PcBb(p, sd, P))) {
       if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // beats 10, 10
 	  else                            Add(sd, F_LINES,  6,  6);  // beats  5,  5
@@ -381,6 +381,19 @@ int Evaluate(POS *p, int use_hash) {
   int eg_phase = max_phase - mg_phase;
 
   score += (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
+
+  // Material imbalance table
+
+  int minorBalance = p->cnt[WC][N] - p->cnt[BC][N] + p->cnt[WC][B] - p->cnt[BC][B];
+  int majorBalance = p->cnt[WC][R] - p->cnt[BC][R] + 2 * p->cnt[WC][Q] - 2 * p->cnt[BC][Q];
+
+  int x = Max(majorBalance + 4, 0);
+  if (x > 8) x = 8;
+
+  int y = Max(minorBalance + 4, 0);
+  if (y > 8) y = 8;
+
+  score += imbalance[x][y];
 
   // Scale down drawish endgames
 

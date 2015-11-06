@@ -283,6 +283,7 @@ int *GenerateQuiet(POS *p, int *list);
 int GetMS(void);
 U64 GetWPControl(U64 bb);
 U64 GetBPControl(U64 bb);
+U64 GetFrontSpan(U64 bb, int sd);
 int GetDrawFactor(POS *p, int sd);
 void UpdateHistory(POS *p, int move, int depth, int ply);
 void Init(void);
