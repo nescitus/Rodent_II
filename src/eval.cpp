@@ -154,8 +154,8 @@ void EvaluatePieces(POS *p, int sd) {
     // Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
-    cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 4;
-    Add(sd, F_MOB, 4*cnt, 4*cnt);                          // mobility bonus
+    cnt = PopCnt(bbMob &~bbPawnTakes[op]);
+	Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
 	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3; // check threat bonus
 	bbAllAttacks[sd] |= bbMob;
 
@@ -187,8 +187,8 @@ void EvaluatePieces(POS *p, int sd) {
     // Bishop mobility
 
     bbMob = BAttacks(OccBb(p), sq);
-    cnt = PopCnt(bbMob &~bbPawnTakes[op]) - 7;
-    Add(sd, F_MOB, 5 * cnt, 5 * cnt);                    // mobility bonus
+    cnt = PopCnt(bbMob &~bbPawnTakes[op]);
+	Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
 	if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
 	bbAllAttacks[sd] |= bbMob;
 
@@ -220,8 +220,8 @@ void EvaluatePieces(POS *p, int sd) {
     // Rook mobility
 
     bbMob = RAttacks(OccBb(p), sq);
-    cnt = PopCnt(bbMob) - 7;
-    Add(sd, F_MOB, 2 * cnt, 4 * cnt);                    // mobility bonus
+    cnt = PopCnt(bbMob);
+    Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
 	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9; // check threat bonus
 	bbAllAttacks[sd] |= bbMob;
 
@@ -264,8 +264,8 @@ void EvaluatePieces(POS *p, int sd) {
     // Queen mobility
 
     bbMob = QAttacks(OccBb(p), sq);
-    cnt = PopCnt(bbMob) - 14;
-    Add(sd, F_MOB, 1 * cnt, 2 * cnt);                      // mobility bonus
+    cnt = PopCnt(bbMob);
+    Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);          // mobility bonus
 	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) att += 12; // check threat bonus
 	bbAllAttacks[sd] |= bbMob;
 
