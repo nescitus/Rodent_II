@@ -78,7 +78,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
 
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv) {
 
-  int best, score, move, new_depth, new_pv[MAX_PLY];
+  int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
@@ -141,8 +141,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && MayNull(p)) {
     int eval = Evaluate(p, 1);
     if (eval > beta) {
-      reduction = 3;
+      reduction = 4;
       if (depth > 8) reduction += depth / 4;
+
+	  if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, depth-reduction, ply)) {
+		  if (null_score < beta) goto avoid_null;
+	  }
 
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
@@ -153,6 +157,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     }
   } 
   
+  avoid_null:
+
   // end of null move code
 
   // Razoring based on Toga II 3.0
