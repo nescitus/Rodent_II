@@ -8,6 +8,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   // Statistics and attempt at quick exit
 
+  if (InCheck(p)) return Search(p, ply, alpha, beta, 1, 0, pv);
+
   nodes++;
   Check();
   if (abort_search) return 0;

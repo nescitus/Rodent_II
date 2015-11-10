@@ -141,6 +141,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   && MayNull(p)) {
     int eval = Evaluate(p, 1);
     if (eval > beta) {
+
       reduction = 4;
       if (depth > 8) reduction += depth / 4;
 
