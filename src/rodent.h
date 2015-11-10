@@ -1,8 +1,8 @@
-// bench: 722357
-// bench 12: 8052204 17,0 s 1.097
-// bench 15: 42348932 76,0 1.292
+// bench: 797262
+// bench 12: 7866957 16,5 s 1.105
+// bench 15: 42442144 76,6 1.285
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 3338 lines of code
+// 3383 lines of code
 // 48% vs Rodent 1.4, ca. 2725 Elo
 
 enum eColor{WC, BC, NO_CL};
@@ -315,6 +315,7 @@ int PopCnt(U64);
 int PopFirstBit(U64 * bb);
 void PvToStr(int *, char *);
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv);
+int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv);
 U64 Random64(void);
 void ReadLine(char *str, int n);
 void ResetEngine(void);
@@ -323,7 +324,6 @@ void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 int Widen(POS *p, int depth, int * pv, int lastScore);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv);
-int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);
 int StrToMove(POS *p, char *move_str);

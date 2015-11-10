@@ -8,7 +8,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   // Statistics and attempt at quick exit
 
-  if (InCheck(p)) return QuiesceFlee(p, ply, alpha, beta, 1, pv);
+  if (InCheck(p)) return QuiesceFlee(p, ply, alpha, beta, pv);
 
   nodes++;
   Check();
@@ -73,7 +73,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   return best;
 }
 
-int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
+int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
 	int best, score, move, new_depth, new_pv[MAX_PLY];
 	int fl_check, mv_type;
@@ -97,21 +97,8 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 	// or at least for a move to improve move ordering.
 
 	move = 0;
-	if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply)) {
-
-		// For move ordering purposes, a cutoff from hash is treated
-		// exactly like a cutoff from search
-
-		if (score >= beta) UpdateHistory(p, move, depth, ply);
-
-		// In pv nodes only exact scores are returned. This is done because
-		// there is much more pruning and reductions in zero-window nodes,
-		// so retrieving such scores in pv nodes works like retrieving scores
-		// from slightly lower depth.
-
-		if (!is_pv || (score > alpha && score < beta))
-			return score;
-	}
+	if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
+		return score;
 
 	// Safeguard against exceeding ply limit
 
@@ -133,37 +120,17 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 	while ((move = NextMove(m, &mv_type))) {
 		p->DoMove(move, u);
 		if (Illegal(p)) { p->UndoMove(move, u); continue; }
-
-		// Set new search depth
-
-		new_depth = depth - 1 + InCheck(p);
 		
-		// PVS
+		score = -Quiesce(p, ply, -beta, -alpha, new_pv);
 
-		if (best == -INF)
-			score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
-		else {
-			score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, new_pv);
-			if (!abort_search && score > alpha && score < beta)
-				score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
-		}
-
+		
 		p->UndoMove(move, u);
 		if (abort_search) return 0;
 
 		// Beta cutoff
 
 		if (score >= beta) {
-			UpdateHistory(p, move, depth, ply);
-			TransStore(p->hash_key, move, score, LOWER, depth, ply);
-
-			// If beta cutoff occurs at the root, change the best move
-
-			if (!ply) {
-				BuildPv(pv, new_pv, move);
-				DisplayPv(score, pv);
-			}
-
+			TransStore(p->hash_key, move, score, LOWER, 0, ply);
 			return score;
 		}
 
@@ -174,7 +141,6 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 			if (score > alpha) {
 				alpha = score;
 				BuildPv(pv, new_pv, move);
-				if (!ply) DisplayPv(score, pv);
 			}
 		}
 
@@ -187,12 +153,8 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
 	// Save score in the transposition table
 
-	if (*pv) {
-		UpdateHistory(p, *pv, depth, ply);
-		TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
-	}
-	else
-		TransStore(p->hash_key, 0, best, UPPER, depth, ply);
+	if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
+	else  	 TransStore(p->hash_key, 0, best, UPPER, 0, ply);
 
 	return best;
 }
