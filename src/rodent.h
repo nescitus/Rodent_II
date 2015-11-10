@@ -1,6 +1,6 @@
-// bench: 739021
-// bench 12: 6935019 14.4 s 1.145
-// bench 15: 39645138 68,5 1.343
+// bench: 722357
+// bench 12: 8052204 17,0 s 1.097
+// bench 15: 42348932 76,0 1.292
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 3338 lines of code
 // 48% vs Rodent 1.4, ca. 2725 Elo
@@ -323,6 +323,7 @@ void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 int Widen(POS *p, int depth, int * pv, int lastScore);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv);
+int QuiesceFlee(POS *p, int ply, int alpha, int beta, int depth, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);
 int StrToMove(POS *p, char *move_str);
