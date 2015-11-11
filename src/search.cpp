@@ -133,6 +133,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   fl_check = InCheck(p);
   fl_prunable_node = !fl_check & !is_pv && alpha > -MAX_EVAL && beta < MAX_EVAL;
 
+  if (ply && depth <= 3
+	  && fl_prunable_node
+	  && !was_null) {
+	  int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
+	  if (sc > beta) return sc;
+  }
+
+
   // Null move
 
   if (depth > 1
