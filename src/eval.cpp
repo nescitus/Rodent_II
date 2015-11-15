@@ -183,7 +183,7 @@ void EvaluatePieces(POS *p, int sd) {
 	// Bishop tropism to enemy king
 
 	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
-  
+
     // Bishop mobility
 
     bbMob = BAttacks(OccBb(p), sq);

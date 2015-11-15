@@ -5,6 +5,8 @@
 sTimer Timer; // class for setting and observing time limits
 
 int main() {
+
+  Timer.Init();
   initmagicmoves();
   Init();
   InitWeights();

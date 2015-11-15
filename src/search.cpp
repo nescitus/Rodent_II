@@ -41,6 +41,11 @@ void Iterate(POS *p, int *pv) {
   U64 nps = 0;
   Timer.SetIterationTiming();
 
+  // Are we operating in slowdown mode?
+
+  Timer.slow_play = 0;
+  if (Timer.nps_limit) Timer.slow_play = 1;
+
   // TODO: only single move available
 
   for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
@@ -134,12 +139,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   fl_prunable_node = !fl_check & !is_pv && alpha > -MAX_EVAL && beta < MAX_EVAL;
 
   if (ply && depth <= 3
-	  && fl_prunable_node
-	  && !was_null) {
-	  int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
-	  if (sc > beta) return sc;
+  && fl_prunable_node
+  && !was_null) {
+    int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
+    if (sc > beta) return sc;
   }
-
 
   // Null move
 
@@ -342,9 +346,8 @@ int IsDraw(POS *p) {
 void DisplayPv(int score, int *pv) {
 
   char *type, pv_str[512];
-  U64 nps = 0;
   int elapsed = Timer.GetElapsedTime();
-  if (elapsed) nps = nodes * 1000 / elapsed;
+  U64 nps = GetNps(elapsed);
 
   type = "mate";
   if (score < -MAX_EVAL)
@@ -362,9 +365,27 @@ void DisplayPv(int score, int *pv) {
 void Check(void) {
 
   char command[80];
+  int time;
+  U64 nps;
 
-  if (nodes & 4095 || root_depth == 1)
-    return;
+  if (!Timer.slow_play) {
+    if (nodes & 4095 || root_depth == 1)
+      return;
+  }
+
+  if (Timer.nps_limit && root_depth > 1) {
+	  time = Timer.GetElapsedTime() + 1;
+	  nps = GetNps(time);
+	  while ((int)nps > Timer.nps_limit) {
+		  Timer.WasteTime(10);
+		  time = Timer.GetElapsedTime() + 1;
+		  nps = GetNps(time);
+		  if (Timeout()) {
+			  abort_search = 1;
+			  return;
+		  }
+	  }
+  }
 
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));
@@ -381,4 +402,11 @@ void Check(void) {
 int Timeout() {
 
   return (!pondering && !Timer.IsInfiniteMode() && Timer.TimeHasElapsed());
+}
+
+U64 GetNps(int elapsed)
+{
+	U64 nps = 0;
+	if (elapsed) nps = (nodes * 1000) / elapsed;
+	return nps;
 }

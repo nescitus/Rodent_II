@@ -118,6 +118,22 @@ void sTimer::SetData(int slot, int val) {
 }
 
 void sTimer::SetSideData(int side) {
+
   data[TIME] = side == WC ? GetData(W_TIME) : GetData(B_TIME);
   data[INC]  = side == WC ? GetData(W_INC)  : GetData(B_INC);
+}
+
+void sTimer::WasteTime(int miliseconds) {
+
+#if defined(_WIN32) || defined(_WIN64)
+	Sleep(miliseconds);
+#else
+	usleep(miliseconds * 1000);
+#endif
+}
+
+void sTimer::Init(void) {
+
+  nps_limit = 0;
+  slow_play = 0;
 }

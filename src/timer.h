@@ -9,8 +9,10 @@ private:
     int startTime;          // when we have begun searching
     int iterationTime;      // when we are allowed to start new iteration
     int moveTime;           // basic time allocated for a move
-	int sTimer::BulletCorrection(int time);
+	int BulletCorrection(int time);
 public:
+	int nps_limit;
+	int slow_play;
     void Clear(void);
     void SetStartTime();
     void SetMoveTiming(void);
@@ -20,6 +22,8 @@ public:
     int GetElapsedTime(void);
     int IsInfiniteMode(void);
     int TimeHasElapsed(void);
+	void Init(void);
+	void WasteTime(int miliseconds);
     int GetData(int slot);
     void SetData(int slot, int val);
     void SetSideData(int side);

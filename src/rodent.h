@@ -1,9 +1,8 @@
-// bench: 797262
-// bench 12: 7866957 16,5 s 1.105
-// bench 15: 42442144 76,6 1.285
+// bench: 701119
+// bench 12: 6350736 14,0 s 1.052
+// bench 15: 39720200 72,1 1.278
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 3383 lines of code
-// 48% vs Rodent 1.4, ca. 2725 Elo
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -282,6 +281,7 @@ U64 FillSouth(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int GetMS(void);
+U64 GetNps(int elapsed);
 U64 GetWPControl(U64 bb);
 U64 GetBPControl(U64 bb);
 U64 GetFrontSpan(U64 bb, int sd);
