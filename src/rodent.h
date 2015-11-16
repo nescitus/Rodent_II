@@ -1,8 +1,8 @@
-// bench: 701119
-// bench 12: 6350736 14,0 s 1.052
-// bench 15: 39720200 72,1 1.278
+// bench: 626866
+// bench 12: 6820437 14,9 s 1.060
+// bench 15: 38263421 70,9 1.251
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 3383 lines of code
+// 3436 lines of code
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -284,6 +284,8 @@ int GetMS(void);
 U64 GetNps(int elapsed);
 U64 GetWPControl(U64 bb);
 U64 GetBPControl(U64 bb);
+U64 GetDoubleWPControl(U64 bb);
+U64 GetDoubleBPControl(U64 bb);
 U64 GetFrontSpan(U64 bb, int sd);
 int GetDrawFactor(POS *p, int sd);
 void UpdateHistory(POS *p, int move, int depth, int ply);

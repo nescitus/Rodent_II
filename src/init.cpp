@@ -37,30 +37,6 @@ void Init(void) {
     }
   }
 
-  // TODO: move to eval init
-
-  for (i = 0; i < 64; i++) {
-    passed_mask[WC][i] = 0;
-    for (j = File(i) - 1; j <= File(i) + 1; j++) {
-      if ((File(i) == FILE_A && j == -1) ||
-          (File(i) == FILE_H && j == 8))
-        continue;
-      for (k = Rank(i) + 1; k <= RANK_8; k++)
-        passed_mask[WC][i] |= SqBb(Sq(j, k));
-    }
-  }
-
-  for (i = 0; i < 64; i++) {
-    passed_mask[BC][i] = 0;
-    for (j = File(i) - 1; j <= File(i) + 1; j++) {
-      if ((File(i) == FILE_A && j == -1) ||
-          (File(i) == FILE_H && j == 8))
-        continue;
-      for (k = Rank(i) - 1; k >= RANK_1; k--)
-        passed_mask[BC][i] |= SqBb(Sq(j, k));
-    }
-  }
-
   for (i = 0; i < 64; i++)
     castle_mask[i] = 15;
 

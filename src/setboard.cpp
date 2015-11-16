@@ -22,23 +22,24 @@ void SetPosition(POS *p, char *epd) {
   int j, pc;
   static const char pc_char[13] = "PpNnBbRrQqKk";
 
-  for (int i = 0; i < 2; i++) {
-    p->cl_bb[i] = 0;
-    p->mg_pst[i] = 0;
-  p->eg_pst[i] = 0;
+  for (int sd = 0; sd < 2; sd++) {
+    p->cl_bb[sd] = 0ULL;
+    p->mg_pst[sd] = 0;
+    p->eg_pst[sd] = 0;
   }
 
   p->phase = 0;
 
-  for (int i = 0; i < 6; i++) {
-    p->tp_bb[i] = 0;
-    p->cnt[WC][i] = 0;
-    p->cnt[BC][i] = 0;
+  for (int pc = 0; pc < 6; pc++) {
+    p->tp_bb[pc] = 0ULL;
+    p->cnt[WC][pc] = 0;
+    p->cnt[BC][pc] = 0;
   }
 
   p->castle_flags = 0;
   p->rev_moves = 0;
   p->head = 0;
+
   for (int i = 56; i >= 0; i -= 8) {
     j = 0;
     while (j < 8) {
@@ -54,8 +55,8 @@ void SetPosition(POS *p, char *epd) {
         p->cl_bb[Cl(pc)] ^= SqBb(i + j);
         p->tp_bb[Tp(pc)] ^= SqBb(i + j);
         
-    if (Tp(pc) == K)
-      p->king_sq[Cl(pc)] = i + j;
+        if (Tp(pc) == K)
+          p->king_sq[Cl(pc)] = i + j;
 
         p->phase += phase_value[Tp(pc)];
         p->mg_pst[Cl(pc)] += mg_pst_data[Cl(pc)][Tp(pc)][i + j];
@@ -67,10 +68,14 @@ void SetPosition(POS *p, char *epd) {
     }
     epd++;
   }
-  if (*epd++ == 'w')
-    p->side = WC;
-  else
-    p->side = BC;
+
+  // Setting side to move
+
+  if (*epd++ == 'w') p->side = WC;
+  else               p->side = BC;
+
+  // Setting castling rights
+
   epd++;
   if (*epd == '-')
     epd++;
@@ -92,6 +97,9 @@ void SetPosition(POS *p, char *epd) {
       epd++;
     }
   }
+
+  // Setting en passant square (only if capture is possible)
+
   epd++;
   if (*epd == '-')
     p->ep_sq = NO_SQ;
@@ -100,6 +108,9 @@ void SetPosition(POS *p, char *epd) {
     if (!(p_attacks[Opp(p->side)][p->ep_sq] & PcBb(p, p->side, P)))
       p->ep_sq = NO_SQ;
   }
+
+  // Calculating hash keys
+
   p->hash_key = InitHashKey(p);
   p->pawn_key = InitPawnKey(p);
 }

@@ -19,6 +19,7 @@ int dist[64][64];
 
 U64 bbAllAttacks[2];
 U64 bbPawnTakes[2];
+U64 bbTwoPawnsTake[2];
 U64 bbPawnCanTake[2];
 U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
@@ -84,6 +85,17 @@ void InitEval(void) {
   for (int t = 0, i = 1; i < 512; ++i) {
 	  t = Min(maxAttScore, Min(int(attCurveMult * i * i), t + maxAttStep));
 	  danger[i] = (t * 100) / 256; // rescale to centipawns
+  }
+
+  // Init mask for passed pawn detection
+
+  for (int sq = 0; sq < 64; sq++) {
+	  passed_mask[WC][sq] = FillNorth(ShiftNorth(SqBb(sq)));
+	  passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
+	  passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
+	  passed_mask[BC][sq] = FillSouth(ShiftSouth(SqBb(sq)));
+	  passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
+	  passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
   }
 
   // Init adjacent mask (for detecting isolated pawns)
@@ -169,9 +181,15 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Knight outpost
 
+	int mul = 0;
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op]) 
-      Add(sd, F_OUTPOST, tmp, tmp);
+	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;
+	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;
+	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;
+	tmp *= mul;
+	tmp /= 2;
+
+    Add(sd, F_OUTPOST, tmp, tmp);
   }
 
   // Bishop
@@ -344,6 +362,8 @@ int Evaluate(POS *p, int use_hash) {
 
   bbPawnTakes[WC] = GetWPControl(PcBb(p, WC, P));
   bbPawnTakes[BC] = GetBPControl(PcBb(p, BC, P));
+  bbTwoPawnsTake[WC] = GetDoubleWPControl(PcBb(p, BC, P));
+  bbTwoPawnsTake[BC] = GetDoubleBPControl(PcBb(p, BC, P));
   bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
   bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
   bbPawnCanTake[WC] = FillNorth(bbPawnTakes[WC]);

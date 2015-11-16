@@ -244,7 +244,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 
   if (depth >= 2 
   && mv_tried > 3
-  && alpha > -MAX_EVAL && beta < MAX_EVAL // Testing
+  && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
   &&  fl_prunable_move
   && lmrSize[is_pv][depth][mv_tried] > 0

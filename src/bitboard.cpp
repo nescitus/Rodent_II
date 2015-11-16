@@ -61,6 +61,14 @@ U64 GetBPControl(U64 bb) {
   return (ShiftSE(bb) | ShiftSW(bb));
 }
 
+U64 GetDoubleWPControl(U64 bb) {
+	return (ShiftNE(bb) & ShiftNW(bb));
+}
+
+U64 GetDoubleBPControl(U64 bb) {
+	return (ShiftSE(bb) & ShiftSW(bb));
+}
+
 U64 GetFrontSpan(U64 bb, int sd) {
 
 	if (sd == WC) return FillNorth(ShiftNorth(bb));
