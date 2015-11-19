@@ -49,6 +49,7 @@ void UciLoop(void) {
 	  printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
 	  printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
 	  printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+	  printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -139,8 +140,10 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "NpsLimit") == 0) {
 	  Timer.nps_limit = atoi(value);
 	 ResetEngine();
- }
-
+  } else if (strcmp(name, "EvalBlur") == 0) {
+	  eval_blur = atoi(value);
+	  ResetEngine();
+  }
 }
 
 void ParseMoves(POS *p, char *ptr) {

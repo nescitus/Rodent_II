@@ -27,6 +27,7 @@ U64 zob_castle[16];
 U64 zob_ep[8];
 int pondering;
 int root_depth;
+int eval_blur;
 U64 nodes;
 int abort_search;
 ENTRY *tt;

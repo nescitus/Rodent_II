@@ -449,6 +449,13 @@ int Evaluate(POS *p, int use_hash) {
   else if (score > MAX_EVAL)
     score = MAX_EVAL;
 
+  // Weakening: add pseudo-random value to eval score
+
+  if (eval_blur) {
+	  int randomMod = (eval_blur / 2) - (p->hash_key % eval_blur);
+	  score += randomMod;
+  }
+
   // Save eval score in the evaluation hash table
 
   EvalTT[addr].key = p->hash_key;
