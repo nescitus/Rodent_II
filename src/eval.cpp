@@ -130,7 +130,6 @@ void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile;
   int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
-  int save_side = p->side;
 
   // Is color OK?
 
@@ -290,7 +289,6 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
 	  att += 12; 
-	  p->side = sd;
 	  U64 bbContact = bbMob & k_attacks[ksq];
 	  while (bbContact) {
 		  int contactSq = PopFirstBit(&bbContact);
@@ -301,7 +299,6 @@ void EvaluatePieces(POS *p, int sd) {
 			  break;
 		  }
 	  }
-	  p->side = save_side;
 	}
 
 	bbAllAttacks[sd] |= bbMob;
