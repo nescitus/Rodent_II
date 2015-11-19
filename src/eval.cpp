@@ -90,12 +90,12 @@ void InitEval(void) {
   // Init mask for passed pawn detection
 
   for (int sq = 0; sq < 64; sq++) {
-	  passed_mask[WC][sq] = FillNorth(ShiftNorth(SqBb(sq)));
-	  passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
-	  passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
-	  passed_mask[BC][sq] = FillSouth(ShiftSouth(SqBb(sq)));
-	  passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
-	  passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
+    passed_mask[WC][sq] = FillNorth(ShiftNorth(SqBb(sq)));
+    passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
+    passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
+    passed_mask[BC][sq] = FillSouth(ShiftSouth(SqBb(sq)));
+    passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
+    passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
   }
 
   // Init adjacent mask (for detecting isolated pawns)
@@ -128,8 +128,9 @@ void InitEval(void) {
 
 void EvaluatePieces(POS *p, int sd) {
 
-  U64 bbPieces, bbMob, bbAtt, bbFile;
-  int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
+  U64 bbPieces, bbMob, bbAtt, bbStop, bbFile;
+  int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
+  int save_side = p->side;
 
   // Is color OK?
 
@@ -181,11 +182,14 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Knight outpost
 
-	int mul = 0;
+	if (sd == WC) bbStop = ShiftNorth(SqBb(sq));
+	if (sd == BC) bbStop = ShiftSouth(SqBb(sq));
+
+	mul = 0;
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;
-	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;
-	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;
+	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
 	tmp *= mul;
 	tmp /= 2;
 
@@ -283,8 +287,23 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = QAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
-    Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);          // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) att += 12; // check threat bonus
+    Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
+	  att += 12; 
+	  p->side = sd;
+	  U64 bbContact = bbMob & k_attacks[ksq];
+	  while (bbContact) {
+		  int contactSq = PopFirstBit(&bbContact);
+
+		  // possible bug: queen exchanges are accepted as contact checks
+		  if (Swap(p, sq, contactSq) >= 0) {
+			  att += 10;
+			  break;
+		  }
+	  }
+	  p->side = save_side;
+	}
+
 	bbAllAttacks[sd] |= bbMob;
 
     // Queen attacks on enemy king zone
