@@ -18,7 +18,8 @@ int NextMove(MOVES *m, int *flag) {
   switch (m->phase) {
   case 0: // return transposition table move, if legal
     move = m->trans_move;
-    if (move && Legal(m->p, move)) {
+    if (move 
+    && Legal(m->p, move)) {
       m->phase = 1;
       *flag = MV_HASH;
       return move;
@@ -48,8 +49,10 @@ int NextMove(MOVES *m, int *flag) {
 
   case 3:  // first killer move
     move = m->killer1;
-    if (move && move != m->trans_move &&
-      m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
+    if (move 
+    && move != m->trans_move 
+    && m->p->pc[Tsq(move)] == NO_PC 
+    && Legal(m->p, move)) {
       m->phase = 4;
       *flag = MV_KILLER;
       return move;
@@ -57,24 +60,26 @@ int NextMove(MOVES *m, int *flag) {
 
   case 4:  // second killer move
     move = m->killer2;
-    if (move && move != m->trans_move &&
-      m->p->pc[Tsq(move)] == NO_PC && Legal(m->p, move)) {
+    if (move 
+	&& move != m->trans_move 
+    && m->p->pc[Tsq(move)] == NO_PC 
+    && Legal(m->p, move)) {
       m->phase = 5;
       *flag = MV_KILLER;
       return move;
     }
 
   case 5: // refutation move
-	  move = m->ref_move;
-	  if (move && move != m->trans_move 
-	  &&  m->p->pc[Tsq(move)] == NO_PC 
-	  &&  move != m->killer1
-	  &&  move != m->killer2
-	  && Legal(m->p, move)) {
-		  m->phase = 6;
-		  *flag = MV_NORMAL;
-		  return move;
-	  }
+	move = m->ref_move;
+	if (move && move != m->trans_move 
+	&&  m->p->pc[Tsq(move)] == NO_PC 
+	&&  move != m->killer1
+	&&  move != m->killer2
+	&& Legal(m->p, move)) {
+      m->phase = 6;
+      *flag = MV_NORMAL;
+      return move;
+    }
 
   case 6:  // helper phase: generate quiet moves
     m->last = GenerateQuiet(m->p, m->move);
@@ -85,10 +90,10 @@ int NextMove(MOVES *m, int *flag) {
   case 7:  // return quiet moves
     while (m->next < m->last) {
       move = SelectBest(m);
-      if (move == m->trans_move ||
-        move == m->killer1 ||
-        move == m->killer2 ||
-		move == m->ref_move)
+      if (move == m->trans_move
+      ||  move == m->killer1
+      ||  move == m->killer2
+      ||  move == m->ref_move)
         continue;
       *flag = MV_NORMAL;
       return move;
@@ -207,8 +212,8 @@ void ClearHist(void) {
       history[i][j] = 0;
 
   for (int i = 0; i < 64; i++)
-	  for (int j = 0; j < 64; j++)
-		  refutation[i][j] = 0;
+    for (int j = 0; j < 64; j++)
+      refutation[i][j] = 0;
 
   for (int i = 0; i < MAX_PLY; i++) {
     killer[i][0] = 0;
@@ -242,7 +247,10 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
         history[i][j] /= 2;
   }
 
-  // Update refutation table
+  // Update refutation table, saving new move in the table indexed
+  // by the coordinates of last move. last_move == 0 is a null move,
+  // special case of last_move == -1 denotes situations when updating
+  // refutation table is switched off: at root or in QuiesceFlee()
 
   if (last_move >= 0)
      refutation[Fsq(last_move)][Tsq(last_move)] = move;

@@ -12,9 +12,9 @@
 
 void sTimer::Clear(void) {
 
-  iterationTime = MAX_INT;
+  iteration_time = MAX_INT;
   SetData(MAX_DEPTH, 64);
-  moveTime = -1;
+  allocated_time = -1;
   SetData(W_TIME,-1);
   SetData(B_TIME,-1);
   SetData(W_INC, 0);
@@ -26,7 +26,7 @@ void sTimer::Clear(void) {
 }
 
 void sTimer::SetStartTime(void) {
-  startTime = GetMS();
+  start_time = GetMS();
 }
 
 int sTimer::BulletCorrection(int time) {
@@ -42,7 +42,7 @@ void sTimer::SetMoveTiming(void) {
   // User-defined time per move, no tricks available
 
   if ( data[MOVE_TIME] ) {
-    moveTime = data[MOVE_TIME];
+    allocated_time = data[MOVE_TIME];
     return;
   }
   
@@ -53,36 +53,36 @@ void sTimer::SetMoveTiming(void) {
 
   if (data[TIME] >= 0) {
     if (data[MOVES_TO_GO] == 1) data[TIME] -= Min(1000, data[TIME] / 10);
-    moveTime = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
+    allocated_time = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
 
 	// assign less time per move on extremely short time controls
-	moveTime = BulletCorrection(moveTime);
+	allocated_time = BulletCorrection(allocated_time);
 
     // while in time trouble, try to save a bit on increment
-    if (moveTime < data[INC] ) moveTime -= ( (data[INC] * 4) / 5);
+    if (allocated_time < data[INC] ) allocated_time -= ( (data[INC] * 4) / 5);
 
     // ensure that our limit does not exceed total time available
-    if (moveTime > data[TIME]) moveTime = data[TIME];
+    if (allocated_time > data[TIME]) allocated_time = data[TIME];
 
     // safeguard against a lag
-    moveTime -= 10;
+    allocated_time -= 10;
 
     // ensure that we have non-zero time
-    if (moveTime < 1) moveTime = 1;
+    if (allocated_time < 1) allocated_time = 1;
   }
 }
 
 void sTimer::SetIterationTiming(void) {
 
-  if (moveTime > 0) iterationTime = ( (moveTime * 3) / 4 );
-  else              iterationTime = 999999000;
+  if (allocated_time > 0) iteration_time = ( (allocated_time * 3) / 4 );
+  else              iteration_time = 999999000;
 
   // assign less time per iteration on extremely short time controls
-  iterationTime = BulletCorrection(iterationTime);
+  iteration_time = BulletCorrection(iteration_time);
 }
 
 int sTimer::FinishIteration(void) {
-  return (GetElapsedTime() >= iterationTime && !pondering && !data[FLAG_INFINITE]);
+  return (GetElapsedTime() >= iteration_time && !pondering && !data[FLAG_INFINITE]);
 }
 
 int sTimer::GetMS(void) {
@@ -98,7 +98,7 @@ int sTimer::GetMS(void) {
 }
 
 int sTimer::GetElapsedTime(void) {
-  return (GetMS() - startTime);
+  return (GetMS() - start_time);
 }
 
 int sTimer::IsInfiniteMode(void) {
@@ -106,7 +106,7 @@ int sTimer::IsInfiniteMode(void) {
 }
 
 int sTimer::TimeHasElapsed(void) {
-  return (GetElapsedTime() >= moveTime);
+  return (GetElapsedTime() >= allocated_time);
 }
 
 int sTimer::GetData(int slot) {

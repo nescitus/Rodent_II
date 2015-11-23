@@ -6,9 +6,9 @@ enum eTimeData { W_TIME, B_TIME, W_INC, B_INC, TIME, INC, MOVES_TO_GO, MOVE_TIME
 struct sTimer {
 private:
     int data[SIZE_OF_DATA]; // various data used to set actual time per move (see eTimeData)
-    int startTime;          // when we have begun searching
-    int iterationTime;      // when we are allowed to start new iteration
-    int moveTime;           // basic time allocated for a move
+    int start_time;         // when we have begun searching
+    int iteration_time;     // when we are allowed to start new iteration
+    int allocated_time;     // basic time allocated for a move
 	int BulletCorrection(int time);
 public:
 	int nps_limit;
