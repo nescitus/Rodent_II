@@ -11,7 +11,7 @@ int Perft(POS *p, int ply, int depth) {
   UNDO u[1];
   int mv_cnt = 0;
 
-  InitMoves(p, m, 0, ply);
+  InitMoves(p, m, 0, 0, ply);
 
   while ( move = NextMove(m, &mv_type) ) {
 

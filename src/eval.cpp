@@ -255,6 +255,7 @@ void EvaluatePieces(POS *p, int sd) {
     }
 
     // Rook on (half) open file
+	// (failed with reducing bonus for half open files blocked by defended pawn)
 
 	bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
     if (!(bbFile & PcBb(p, sd, P))) {

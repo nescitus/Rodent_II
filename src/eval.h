@@ -62,6 +62,11 @@ const int passed_bonus_eg[2][8] = {
   { 0, 156, 104, 65, 39, 16, 16, 0 }
 };
 
+static const int phalanx_bonus[2][8] = {
+	{ 0, 1, 2, 3, 4, 5, 6, 0 },
+	{ 0, 6, 5, 4, 3, 2, 1, 0 }
+};
+
 struct sEvalHashEntry {
   U64 key;
   int score;

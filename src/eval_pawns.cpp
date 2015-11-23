@@ -51,9 +51,9 @@ void FullPawnEval(POS * p, int use_hash) {
   // Save stuff in pawn hashtable
 
   PawnTT[addr].key = p->pawn_key;
-  PawnTT[addr].mg_pawns = mg[WC][F_PAWNS] - mg[BC][F_PAWNS];
+  PawnTT[addr].mg_pawns   = mg[WC][F_PAWNS]   - mg[BC][F_PAWNS];
   PawnTT[addr].mg_passers = mg[WC][F_PASSERS] - mg[BC][F_PASSERS];
-  PawnTT[addr].eg_pawns = eg[WC][F_PAWNS] - eg[BC][F_PAWNS];
+  PawnTT[addr].eg_pawns   = eg[WC][F_PAWNS]   - eg[BC][F_PAWNS];
   PawnTT[addr].eg_passers = eg[WC][F_PASSERS] - eg[BC][F_PASSERS];
 }
 
@@ -78,8 +78,8 @@ void EvaluatePawns(POS *p, int sd) {
 
 	bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
-	fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
-	fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
+	//fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
+	//fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
 
     // Doubled pawn
 
@@ -98,8 +98,8 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Backward pawn
 
-    else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-      Add(sd, F_PAWNS, -8 - 8*fl_unopposed, -8);
+	else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+	  Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
   }
 }
 

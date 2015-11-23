@@ -21,6 +21,7 @@ const int tp_value[7] = {
   100, 325, 325, 500, 1000, 0, 0
 };
 int history[12][64];
+int refutation[64][64];
 int killer[MAX_PLY][2];
 U64 zob_piece[12][64];
 U64 zob_castle[16];

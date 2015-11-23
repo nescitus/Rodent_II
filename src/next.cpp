@@ -1,11 +1,12 @@
 #include "rodent.h"
 #include <assert.h>
 
-void InitMoves(POS *p, MOVES *m, int trans_move, int ply) {
+void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply) {
 
   m->p = p;
   m->phase = 0;
   m->trans_move = trans_move;
+  m->ref_move = ref_move;
   m->killer1 = killer[ply][0];
   m->killer2 = killer[ply][1];
 }
@@ -63,27 +64,40 @@ int NextMove(MOVES *m, int *flag) {
       return move;
     }
 
-  case 5:  // helper phase: generate quiet moves
+  case 5: // refutation move
+	  move = m->ref_move;
+	  if (move && move != m->trans_move 
+	  &&  m->p->pc[Tsq(move)] == NO_PC 
+	  &&  move != m->killer1
+	  &&  move != m->killer2
+	  && Legal(m->p, move)) {
+		  m->phase = 6;
+		  *flag = MV_NORMAL;
+		  return move;
+	  }
+
+  case 6:  // helper phase: generate quiet moves
     m->last = GenerateQuiet(m->p, m->move);
     ScoreQuiet(m);
     m->next = m->move;
-    m->phase = 6;
+    m->phase = 7;
 
-  case 6:  // return quiet moves
+  case 7:  // return quiet moves
     while (m->next < m->last) {
       move = SelectBest(m);
       if (move == m->trans_move ||
         move == m->killer1 ||
-        move == m->killer2)
+        move == m->killer2 ||
+		move == m->ref_move)
         continue;
       *flag = MV_NORMAL;
       return move;
     }
 
     m->next = m->bad;
-    m->phase = 7;
+    m->phase = 8;
 
-  case 7: // return bad captures
+  case 8: // return bad captures
     if (m->next < m->badp) {
       *flag = MV_BADCAPT;
       return *m->next++;
@@ -123,10 +137,15 @@ void ScoreCaptures(MOVES *m) {
 void ScoreQuiet(MOVES *m) {
 
   int *movep, *valuep;
+  int move_score;
 
   valuep = m->value;
-  for (movep = m->move; movep < m->last; movep++)
-    *valuep++ = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
+  for (movep = m->move; movep < m->last; movep++) {
+	  
+	  move_score = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
+	  
+	  *valuep++ = move_score;
+  }
 }
 
 int SelectBest(MOVES *m) {
@@ -160,8 +179,7 @@ int BadCapture(POS *p, int move) {
 
   // En passant captures are good by definition
 
-  if (MoveType(move) == EP_CAP)
-    return 0;
+  if (MoveType(move) == EP_CAP) return 0;
 
   // We have to evaluate this capture using expensive Static Exchange Evaluation
 
@@ -188,13 +206,17 @@ void ClearHist(void) {
     for (int j = 0; j < 64; j++)
       history[i][j] = 0;
 
+  for (int i = 0; i < 64; i++)
+	  for (int j = 0; j < 64; j++)
+		  refutation[i][j] = 0;
+
   for (int i = 0; i < MAX_PLY; i++) {
     killer[i][0] = 0;
     killer[i][1] = 0;
   }
 }
 
-void UpdateHistory(POS *p, int move, int depth, int ply) {
+void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Don't update stuff used for move ordering if a move changes material balance
 
@@ -219,6 +241,11 @@ void UpdateHistory(POS *p, int move, int depth, int ply) {
       for (int j = 0; j < 64; j++)
         history[i][j] /= 2;
   }
+
+  // Update refutation table
+
+  if (last_move >= 0)
+     refutation[Fsq(last_move)][Tsq(last_move)] = move;
 
   // Update killer moves, taking care that they are different
 

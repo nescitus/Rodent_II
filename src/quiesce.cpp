@@ -113,7 +113,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 	// Init moves and variables before entering main loop
 
 	best = -INF;
-	InitMoves(p, m, move, ply);
+	InitMoves(p, m, move, -1, ply);
 
 	// Main loop
 

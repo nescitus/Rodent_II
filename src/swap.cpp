@@ -15,7 +15,7 @@ int Swap(POS *p, int from, int to) {
                  (RAttacks(bbOcc, to) & (p->tp_bb[R] | p->tp_bb[Q]));
   bbAttackers &= bbOcc;
 
-  side = ((SqBb(from) & p->cl_bb[BC]) == 0);
+  side = ((SqBb(from) & p->cl_bb[BC]) == 0); // so that we can call Swap() out of turn
 
   ply = 1;
   while (bbAttackers & p->cl_bb[side]) {

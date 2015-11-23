@@ -5,6 +5,7 @@
 #include "timer.h"
 
 double lmrSize[2][MAX_PLY][MAX_MOVES];
+int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
 
 void InitSearch(void) {
 
@@ -69,7 +70,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     for (int margin = 10; margin < 500; margin *= 2) {
       alpha = lastScore - margin;
       beta  = lastScore + margin;
-      cur_val = Search(p, 0, alpha, beta, depth, 0, pv);
+      cur_val = Search(p, 0, alpha, beta, depth, 0, -1, pv);
       if (abort_search) break;
       if (cur_val > alpha && cur_val < beta) 
 		  return cur_val;            // we have finished within the window
@@ -77,11 +78,11 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     }
   }
 
-  cur_val = Search(p, 0, -INF, INF, root_depth, 0, pv);      // full window search
+  cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv);      // full window search
   return cur_val;
 }
 
-int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *pv) {
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv) {
 
   int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
@@ -116,7 +117,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
     // For move ordering purposes, a cutoff from hash is treated
     // exactly like a cutoff from search
 
-    if (score >= beta) UpdateHistory(p, move, depth, ply);
+    if (score >= beta) UpdateHistory(p, last_move, move, depth, ply);
 
     // In pv nodes only exact scores are returned. This is done because
     // there is much more pruning and reductions in zero-window nodes,
@@ -162,7 +163,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
 	  }
 
       p->DoNull(u);
-      score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, new_pv);
+      score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, 0, new_pv);
       p->UndoNull(u);
 
       if (abort_search ) return 0;
@@ -202,7 +203,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Init moves and variables before entering main loop
   
   best = -INF;
-  InitMoves(p, m, move, ply);
+  InitMoves(p, m, move, refutation[Fsq(last_move)][Tsq(last_move)], ply);
   
   // Main loop
   
@@ -231,7 +232,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Late move pruning
 
   if (fl_prunable_node
-  && quiet_tried > 4 * depth
+  && quiet_tried > lmp_limit[depth]
   && fl_prunable_move
   && depth <= 3
   && MoveType(move) != CASTLE ) {
@@ -258,11 +259,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // PVS
 
     if (best == -INF)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
     else {
-      score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, new_pv);
+      score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
       if (!abort_search && score > alpha && score < beta)
-        score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, new_pv);
+        score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
     }
 
   // Reduced move scored above alpha - we need to re-search it
@@ -279,7 +280,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Beta cutoff
 
     if (score >= beta) {
-      UpdateHistory(p, move, depth, ply);
+      UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
 	  // If beta cutoff occurs at the root, change the best move
@@ -313,7 +314,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int *p
   // Save score in the transposition table
 
   if (*pv) {
-    UpdateHistory(p, *pv, depth, ply);
+    UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);
