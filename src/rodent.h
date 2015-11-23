@@ -1,6 +1,6 @@
-// bench: 690309
-// bench 12: 6568024 14,9 s 1.026
-// bench 15: 37618719 70,6 1.236  1.236
+// bench: 729245
+// bench 12: 6188397 14,3 s 1.002
+// bench 15: 35966748 68,7 1.213
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 3451 lines of code
 
@@ -55,8 +55,8 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define FILE_G_BB       (U64)0x4040404040404040
 #define FILE_H_BB       (U64)0x8080808080808080
 
-#define bbWhiteSq		(U64)0x55AA55AA55AA55AA
-#define bbBlackSq		(U64)0xAA55AA55AA55AA55
+#define bbWhiteSq    (U64)0x55AA55AA55AA55AA
+#define bbBlackSq    (U64)0xAA55AA55AA55AA55
 
 #define DIAG_A1H8_BB    (U64)0x8040201008040201
 #define DIAG_A8H1_BB    (U64)0x0102040810204080
@@ -141,14 +141,14 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #ifndef _WIN64
 const int lsb_64_table[64] =
 {
-	63, 30, 3, 32, 59, 14, 11, 33,
-	60, 24, 50, 9, 55, 19, 21, 34,
-	61, 29, 2, 53, 51, 23, 41, 18,
-	56, 28, 1, 43, 46, 27, 0, 35,
-	62, 31, 58, 4, 5, 49, 54, 6,
-	15, 52, 12, 40, 7, 42, 45, 16,
-	25, 57, 48, 13, 10, 39, 8, 44,
-	20, 47, 38, 22, 17, 37, 36, 26
+  63, 30, 3, 32, 59, 14, 11, 33,
+  60, 24, 50, 9, 55, 19, 21, 34,
+  61, 29, 2, 53, 51, 23, 41, 18,
+  56, 28, 1, 43, 46, 27, 0, 35,
+  62, 31, 58, 4, 5, 49, 54, 6,
+  15, 52, 12, 40, 7, 42, 45, 16,
+  25, 57, 48, 13, 10, 39, 8, 44,
+  20, 47, 38, 22, 17, 37, 36, 26
 };
 
 /**
@@ -159,29 +159,29 @@ const int lsb_64_table[64] =
 * @return index (0..63) of least significant one bit
 */
 static int FORCEINLINE  bitScanForward(U64 bb) {
-	unsigned int folded;
-	bb ^= bb - 1;
-	folded = (int)bb ^ (bb >> 32);
-	return lsb_64_table[folded * 0x78291ACF >> 26];
+  unsigned int folded;
+  bb ^= bb - 1;
+  folded = (int)bb ^ (bb >> 32);
+  return lsb_64_table[folded * 0x78291ACF >> 26];
 }
 #endif
 #endif
 static int FORCEINLINE FirstOne(U64 x) {
 #ifndef _WIN64
-	return bitScanForward(x);
+  return bitScanForward(x);
 #else
-	unsigned long index = -1;
-	_BitScanForward64(&index, x);
-	return index;
+  unsigned long index = -1;
+  _BitScanForward64(&index, x);
+  return index;
 #endif
 }
 
 #elif defined(__GNUC__)
 
 static int FORCEINLINE FirstOne(U64 x) {
-	int tmp = __builtin_ffsll(x);
-	if (tmp == 0) return -1;
-	else return tmp - 1;
+  int tmp = __builtin_ffsll(x);
+  if (tmp == 0) return -1;
+  else return tmp - 1;
 }
 
 #endif
@@ -370,9 +370,11 @@ extern int weights[N_OF_FACTORS];
 extern int mat_perc;
 
 int DifferentBishops(POS * p);
+int NotOnBishColor(POS * p, int bishSide, int sq);
 int PcMat1Minor(POS *p, int sd);
 int PcMat2Minors(POS *p, int sd);
 int PcMatBN(POS *p, int sd);
 int PcMatB(POS *p, int sd);
 int PcMatQ(POS *p, int sd);
 int PcMatR(POS *p, int sd);
+int PcMatRm(POS *p, int sd);

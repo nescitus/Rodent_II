@@ -27,7 +27,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   // Transposition table read
 
   if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
-	  return score;
+    return score;
 
   InitCaptures(p, m);
 
@@ -51,10 +51,10 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   // Beta cutoff
 
-	if (score >= beta) {
-		TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
-		return score;
-	}
+  if (score >= beta) {
+    TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
+    return score;
+  }
 
   // Adjust alpha and score
 
@@ -68,93 +68,93 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   }
 
   if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
-  else 	   TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+  else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
 
   return best;
 }
 
 int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
-	int best, score, move, new_depth, new_pv[MAX_PLY];
-	int fl_check, mv_type;
-	int is_pv = (beta > alpha + 1);
+  int best, score, move, new_pv[MAX_PLY];
+  int fl_check, mv_type;
+  int is_pv = (beta > alpha + 1);
 
-	MOVES m[1];
-	UNDO u[1];
+  MOVES m[1];
+  UNDO u[1];
 
-	// Periodically check for timeout, ponderhit or stop command
+  // Periodically check for timeout, ponderhit or stop command
 
-	nodes++;
-	Check();
+  nodes++;
+  Check();
 
-	// Quick exit on a timeout or on a statically detected draw
+  // Quick exit on a timeout or on a statically detected draw
 
-	if (abort_search) return 0;
-	if (ply) *pv = 0;
-	if (IsDraw(p) && ply) return 0;
+  if (abort_search) return 0;
+  if (ply) *pv = 0;
+  if (IsDraw(p) && ply) return 0;
 
-	// Retrieving data from transposition table. We hope for a cutoff
-	// or at least for a move to improve move ordering.
+  // Retrieving data from transposition table. We hope for a cutoff
+  // or at least for a move to improve move ordering.
 
-	move = 0;
-	if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
-		return score;
+  move = 0;
+  if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
+    return score;
 
-	// Safeguard against exceeding ply limit
+  // Safeguard against exceeding ply limit
 
-	if (ply >= MAX_PLY - 1)
-		return Evaluate(p, 1);
+  if (ply >= MAX_PLY - 1)
+    return Evaluate(p, 1);
 
-	// Are we in check? Knowing that is useful when it comes 
-	// to pruning/reduction decisions
+  // Are we in check? Knowing that is useful when it comes 
+  // to pruning/reduction decisions
 
-	fl_check = InCheck(p);
+  fl_check = InCheck(p);
 
-	// Init moves and variables before entering main loop
+  // Init moves and variables before entering main loop
 
-	best = -INF;
-	InitMoves(p, m, move, -1, ply);
+  best = -INF;
+  InitMoves(p, m, move, -1, ply);
 
-	// Main loop
+  // Main loop
 
-	while ((move = NextMove(m, &mv_type))) {
-		p->DoMove(move, u);
-		if (Illegal(p)) { p->UndoMove(move, u); continue; }
-		
-		score = -Quiesce(p, ply, -beta, -alpha, new_pv);
+  while ((move = NextMove(m, &mv_type))) {
+    p->DoMove(move, u);
+    if (Illegal(p)) { p->UndoMove(move, u); continue; }
+    
+    score = -Quiesce(p, ply, -beta, -alpha, new_pv);
 
-		
-		p->UndoMove(move, u);
-		if (abort_search) return 0;
+    
+    p->UndoMove(move, u);
+    if (abort_search) return 0;
 
-		// Beta cutoff
+    // Beta cutoff
 
-		if (score >= beta) {
-			TransStore(p->hash_key, move, score, LOWER, 0, ply);
-			return score;
-		}
+    if (score >= beta) {
+      TransStore(p->hash_key, move, score, LOWER, 0, ply);
+      return score;
+    }
 
-		// Updating score and alpha
+    // Updating score and alpha
 
-		if (score > best) {
-			best = score;
-			if (score > alpha) {
-				alpha = score;
-				BuildPv(pv, new_pv, move);
-			}
-		}
+    if (score > best) {
+      best = score;
+      if (score > alpha) {
+        alpha = score;
+        BuildPv(pv, new_pv, move);
+      }
+    }
 
-	} // end of the main loop
+  } // end of the main loop
 
-	// Return correct checkmate/stalemate score
+  // Return correct checkmate/stalemate score
 
-	if (best == -INF)
-		return InCheck(p) ? -MATE + ply : 0;
+  if (best == -INF)
+    return InCheck(p) ? -MATE + ply : 0;
 
-	// Save score in the transposition table
+  // Save score in the transposition table
 
-	if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
-	else  	 TransStore(p->hash_key, 0, best, UPPER, 0, ply);
+  if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
+  else     TransStore(p->hash_key, 0, best, UPPER, 0, ply);
 
-	return best;
+  return best;
 }

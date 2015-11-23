@@ -61,7 +61,7 @@ int NextMove(MOVES *m, int *flag) {
   case 4:  // second killer move
     move = m->killer2;
     if (move 
-	&& move != m->trans_move 
+    && move != m->trans_move 
     && m->p->pc[Tsq(move)] == NO_PC 
     && Legal(m->p, move)) {
       m->phase = 5;
@@ -70,12 +70,12 @@ int NextMove(MOVES *m, int *flag) {
     }
 
   case 5: // refutation move
-	move = m->ref_move;
-	if (move && move != m->trans_move 
-	&&  m->p->pc[Tsq(move)] == NO_PC 
-	&&  move != m->killer1
-	&&  move != m->killer2
-	&& Legal(m->p, move)) {
+    move = m->ref_move;
+    if (move && move != m->trans_move 
+    &&  m->p->pc[Tsq(move)] == NO_PC 
+    &&  move != m->killer1
+    &&  move != m->killer2
+    && Legal(m->p, move)) {
       m->phase = 6;
       *flag = MV_NORMAL;
       return move;
@@ -146,10 +146,10 @@ void ScoreQuiet(MOVES *m) {
 
   valuep = m->value;
   for (movep = m->move; movep < m->last; movep++) {
-	  
-	  move_score = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
-	  
-	  *valuep++ = move_score;
+    
+    move_score = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
+    
+    *valuep++ = move_score;
   }
 }
 

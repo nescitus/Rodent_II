@@ -36,20 +36,20 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Rodent II 0.4.3\n");
+      printf("id name Rodent II 0.4.4\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
-	  printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-	  printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
-	  printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
-	  printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
-	  printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
-	  printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
-	  printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
-	  printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-	  printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-	  printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+    printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
+    printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
+    printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
+    printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+    printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
+    printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
+    printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
+    printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
+    printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+    printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -59,11 +59,11 @@ void UciLoop(void) {
       ParsePosition(p, ptr);
     } else if (strcmp(token, "perft") == 0) {
       ptr = ParseToken(ptr, token);
-	  int depth = atoi(token);
-	  if (depth == 0) depth = 5;
-	  Timer.SetStartTime();
-	  nodes = Perft(p, 0, depth);
-	  printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
+    int depth = atoi(token);
+    if (depth == 0) depth = 5;
+    Timer.SetStartTime();
+    nodes = Perft(p, 0, depth);
+    printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
     } else if (strcmp(token, "print") == 0) {
       PrintBoard(p);
     } else if (strcmp(token, "eval") == 0) {
@@ -113,9 +113,9 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Clear Hash") == 0) {
     ResetEngine();
   } else if (strcmp(name, "Material") == 0) {
-	  mat_perc = atoi(value);
-	  ResetEngine();
-	  InitEval();
+    mat_perc = atoi(value);
+    ResetEngine();
+    InitEval();
   } else if (strcmp(name, "Attack") == 0) {
     weights[F_ATT] = atoi(value);
     ResetEngine();
@@ -132,22 +132,22 @@ void ParseSetoption(char *ptr) {
     weights[F_PAWNS] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "Lines") == 0) {
-	 weights[F_LINES] = atoi(value);
-	 ResetEngine();
+   weights[F_LINES] = atoi(value);
+   ResetEngine();
   } else if (strcmp(name, "Outposts") == 0) {
-	  weights[F_OUTPOST] = atoi(value);
-	  ResetEngine();
+    weights[F_OUTPOST] = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "NpsLimit") == 0) {
-	  Timer.nps_limit = atoi(value);
-	 ResetEngine();
+    Timer.nps_limit = atoi(value);
+   ResetEngine();
   } else if (strcmp(name, "EvalBlur") == 0) {
-	  eval_blur = atoi(value);
-	  ResetEngine();
+    eval_blur = atoi(value);
+    ResetEngine();
   }
 }
 
 void ParseMoves(POS *p, char *ptr) {
-	
+  
   char token[80];
   UNDO u[1];
 
@@ -157,13 +157,13 @@ void ParseMoves(POS *p, char *ptr) {
 
     ptr = ParseToken(ptr, token);
 
-	// No more moves!
+  // No more moves!
 
     if (*token == '\0') break;
 
     p->DoMove(StrToMove(p, token), u);
 
-	// We won't be taking back moves beyond this point:
+  // We won't be taking back moves beyond this point:
 
     if (p->rev_moves == 0) p->head = 0;
   }

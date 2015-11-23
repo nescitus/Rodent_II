@@ -5,75 +5,115 @@ static const U64 bbHomeZone[2] = { RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB
 
 int GetDrawFactor(POS *p, int sd) 
 {
-	int op = Opp(sd);
+  int op = Opp(sd);
 
-	// Bishops of opposite color
+  // Case 1: KBP vs Km
+  // drawn when defending king stands on pawn's path and can't be driven out by a bishop
+  // (must be dealt with before opposite bishops ending)
+  if (PcMatB(p, sd)
+  && PcMat1Minor(p, op)
+  && p->cnt[sd][P] == 1
+  && p->cnt[op][P] == 0
+  && (SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd))
+  && NotOnBishColor(p, sd, p->king_sq[op]) ) 
+     return 0;
 
-	if (PcMatB(p, sd) && PcMatB(p, op) && DifferentBishops(p)) {
-	   if (p->cnt[sd][P] == 0) return 0; // single bishop cannot win without pawns
+  // Case 2: Bishops of opposite color
 
-	   if (p->cnt[sd][P] == 1
-	   &&  p->cnt[op][P] == 0) {
-		   if (bbHomeZone[sd] & PcBb(p, sd, P)) return 0; // a pawn on the own half of the board will not queen
-		   // TODO: distant bishop controls a square on pawn's path
-	   }
+  if (PcMatB(p, sd) && PcMatB(p, op) && DifferentBishops(p)) {
 
-		return 32; // halve the score for pure BOC endings
-	}
+     // 2a: single bishop cannot win without pawns
+     if (p->cnt[sd][P] == 0) return 0;
 
-	if (p->cnt[sd][P] == 0) {
-	   
-	   // K(m) vs K(m) or Km vs Kp(p)
-	   if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2) return 0;
+     // 2b: different bishops with a single pawn on the own half of the board
+     if (p->cnt[sd][P] == 1
+     &&  p->cnt[op][P] == 0) {
+       if (bbHomeZone[sd] & PcBb(p, sd, P)) return 0;
 
-	   // KR vs Km(p)
-	   if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 32;
+     // TODO: 2c: distant bishop controls a square on pawn's path
+     }
 
-	   // KRm vs KR(p)
-	   if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
-	   &&  PcMatR(p, op) ) return 32;
+     // 2d: halve the score for pure BOC endings
+     return 32;
+  }
 
-	   // KQm vs KQ(p)
-	   if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
-	   &&  PcMatQ(p, op) ) return 32;
+  if (p->cnt[sd][P] == 0) {
 
-	   // Kmm vs KB(p)
-	   if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
+    // low and almost equal material with no pawns
+    if (p->cnt[op][P] == 0) {
+      if (PcMatRm(p, sd) && PcMatRm(p, op)) return 8;
+      if (PcMatR(p, sd) && PcMatR(p, op)) return 8;
+      if (PcMatQ(p, sd) && PcMatQ(p, op)) return 8;
+      if (PcMat2Minors(p, sd) && PcMatR(p, op)) return 8;
+    }
+     
+     // K(m) vs K(m) or Km vs Kp(p)
+     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2) return 0;
 
-	   // KBN vs Km(p)
-	   if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
-	}
+     // KR vs Km(p)
+     if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 32;
 
-	return 64;
+     // KRm vs KR(p)
+     if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
+     &&  PcMatR(p, op) ) return 32;
+
+     // KQm vs KQ(p)
+     if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
+     &&  PcMatQ(p, op) ) return 32;
+
+     // Kmm vs KB(p)
+     if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
+
+     // KBN vs Km(p)
+     if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
+  }
+
+  return 64;
 }
 
 int DifferentBishops(POS * p) {
 
-	if ((bbWhiteSq & PcBb(p, WC, B)) && (bbBlackSq & PcBb(p, BC, B))) return 1;
-	if ((bbBlackSq & PcBb(p, WC, B)) && (bbWhiteSq & PcBb(p, BC, B))) return 1;
-	return 0;
+  if ((bbWhiteSq & PcBb(p, WC, B)) && (bbBlackSq & PcBb(p, BC, B))) return 1;
+  if ((bbBlackSq & PcBb(p, WC, B)) && (bbWhiteSq & PcBb(p, BC, B))) return 1;
+  return 0;
 }
 
+int NotOnBishColor(POS * p, int bishSide, int sq) {
+
+  if (((bbWhiteSq & PcBb(p, bishSide, B)) == 0)
+  && (SqBb(sq) & bbWhiteSq)) return 1;
+
+  if (((bbBlackSq & PcBb(p, bishSide, B)) == 0)
+  && (SqBb(sq) & bbBlackSq)) return 1;
+
+  return 0;
+}
+
+
 int PcMat1Minor(POS *p, int sd) {
-	return (p->cnt[sd][B] + p->cnt[sd][N] == 1 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+  return (p->cnt[sd][B] + p->cnt[sd][N] == 1 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }
 
 int PcMat2Minors(POS *p, int sd) {
-	return (p->cnt[sd][B] + p->cnt[sd][N] == 2 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+  return (p->cnt[sd][B] + p->cnt[sd][N] == 2 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }
 
 int PcMatBN(POS *p, int sd) {
-	return (p->cnt[sd][B] == 1 && p->cnt[sd][N] == 1 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+  return (p->cnt[sd][B] == 1 && p->cnt[sd][N] == 1 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }
 
 int PcMatB(POS *p, int sd) {
-	return (p->cnt[sd][B] == 1 && p->cnt[sd][N] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+  return (p->cnt[sd][B] == 1 && p->cnt[sd][N] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }
 
 int PcMatQ(POS *p, int sd) {
-	return (p->cnt[sd][Q] == 1 && p->cnt[sd][N] + p->cnt[sd][B] + p->cnt[sd][R] == 0);
+  return (p->cnt[sd][Q] == 1 && p->cnt[sd][N] + p->cnt[sd][B] + p->cnt[sd][R] == 0);
 }
 
 int PcMatR(POS *p, int sd) {
-	return (p->cnt[sd][R] == 1 && p->cnt[sd][N] + p->cnt[sd][B] + p->cnt[sd][Q] == 0);
+  return (p->cnt[sd][R] == 1 && p->cnt[sd][N] + p->cnt[sd][B] + p->cnt[sd][Q] == 0);
+}
+
+int PcMatRm(POS *p, int sd) {
+  return (p->cnt[sd][R] == 1 && p->cnt[sd][N] + p->cnt[sd][B] == 1 && p->cnt[sd][Q] == 0);
 }

@@ -53,7 +53,7 @@ void Iterate(POS *p, int *pv) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
-	cur_val = Widen(p, root_depth, pv, cur_val);
+    cur_val = Widen(p, root_depth, pv, cur_val);
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
   }
@@ -73,8 +73,8 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
       cur_val = Search(p, 0, alpha, beta, depth, 0, -1, pv);
       if (abort_search) break;
       if (cur_val > alpha && cur_val < beta) 
-		  return cur_val;            // we have finished within the window
-	  if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
+      return cur_val;                // we have finished within the window
+      if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
     }
   }
 
@@ -158,9 +158,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       reduction = 4;
       if (depth > 8) reduction += depth / 4;
 
-	  if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, depth-reduction, ply)) {
-		  if (null_score < beta) goto avoid_null;
-	  }
+	  // omit null move search if normal search to the same depth wouldn't exceed beta
+	  // (sometimes we can check it for free via hash table)
+
+      if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, depth-reduction, ply)) {
+        if (null_score < beta) goto avoid_null;
+      }
 
       p->DoNull(u);
       score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, 0, new_pv);
@@ -283,12 +286,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
-	  // If beta cutoff occurs at the root, change the best move
+    // If beta cutoff occurs at the root, change the best move
 
-	  if (!ply) {
-		  BuildPv(pv, new_pv, move);
-		  DisplayPv(score, pv);
-	  }
+    if (!ply) {
+      BuildPv(pv, new_pv, move);
+      DisplayPv(score, pv);
+    }
 
       return score;
     }
@@ -375,17 +378,17 @@ void Check(void) {
   }
 
   if (Timer.nps_limit && root_depth > 1) {
-	  time = Timer.GetElapsedTime() + 1;
-	  nps = GetNps(time);
-	  while ((int)nps > Timer.nps_limit) {
-		  Timer.WasteTime(10);
-		  time = Timer.GetElapsedTime() + 1;
-		  nps = GetNps(time);
-		  if (Timeout()) {
-			  abort_search = 1;
-			  return;
-		  }
-	  }
+    time = Timer.GetElapsedTime() + 1;
+    nps = GetNps(time);
+    while ((int)nps > Timer.nps_limit) {
+      Timer.WasteTime(10);
+      time = Timer.GetElapsedTime() + 1;
+      nps = GetNps(time);
+      if (Timeout()) {
+        abort_search = 1;
+        return;
+      }
+    }
   }
 
   if (InputAvailable()) {
@@ -407,7 +410,7 @@ int Timeout() {
 
 U64 GetNps(int elapsed)
 {
-	U64 nps = 0;
-	if (elapsed) nps = (nodes * 1000) / elapsed;
-	return nps;
+  U64 nps = 0;
+  if (elapsed) nps = (nodes * 1000) / elapsed;
+  return nps;
 }

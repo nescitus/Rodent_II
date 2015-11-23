@@ -63,8 +63,8 @@ const int passed_bonus_eg[2][8] = {
 };
 
 static const int phalanx_bonus[2][8] = {
-	{ 0, 1, 2, 3, 4, 5, 6, 0 },
-	{ 0, 6, 5, 4, 3, 2, 1, 0 }
+  { 0, 1, 2, 3, 4, 5, 6, 0 },
+  { 0, 6, 5, 4, 3, 2, 1, 0 }
 };
 
 struct sEvalHashEntry {
@@ -73,11 +73,11 @@ struct sEvalHashEntry {
 };
 
 struct sPawnHashEntry {
-	U64 key;
-	int mg_pawns;
-	int eg_pawns;
-	int mg_passers;
-	int eg_passers;
+  U64 key;
+  int mg_pawns;
+  int eg_pawns;
+  int mg_passers;
+  int eg_passers;
 };
 
 extern int mg[2][N_OF_FACTORS];

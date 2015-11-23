@@ -56,35 +56,35 @@ void InitEval(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5 * file_bonus[File(sq)];
-	  if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 25;
-	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 10;
-	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 0;
-	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
+    mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5 * file_bonus[File(sq)];
+    if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 25;
+    if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 10;
+    if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 0;
+    if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
 
-	  eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
+    eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
 
-	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
-	  if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
-	  if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100;
+    mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
+    if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
+    if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100;
 
-	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
-	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopMg[sq];
-	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopEg[sq];
-	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc) + file_bonus[File(sq)];
-	  eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc);
-	  mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) - (5 * (Rank(sq) == RANK_1));
-	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
-	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
-	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
+    eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
+    mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopMg[sq];
+    eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopEg[sq];
+    mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc) + file_bonus[File(sq)];
+    eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc);
+    mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) - (5 * (Rank(sq) == RANK_1));
+    eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
+    mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
+    eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
     }
   }
 
   // Init king attack table
 
   for (int t = 0, i = 1; i < 512; ++i) {
-	  t = Min(maxAttScore, Min(int(attCurveMult * i * i), t + maxAttStep));
-	  danger[i] = (t * 100) / 256; // rescale to centipawns
+    t = Min(maxAttScore, Min(int(attCurveMult * i * i), t + maxAttStep));
+    danger[i] = (t * 100) / 256; // rescale to centipawns
   }
 
   // Init mask for passed pawn detection
@@ -101,9 +101,9 @@ void InitEval(void) {
   // Init adjacent mask (for detecting isolated pawns)
 
   for (int i = 0; i < 8; i++) {
-	  adjacent_mask[i] = 0;
-	  if (i > 0) adjacent_mask[i] |= FILE_A_BB << (i - 1);
-	  if (i < 7) adjacent_mask[i] |= FILE_A_BB << (i + 1);
+    adjacent_mask[i] = 0;
+    if (i > 0) adjacent_mask[i] |= FILE_A_BB << (i - 1);
+    if (i < 7) adjacent_mask[i] |= FILE_A_BB << (i + 1);
   }
 
   // Init support mask (for detecting weak pawns)
@@ -119,9 +119,9 @@ void InitEval(void) {
   // Init distance table (for evaluating king tropism)
 
   for (int i = 0; i < 64; ++i) {
-	  for (int j = 0; j < 64; ++j) {
-		  dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
-	  }
+    for (int j = 0; j < 64; ++j) {
+      dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
+    }
   }
 
 }
@@ -159,17 +159,17 @@ void EvaluatePieces(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Knight tropism to enemy king
+  // Knight tropism to enemy king
 
-	Add(sd, F_TROPISM, 3 * dist[sq][ksq], 3 * dist[sq][ksq]);
+  Add(sd, F_TROPISM, 3 * dist[sq][ksq], 3 * dist[sq][ksq]);
     
     // Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
-	Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3; // check threat bonus
-	bbAllAttacks[sd] |= bbMob;
+  Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
+  if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3; // check threat bonus
+  bbAllAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
 
@@ -181,16 +181,16 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Knight outpost
 
-	if (sd == WC) bbStop = ShiftNorth(SqBb(sq));
-	if (sd == BC) bbStop = ShiftSouth(SqBb(sq));
+  if (sd == WC) bbStop = ShiftNorth(SqBb(sq));
+  if (sd == BC) bbStop = ShiftSouth(SqBb(sq));
 
-	mul = 0;
+  mul = 0;
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-	tmp *= mul;
-	tmp /= 2;
+  if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+  if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+  if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
+  tmp *= mul;
+  tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
   }
@@ -201,17 +201,17 @@ void EvaluatePieces(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Bishop tropism to enemy king
+  // Bishop tropism to enemy king
 
-	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
+  Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
 
     // Bishop mobility
 
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
-	Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
-	bbAllAttacks[sd] |= bbMob;
+  Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
+  if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
+  bbAllAttacks[sd] |= bbMob;
 
     // Bishop attacks on enemy king zone
 
@@ -234,17 +234,17 @@ void EvaluatePieces(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Rook tropism to enemy king
+  // Rook tropism to enemy king
 
-	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
+  Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
   
     // Rook mobility
 
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9; // check threat bonus
-	bbAllAttacks[sd] |= bbMob;
+  if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9; // check threat bonus
+  bbAllAttacks[sd] |= bbMob;
 
     // Rook attacks on enemy king zone
 
@@ -255,12 +255,12 @@ void EvaluatePieces(POS *p, int sd) {
     }
 
     // Rook on (half) open file
-	// (failed with reducing bonus for half open files blocked by defended pawn)
+  // (failed with reducing bonus for half open files blocked by defended pawn)
 
-	bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
+  bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
     if (!(bbFile & PcBb(p, sd, P))) {
       if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // beats 10, 10
-	  else                            Add(sd, F_LINES,  6,  6);  // beats  5,  5
+    else                            Add(sd, F_LINES,  6,  6);  // beats  5,  5
     }
 
     // Rook on 7th rank attacking pawns or cutting off enemy king
@@ -268,7 +268,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (PcBb(p, op, P) & bbRelRank[sd][RANK_7]
       ||  PcBb(p, op, K) & bbRelRank[sd][RANK_8]) {
-		  Add(sd, F_LINES, 16, 32);
+      Add(sd, F_LINES, 16, 32);
       }
     }
   }
@@ -279,30 +279,30 @@ void EvaluatePieces(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-	// Queen tropism to enemy king
+  // Queen tropism to enemy king
 
-	Add(sd, F_TROPISM, 2 * dist[sq][ksq], 4 * dist[sq][ksq]);
+  Add(sd, F_TROPISM, 2 * dist[sq][ksq], 4 * dist[sq][ksq]);
 
     // Queen mobility
 
     bbMob = QAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
-	  att += 12; 
-	  U64 bbContact = bbMob & k_attacks[ksq];
-	  while (bbContact) {
-		  int contactSq = PopFirstBit(&bbContact);
+  if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
+    att += 12; 
+    U64 bbContact = bbMob & k_attacks[ksq];
+    while (bbContact) {
+      int contactSq = PopFirstBit(&bbContact);
 
-		  // possible bug: queen exchanges are accepted as contact checks
-		  if (Swap(p, sq, contactSq) >= 0) {
-			  att += 10;
-			  break;
-		  }
-	  }
-	}
+      // possible bug: queen exchanges are accepted as contact checks
+      if (Swap(p, sq, contactSq) >= 0) {
+        att += 10;
+        break;
+      }
+    }
+  }
 
-	bbAllAttacks[sd] |= bbMob;
+  bbAllAttacks[sd] |= bbMob;
 
     // Queen attacks on enemy king zone
    
@@ -310,7 +310,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
     if (bbAtt & bbZone) {
       wood++;
-	  att += 15 * PopCnt(bbAtt & bbZone);
+    att += 15 * PopCnt(bbAtt & bbZone);
     }
   }
 
@@ -318,7 +318,7 @@ void EvaluatePieces(POS *p, int sd) {
 
   if (wood > 1 && p->cnt[sd][Q]) {
     if (att > 399) att = 399;
-	tmp = danger[att];
+  tmp = danger[att];
 
     Add(sd, F_ATT, tmp, tmp);
   }
@@ -326,21 +326,21 @@ void EvaluatePieces(POS *p, int sd) {
 
 void EvalHanging(POS *p, int sd) {
 
-	int op = Opp(sd);
-	U64 bbHanging = p->cl_bb[op]    & ~bbPawnTakes[op];
-	U64 bbThreatened = p->cl_bb[op] & bbPawnTakes[sd];
-	bbHanging |= bbThreatened;     // piece attacked by our pawn isn't well defended
-	bbHanging &= bbAllAttacks[sd]; // obviously, hanging piece has to be attacked
-	bbHanging &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
+  int op = Opp(sd);
+  U64 bbHanging = p->cl_bb[op]    & ~bbPawnTakes[op];
+  U64 bbThreatened = p->cl_bb[op] & bbPawnTakes[sd];
+  bbHanging |= bbThreatened;     // piece attacked by our pawn isn't well defended
+  bbHanging &= bbAllAttacks[sd]; // obviously, hanging piece has to be attacked
+  bbHanging &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
 
-	int pc, sq, val;
+  int pc, sq, val;
 
-	while (bbHanging) {
-		sq = PopFirstBit(&bbHanging);
-		pc = TpOnSq(p, sq);
-		val = tp_value[pc] / 64;
-		Add(sd, F_OTHERS, 10 + val, 18 + val);
-	}
+  while (bbHanging) {
+    sq = PopFirstBit(&bbHanging);
+    pc = TpOnSq(p, sq);
+    val = tp_value[pc] / 64;
+    Add(sd, F_OTHERS, 10 + val, 18 + val);
+  }
 }
 
 
@@ -450,8 +450,8 @@ int Evaluate(POS *p, int use_hash) {
   // Weakening: add pseudo-random value to eval score
 
   if (eval_blur) {
-	  int randomMod = (eval_blur / 2) - (p->hash_key % eval_blur);
-	  score += randomMod;
+    int randomMod = (eval_blur / 2) - (p->hash_key % eval_blur);
+    score += randomMod;
   }
 
   // Save eval score in the evaluation hash table
@@ -481,9 +481,9 @@ void PrintEval(POS * p) {
   printf("Factor     | Val (perc) |   Mg (  WC,   BC) |   Eg (  WC,   BC) |\n");
   printf("-----------------------------------------------------------------\n");
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-	mg_score = ((mg[WC][fc] - mg[BC][fc]) * weights[fc]) / 100;
-	eg_score = ((eg[WC][fc] - eg[BC][fc]) * weights[fc]) / 100;
-	total = (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
+  mg_score = ((mg[WC][fc] - mg[BC][fc]) * weights[fc]) / 100;
+  eg_score = ((eg[WC][fc] - eg[BC][fc]) * weights[fc]) / 100;
+  total = (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
 
     printf(factor_name[fc]);
     printf(" | %4d (%3d) | %4d (%4d, %4d) | %4d (%4d, %4d) |\n", total, weights[fc], mg_score, mg[WC][fc], mg[BC][fc], eg_score, eg[WC][fc], eg[BC][fc]);

@@ -55,8 +55,8 @@ void sTimer::SetMoveTiming(void) {
     if (data[MOVES_TO_GO] == 1) data[TIME] -= Min(1000, data[TIME] / 10);
     allocated_time = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
 
-	// assign less time per move on extremely short time controls
-	allocated_time = BulletCorrection(allocated_time);
+  // assign less time per move on extremely short time controls
+  allocated_time = BulletCorrection(allocated_time);
 
     // while in time trouble, try to save a bit on increment
     if (allocated_time < data[INC] ) allocated_time -= ( (data[INC] * 4) / 5);
@@ -75,7 +75,7 @@ void sTimer::SetMoveTiming(void) {
 void sTimer::SetIterationTiming(void) {
 
   if (allocated_time > 0) iteration_time = ( (allocated_time * 3) / 4 );
-  else              iteration_time = 999999000;
+  else                    iteration_time = 999999000;
 
   // assign less time per iteration on extremely short time controls
   iteration_time = BulletCorrection(iteration_time);
@@ -126,9 +126,9 @@ void sTimer::SetSideData(int side) {
 void sTimer::WasteTime(int miliseconds) {
 
 #if defined(_WIN32) || defined(_WIN64)
-	Sleep(miliseconds);
+  Sleep(miliseconds);
 #else
-	usleep(miliseconds * 1000);
+  usleep(miliseconds * 1000);
 #endif
 }
 

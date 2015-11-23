@@ -76,10 +76,10 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Get front span
 
-	bbSpan = GetFrontSpan(SqBb(sq), sd);
+  bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
-	//fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
-	//fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
+  //fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
+  //fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
 
     // Doubled pawn
 
@@ -94,70 +94,70 @@ void EvaluatePawns(POS *p, int sd) {
     // Isolated pawn
 
     if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-	  Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
+    Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
 
     // Backward pawn
 
-	else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-	  Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
+  else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+    Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
   }
 }
 
 void EvaluateKing(POS *p, int sd) {
 
-	const int startSq[2] = { E1, E8 };
-	const int qCastle[2] = { B1, B8 };
-	const int kCastle[2] = { G1, G8 };
+  const int startSq[2] = { E1, E8 };
+  const int qCastle[2] = { B1, B8 };
+  const int kCastle[2] = { G1, G8 };
 
-	U64 bbKingFile, bbNextFile;
-	int result = 0;
-	int sq = KingSq(p, sd);
+  U64 bbKingFile, bbNextFile;
+  int result = 0;
+  int sq = KingSq(p, sd);
 
-	// Normalize king square for pawn shield evaluation,
-	// to discourage shuffling the king between g1 and h1.
+  // Normalize king square for pawn shield evaluation,
+  // to discourage shuffling the king between g1 and h1.
 
-	if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
-	if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
+  if (SqBb(sq) & bbKSCastle[sd]) sq = kCastle[sd];
+  if (SqBb(sq) & bbQSCastle[sd]) sq = qCastle[sd];
 
-	// Evaluate shielding and storming pawns on each file.
+  // Evaluate shielding and storming pawns on each file.
 
-	bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-	result += EvalKingFile(p, sd, bbKingFile);
+  bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+  result += EvalKingFile(p, sd, bbKingFile);
 
-	bbNextFile = ShiftEast(bbKingFile);
-	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  bbNextFile = ShiftEast(bbKingFile);
+  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-	bbNextFile = ShiftWest(bbKingFile);
-	if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  bbNextFile = ShiftWest(bbKingFile);
+  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
-	mg[sd][F_PAWNS] += result;
+  mg[sd][F_PAWNS] += result;
 }
 
 int EvalKingFile(POS * p, int sd, U64 bbFile) {
 
-	int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
-	int storm = EvalFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
-	if (bbFile & bbCentralFile) return (shelter / 2) + storm;
-	else return shelter + storm;
+  int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
+  int storm = EvalFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
+  if (bbFile & bbCentralFile) return (shelter / 2) + storm;
+  else return shelter + storm;
 }
 
 int EvalFileShelter(U64 bbOwnPawns, int sd) {
 
-	if (!bbOwnPawns) return -36;
-	if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
-	if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
-	if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
-	if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
-	if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
-	if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
-	return 0;
+  if (!bbOwnPawns) return -36;
+  if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
+  if (bbOwnPawns & bbRelRank[sd][RANK_3]) return  -11;
+  if (bbOwnPawns & bbRelRank[sd][RANK_4]) return  -20;
+  if (bbOwnPawns & bbRelRank[sd][RANK_5]) return  -27;
+  if (bbOwnPawns & bbRelRank[sd][RANK_6]) return  -32;
+  if (bbOwnPawns & bbRelRank[sd][RANK_7]) return  -35;
+  return 0;
 }
 
 int EvalFileStorm(U64 bbOppPawns, int sd) {
 
-	if (!bbOppPawns) return -16;
-	if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
-	if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
-	if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
-	return 0;
+  if (!bbOppPawns) return -16;
+  if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
+  if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
+  if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
+  return 0;
 }
