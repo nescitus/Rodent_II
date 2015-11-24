@@ -3,6 +3,7 @@
 #include <string.h>
 #include "rodent.h"
 #include "timer.h"
+#include "book.h"
 
 void ReadLine(char *str, int n) {
   char *ptr;
@@ -25,7 +26,7 @@ char *ParseToken(char *string, char *token) {
 
 void UciLoop(void) {
 
-  char command[4096], token[80], *ptr;
+  char command[4096], token[120], *ptr;
   POS p[1];
 
   setbuf(stdin, NULL);
@@ -50,6 +51,7 @@ void UciLoop(void) {
     printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
     printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
     printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+	printf("option name BookFile type string default guide.bin\n");
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -83,7 +85,7 @@ void UciLoop(void) {
 
 void ParseSetoption(char *ptr) {
 
-  char token[80], name[80], value[80] = "";
+  char token[120], name[120], value[120] = "";
 
   ptr = ParseToken(ptr, token);
   name[0] = '\0';
@@ -136,6 +138,10 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "EvalBlur") == 0) {
     eval_blur = atoi(value);
     ResetEngine();
+  } else if (strcmp(name, "BookFile") == 0) {
+	  Book.ClosePolyglot();
+	  Book.bookName = value;
+	  Book.OpenPolyglot();
   }
 }
 
@@ -147,7 +153,7 @@ void SetWeight(int weight_name, int value) {
 
 void ParseMoves(POS *p, char *ptr) {
   
-  char token[80];
+  char token[120];
   UNDO u[1];
 
   for (;;) {
@@ -170,7 +176,7 @@ void ParseMoves(POS *p, char *ptr) {
 
 void ParsePosition(POS *p, char *ptr) {
 
-  char token[80], fen[80];
+  char token[120], fen[120];
 
   ptr = ParseToken(ptr, token);
   if (strcmp(token, "fen") == 0) {
@@ -196,7 +202,7 @@ void ParsePosition(POS *p, char *ptr) {
 
 void ParseGo(POS *p, char *ptr) {
 
-  char token[80], bestmove_str[6], ponder_str[6];
+  char token[120], bestmove_str[6], ponder_str[6];
   int pv[MAX_PLY];
 
   Timer.Clear();
