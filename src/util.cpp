@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #if defined(_WIN32) || defined(_WIN64)
 #  include <windows.h>
 #else
@@ -107,6 +108,13 @@ void MoveToStr(int move, char *move_str) {
     move_str[4] = prom_char[(move >> 12) & 3];
     move_str[5] = '\0';
   }
+}
+
+void PrintMove(int move)
+{
+  char moveString[6];
+  MoveToStr(move, moveString);
+  printf("%s", moveString);
 }
 
 int StrToMove(POS *p, char *move_str) {

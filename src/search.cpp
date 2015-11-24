@@ -3,6 +3,7 @@
 #include "math.h"
 #include "rodent.h"
 #include "timer.h"
+#include "book.h"
 
 double lmrSize[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
@@ -27,6 +28,9 @@ void InitSearch(void) {
 }
 
 void Think(POS *p, int *pv) {
+
+  pv[0] = Book.GetPolyglotMove(p, 1);
+  if (pv[0]) return;
 
   ClearHist();
   tt_date = (tt_date + 1) & 255;
