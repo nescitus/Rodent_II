@@ -29,7 +29,10 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
-  pv[0] = Book.GetPolyglotMove(p, 1);
+  pv[0] = GuideBook.GetPolyglotMove(p, 1);
+  if (pv[0]) return;
+
+  pv[0] = MainBook.GetPolyglotMove(p, 1);
   if (pv[0]) return;
 
   ClearHist();

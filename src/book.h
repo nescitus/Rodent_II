@@ -57,4 +57,5 @@ public:
     void Init(POS *p);
 };
 
-extern sBook Book;
+extern sBook GuideBook;
+extern sBook MainBook;

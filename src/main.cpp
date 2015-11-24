@@ -4,7 +4,8 @@
 #include "book.h"
 
 sTimer Timer; // class for setting and observing time limits
-sBook       Book;         // opening book
+sBook       MainBook;         // opening book
+sBook       GuideBook;
 
 int main() {
   
@@ -15,9 +16,12 @@ int main() {
   InitWeights();
   InitEval();
   InitSearch();
-  Book.bookName = "handmade.bin";
-  Book.OpenPolyglot();
+  MainBook.bookName = "handmade.bin";
+  MainBook.OpenPolyglot();
+  GuideBook.bookName = "handmade.bin";
+  GuideBook.OpenPolyglot();
   UciLoop();
-  Book.ClosePolyglot();
+  MainBook.ClosePolyglot();
+  GuideBook.ClosePolyglot();
   return 0;
 }

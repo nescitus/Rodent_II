@@ -51,7 +51,8 @@ void UciLoop(void) {
     printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
     printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
     printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-	printf("option name BookFile type string default guide.bin\n");
+	printf("option name GuideBookFile type string default guide.bin\n");
+	printf("option name MainBookFile type string default rodent.bin\n");
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -138,10 +139,14 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "EvalBlur") == 0) {
     eval_blur = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "BookFile") == 0) {
-	  Book.ClosePolyglot();
-	  Book.bookName = value;
-	  Book.OpenPolyglot();
+  } else if (strcmp(name, "GuideBookFile") == 0) {
+	  GuideBook.ClosePolyglot();
+	  GuideBook.bookName = value;
+	  GuideBook.OpenPolyglot();
+  } else if (strcmp(name, "MainBookFile") == 0) {
+	  MainBook.ClosePolyglot();
+	  MainBook.bookName = value;
+	  MainBook.OpenPolyglot();
   }
 }
 
