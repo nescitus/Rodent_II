@@ -117,26 +117,19 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
     InitEval();
   } else if (strcmp(name, "Attack") == 0) {
-    weights[F_ATT] = atoi(value);
-    ResetEngine();
+    SetWeight(F_ATT, atoi(value));
   } else if (strcmp(name, "Mobility") == 0) {
-    weights[F_MOB] = atoi(value);
-    ResetEngine();
+    SetWeight(F_MOB, atoi(value));
   } else if (strcmp(name, "KingTropism") == 0) {
-    weights[F_TROPISM] = atoi(value);
-    ResetEngine();
+    SetWeight(F_TROPISM, atoi(value));
   } else if (strcmp(name, "PassedPawns") == 0) {
-    weights[F_PASSERS] = atoi(value);
-    ResetEngine();
+    SetWeight(F_PASSERS, atoi(value));
   } else if (strcmp(name, "PawnStructure") == 0) {
-    weights[F_PAWNS] = atoi(value);
-    ResetEngine();
+    SetWeight(F_PAWNS, atoi(value));
   } else if (strcmp(name, "Lines") == 0) {
-   weights[F_LINES] = atoi(value);
-   ResetEngine();
+   SetWeight(F_LINES, atoi(value));
   } else if (strcmp(name, "Outposts") == 0) {
-    weights[F_OUTPOST] = atoi(value);
-    ResetEngine();
+    SetWeight(F_OUTPOST, atoi(value));
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
    ResetEngine();
@@ -144,6 +137,12 @@ void ParseSetoption(char *ptr) {
     eval_blur = atoi(value);
     ResetEngine();
   }
+}
+
+void SetWeight(int weight_name, int value) {
+
+  weights[weight_name] = value;
+  ResetEngine();
 }
 
 void ParseMoves(POS *p, char *ptr) {
