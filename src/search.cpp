@@ -165,8 +165,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       reduction = 4;
       if (depth > 8) reduction += depth / 4;
 
-	  // omit null move search if normal search to the same depth wouldn't exceed beta
-	  // (sometimes we can check it for free via hash table)
+    // omit null move search if normal search to the same depth wouldn't exceed beta
+    // (sometimes we can check it for free via hash table)
 
       if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, depth-reduction, ply)) {
         if (null_score < beta) goto avoid_null;
@@ -268,13 +268,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
    
   // PVS
 
-    if (best == -INF)
+  if (best == -INF)
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+  else {
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+    if (!abort_search && score > alpha && score < beta)
       score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-    else {
-      score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
-      if (!abort_search && score > alpha && score < beta)
-        score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-    }
+  }
 
   // Reduced move scored above alpha - we need to re-search it
 

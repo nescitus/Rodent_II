@@ -76,7 +76,7 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Get front span
 
-  bbSpan = GetFrontSpan(SqBb(sq), sd);
+    bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
   //fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
   //fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
@@ -94,12 +94,12 @@ void EvaluatePawns(POS *p, int sd) {
     // Isolated pawn
 
     if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-    Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
+      Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
 
     // Backward pawn
 
-  else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-    Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
+    else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
+      Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
   }
 }
 

@@ -26,11 +26,11 @@ struct sBookEntry {
 };
 
 struct polyglot_move {
-    U64	key;
-    int	move;
+    U64  key;
+    int  move;
     int weight;
-    int	n;
-    int	learn;
+    int  n;
+    int  learn;
 };
 
 #include<stdio.h>
@@ -45,7 +45,6 @@ private:
     int IsInfrequent(int val, int maxFreq);
     void ParseBookEntry(char * ptr, int line_no);
     int FindPos(U64 key);
-    int MoveIsInBook(POS *p, int knownMove);
     void ReadEntry(polyglot_move * entry, int n);
     U64 ReadInteger(int size);
 public:

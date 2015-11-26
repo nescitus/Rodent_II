@@ -37,7 +37,7 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Rodent II 0.4.5\n");
+      printf("id name Rodent II 0.4.6\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
@@ -51,8 +51,8 @@ void UciLoop(void) {
     printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
     printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
     printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-	printf("option name GuideBookFile type string default guide.bin\n");
-	printf("option name MainBookFile type string default rodent.bin\n");
+  printf("option name GuideBookFile type string default guide.bin\n");
+  printf("option name MainBookFile type string default rodent.bin\n");
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -140,13 +140,13 @@ void ParseSetoption(char *ptr) {
     eval_blur = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "GuideBookFile") == 0) {
-	  GuideBook.ClosePolyglot();
-	  GuideBook.bookName = value;
-	  GuideBook.OpenPolyglot();
+    GuideBook.ClosePolyglot();
+    GuideBook.bookName = value;
+    GuideBook.OpenPolyglot();
   } else if (strcmp(name, "MainBookFile") == 0) {
-	  MainBook.ClosePolyglot();
-	  MainBook.bookName = value;
-	  MainBook.OpenPolyglot();
+    MainBook.ClosePolyglot();
+    MainBook.bookName = value;
+    MainBook.OpenPolyglot();
   }
 }
 
