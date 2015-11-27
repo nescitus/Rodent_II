@@ -151,6 +151,10 @@ void EvaluatePieces(POS *p, int sd) {
   U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
+
+  // Piece configurations
+
+  if (PopCnt(PcBb(p, sd, B)) > 1) Add(sd, F_OTHERS, 40, 60); // Bishop pair
   
   // Knight
 
@@ -388,11 +392,6 @@ int Evaluate(POS *p, int use_hash) {
 
   mg[p->side][F_OTHERS] += 10;
   eg[p->side][F_OTHERS] += 5;
-
-  // Bishop pair
-
-  if (PopCnt(PcBb(p, WC, B)) > 1) score += 50;
-  if (PopCnt(PcBb(p, BC, B)) > 1) score -= 50;
 
   // Evaluate pieces and pawns
 

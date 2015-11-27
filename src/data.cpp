@@ -16,10 +16,8 @@ const int bit_table[64] = {
   62, 11, 23, 32, 36, 44, 52, 55,
   61, 22, 43, 51, 60, 42, 59, 58
 };
-
-const int tp_value[7] = {
-  100, 325, 325, 500, 1000, 0, 0
-};
+//                         P    N    B    R    Q
+const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 };
 int history[12][64];
 int refutation[64][64];
 int killer[MAX_PLY][2];

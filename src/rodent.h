@@ -1,6 +1,6 @@
-// bench: 729245
-// bench 12: 6188397 14,3 s 1.002
-// bench 15: 35966748 68,7 1.213
+// bench: 593033
+// bench 12: 6784709 15,4 s 1.002
+// bench 15: 41122235 79,4 1.200
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4047 lines of code
 

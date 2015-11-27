@@ -182,10 +182,16 @@ int BadCapture(POS *p, int move) {
   if (tp_value[TpOnSq(p, tsq)] >= tp_value[TpOnSq(p, fsq)])
     return 0;
 
+  // Bishop takes knight and knight takes bishop are good irrespectively from
+  // the way minor pieces' values are tuned
+
+  if (TpOnSq(p, fsq) == B && TpOnSq(p, fsq) == N) return 0;
+  if (TpOnSq(p, fsq) == N && TpOnSq(p, fsq) == B) return 0;
+
   // En passant captures are good by definition
 
   if (MoveType(move) == EP_CAP) return 0;
-
+  
   // We have to evaluate this capture using expensive Static Exchange Evaluation
 
   return Swap(p, fsq, tsq) < 0;
