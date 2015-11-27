@@ -154,7 +154,8 @@ void EvaluatePieces(POS *p, int sd) {
 
   // Piece configurations
 
-  if (PopCnt(PcBb(p, sd, B)) > 1) Add(sd, F_OTHERS, 40, 60); // Bishop pair
+  if (PopCnt(PcBb(p, sd, B)) > 1) Add(sd, F_OTHERS, 40,  60); // Bishop pair
+  if (PopCnt(PcBb(p, sd, N)) > 1) Add(sd, F_OTHERS,-10, -10); // Knight pair
   
   // Knight
 
