@@ -27,7 +27,7 @@ int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Others    "};
+char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Hanging   ", "Others    "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -129,6 +129,7 @@ void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile;
   int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
+  int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
 
   // Is color OK?
 
@@ -180,6 +181,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
       wood++;
+	  n_att++;
       att += 6 * PopCnt(bbAtt & bbZone);
     }
 
@@ -222,6 +224,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
     if (bbAtt & bbZone) {
       wood++;
+	  b_att++;
       att += 6 * PopCnt(bbAtt & bbZone);
     }
 
@@ -255,6 +258,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
     if (bbAtt & bbZone) {
       wood++;
+	  r_att++;
       att += 9 * PopCnt(bbAtt & bbZone);
     }
 
@@ -314,6 +318,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
     if (bbAtt & bbZone) {
       wood++;
+	  q_att++;
       att += 15 * PopCnt(bbAtt & bbZone);
     }
   }
@@ -321,6 +326,13 @@ void EvaluatePieces(POS *p, int sd) {
   // Score king attacks if own queen is present and there are at least 2 attackers
 
   if (wood > 1 && p->cnt[sd][Q]) {
+
+	if (q_att & r_att) att += 6;
+	if (q_att & n_att) att += 3;
+	if (q_att & b_att) att += 3;
+	if (r_att & n_att) att += 1;
+	if (r_att & b_att) att += 1;
+
     if (att > 399) att = 399;
     tmp = danger[att];
     Add(sd, F_ATT, tmp, tmp);
@@ -343,7 +355,7 @@ void EvalHanging(POS *p, int sd) {
     sq = PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 64;
-    Add(sd, F_OTHERS, 10 + val, 18 + val);
+    Add(sd, F_HANGING, 10 + val, 18 + val);
   }
 }
 

@@ -48,6 +48,7 @@ void Iterate(POS *p, int *pv) {
   int val = 0, cur_val = 0;
   U64 nps = 0;
   Timer.SetIterationTiming();
+  int max_root_depth = Timer.GetData(MAX_DEPTH);
 
   // Are we operating in slowdown mode?
 
@@ -56,7 +57,7 @@ void Iterate(POS *p, int *pv) {
 
   // TODO: only single move available
 
-  for (root_depth = 1; root_depth <= Timer.GetData(MAX_DEPTH); root_depth++) {
+  for (root_depth = 1; root_depth <= max_root_depth; root_depth++) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
