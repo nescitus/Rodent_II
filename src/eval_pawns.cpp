@@ -59,8 +59,8 @@ void FullPawnEval(POS * p, int use_hash) {
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan, fl_phalanx1, fl_phalanx2;
-  int sq, fl_unopposed;
+  U64 bbPieces, bbSpan;
+  int sq, fl_unopposed; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
 
@@ -78,13 +78,11 @@ void EvaluatePawns(POS *p, int sd) {
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
-  //fl_phalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
-  //fl_phalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
 
-    // Doubled pawn
+	// Doubled pawn
 
     if (bbSpan & PcBb(p, sd, P))
-      Add(sd, F_PAWNS, -10, -20);
+      Add(sd, F_PAWNS, -12, -24); // -10.-20
 
     // Passed pawn
 
