@@ -82,12 +82,7 @@ void EvaluatePawns(POS *p, int sd) {
 	// Doubled pawn
 
     if (bbSpan & PcBb(p, sd, P))
-      Add(sd, F_PAWNS, -12, -24); // -10.-20
-
-    // Passed pawn
-
-    if (!(passed_mask[sd][sq] & PcBb(p, Opp(sd), P)))
-      Add(sd, F_PASSERS, passed_bonus_mg[sd][Rank(sq)], passed_bonus_eg[sd][Rank(sq)]);
+      Add(sd, F_PAWNS, -12, -24);
 
     // Isolated pawn
 

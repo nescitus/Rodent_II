@@ -359,6 +359,42 @@ void EvalHanging(POS *p, int sd) {
   }
 }
 
+U64 ShiftFwd(U64 bb, int side)
+{
+	if (side == WC) return ShiftNorth(bb);
+	return ShiftSouth(bb);
+}
+
+void EvalPassers(POS * p, int sd) 
+{
+  U64 bbPieces;
+  int sq, mul, mg_tmp, eg_tmp;
+  int op = Opp(sd);
+  U64 bbOwnPawns = PcBb(p, sd, P);
+  U64 bbStop;
+
+  bbPieces = PcBb(p, sd, P);
+  while (bbPieces) {
+    sq = PopFirstBit(&bbPieces);
+    bbStop = ShiftFwd(SqBb(sq), sd);
+
+    // Passed pawn
+
+    if (!(passed_mask[sd][sq] & PcBb(p, op, P))) {
+		
+      mg_tmp = passed_bonus_mg[sd][Rank(sq)];
+      eg_tmp = passed_bonus_eg[sd][Rank(sq)];
+      mul = 100;
+
+      // blocked passers are worth less
+
+      if (bbStop & OccBb(p)) mul -= 20;
+
+      Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
+    }
+  }
+}
+
 int Evaluate(POS *p, int use_hash) {
 
   // Try to retrieve score from eval hashtable
@@ -414,6 +450,8 @@ int Evaluate(POS *p, int use_hash) {
   EvalHanging(p, WC);
   EvalHanging(p, BC);
   EvalPatterns(p);
+  EvalPassers(p, WC);
+  EvalPassers(p, BC);
 
   // Sum all the eval factors
 

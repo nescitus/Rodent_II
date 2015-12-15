@@ -1,8 +1,8 @@
-// bench: 626512
-// bench 12: 7373013 16,4 s 1.038
-// bench 15: 38094352 73,1 1.208
+// bench: 650405
+// bench 12: 7265455 17,5 s 0.962
+// bench 15: 31365955 64,2 1.132
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 4047 lines of code
+// 4086 lines of code
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -277,6 +277,7 @@ void EvalHanging(POS *p, int sd);
 void EvaluatePieces(POS * p, int sd);
 void EvaluatePawns(POS * p, int sd);
 void EvalPatterns(POS * p);
+void EvalPassers(POS * p, int sd);
 void FullPawnEval(POS * p, int use_hash);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
@@ -325,6 +326,7 @@ U64 Random64(void);
 void ReadLine(char *str, int n);
 void ResetEngine(void);
 int IsDraw(POS * p);
+U64 ShiftFwd(U64 bb, int side);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 void SetWeight(int weight_name, int value);
