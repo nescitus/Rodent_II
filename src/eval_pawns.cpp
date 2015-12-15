@@ -19,8 +19,6 @@ void ClearPawnHash(void) {
     PawnTT[e].key = 0;
     PawnTT[e].mg_pawns = 0;
     PawnTT[e].eg_pawns = 0;
-    PawnTT[e].mg_passers = 0;
-    PawnTT[e].eg_passers = 0;
   }
 }
 
@@ -33,8 +31,8 @@ void FullPawnEval(POS * p, int use_hash) {
   if (PawnTT[addr].key == p->pawn_key && use_hash) {
     mg[WC][F_PAWNS]   = PawnTT[addr].mg_pawns;
     eg[WC][F_PAWNS]   = PawnTT[addr].eg_pawns;
-    mg[WC][F_PASSERS] = PawnTT[addr].mg_passers;
-    eg[WC][F_PASSERS] = PawnTT[addr].eg_passers;
+ //   mg[WC][F_PASSERS] = PawnTT[addr].mg_passers;
+ //   eg[WC][F_PASSERS] = PawnTT[addr].eg_passers;
     return;
   }
 
@@ -52,9 +50,7 @@ void FullPawnEval(POS * p, int use_hash) {
 
   PawnTT[addr].key = p->pawn_key;
   PawnTT[addr].mg_pawns   = mg[WC][F_PAWNS]   - mg[BC][F_PAWNS];
-  PawnTT[addr].mg_passers = mg[WC][F_PASSERS] - mg[BC][F_PASSERS];
   PawnTT[addr].eg_pawns   = eg[WC][F_PAWNS]   - eg[BC][F_PAWNS];
-  PawnTT[addr].eg_passers = eg[WC][F_PASSERS] - eg[BC][F_PASSERS];
 }
 
 void EvaluatePawns(POS *p, int sd) {

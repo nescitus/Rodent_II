@@ -1,8 +1,8 @@
 // bench: 650405
 // bench 12: 7265455 17,5 s 0.962
-// bench 15: 31365955 64,2 1.132
+// bench 15: 31365955 63,8 1.141
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 4086 lines of code
+// 4078 lines of code
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};

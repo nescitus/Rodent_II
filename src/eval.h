@@ -76,8 +76,6 @@ struct sPawnHashEntry {
   U64 key;
   int mg_pawns;
   int eg_pawns;
-  int mg_passers;
-  int eg_passers;
 };
 
 extern int mg[2][N_OF_FACTORS];
