@@ -31,8 +31,6 @@ void FullPawnEval(POS * p, int use_hash) {
   if (PawnTT[addr].key == p->pawn_key && use_hash) {
     mg[WC][F_PAWNS]   = PawnTT[addr].mg_pawns;
     eg[WC][F_PAWNS]   = PawnTT[addr].eg_pawns;
- //   mg[WC][F_PASSERS] = PawnTT[addr].mg_passers;
- //   eg[WC][F_PASSERS] = PawnTT[addr].eg_passers;
     return;
   }
 
@@ -49,14 +47,14 @@ void FullPawnEval(POS * p, int use_hash) {
   // Save stuff in pawn hashtable
 
   PawnTT[addr].key = p->pawn_key;
-  PawnTT[addr].mg_pawns   = mg[WC][F_PAWNS]   - mg[BC][F_PAWNS];
-  PawnTT[addr].eg_pawns   = eg[WC][F_PAWNS]   - eg[BC][F_PAWNS];
+  PawnTT[addr].mg_pawns = mg[WC][F_PAWNS] - mg[BC][F_PAWNS];
+  PawnTT[addr].eg_pawns = eg[WC][F_PAWNS] - eg[BC][F_PAWNS];
 }
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan;
-  int sq, fl_unopposed; 
+  U64 bbPieces, bbSpan, bbContact;
+  int sq, fl_unopposed, fl_weak; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
 
@@ -70,25 +68,34 @@ void EvaluatePawns(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-    // Get front span
+    // Get some information about the pawn we are evaluation
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
+	bbContact = SqBb(sq) ^ ShiftNorth(sq) ^ ShiftSouth(sq);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
+	fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
 
 	// Doubled pawn
 
     if (bbSpan & PcBb(p, sd, P))
       Add(sd, F_PAWNS, -12, -24);
 
-    // Isolated pawn
+	// Weak pawn (two flavours)
 
-    if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
-      Add(sd, F_PAWNS, -10 - 10*fl_unopposed, -20);
+    if (fl_weak) {
+      if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
+        Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20); // isolated pawn
+      else
+        Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);    // backward pawn
+	}
 
-    // Backward pawn
+	// Losing contact with own pawn mass
 
-    else if ((support_mask[sd][sq] & PcBb(p, sd, P)) == 0)
-      Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);
+    if (!fl_weak
+    &&  !(bbContact & bbPawnTakes[sd])) {
+		Add(sd, F_PAWNS, -4, -8);
+	}
+
   }
 }
 

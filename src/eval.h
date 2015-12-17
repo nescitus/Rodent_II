@@ -123,4 +123,4 @@ static const int imbalance[9][9] = {
     {   0,    0,    0,    0,   Rk,    A,    A,    A,    A }  // R = +4
 };
 
-int CheckmateHelper(POS *p);
+extern U64 bbPawnTakes[2];
