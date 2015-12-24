@@ -127,9 +127,10 @@ void InitEval(void) {
 
 void EvaluatePieces(POS *p, int sd) {
 
-  U64 bbPieces, bbMob, bbAtt, bbStop, bbFile;
+  U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
   int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
+  int own_pawn_cnt;
 
   // Is color OK?
 
@@ -219,6 +220,8 @@ void EvaluatePieces(POS *p, int sd) {
     if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
     bbAllAttacks[sd] |= bbMob;
 
+	Add(sd, F_OTHERS, 0, 3 * own_pawn_cnt);
+
     // Bishop attacks on enemy king zone
 
     bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
@@ -250,7 +253,22 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) att += 9; // check threat bonus
+	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) {         // check threat bonus
+		att += 9; 
+		/**
+		bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
+		
+		while (bbContact) {
+			int contactSq = PopFirstBit(&bbContact);
+
+			// possible bug: rook exchanges are accepted as contact checks
+			if (Swap(p, sq, contactSq) >= 0) {
+				att += 15;
+				break;
+			}
+		}
+		/**/
+	}
     bbAllAttacks[sd] |= bbMob;
 
     // Rook attacks on enemy king zone
@@ -298,13 +316,13 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
     if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
     att += 12; 
-    U64 bbContact = bbMob & k_attacks[ksq];
+    bbContact = bbMob & k_attacks[ksq];
     while (bbContact) {
       int contactSq = PopFirstBit(&bbContact);
 
       // possible bug: queen exchanges are accepted as contact checks
       if (Swap(p, sq, contactSq) >= 0) {
-        att += 10;
+		att += 12;  //was 10  //30;
         break;
       }
     }

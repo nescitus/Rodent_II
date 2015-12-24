@@ -37,22 +37,24 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
     if (strcmp(token, "uci") == 0) {
-      printf("id name Rodent II 0.5.1\n");
+      printf("id name ");
+      printf(PROG_NAME);
+	  printf("\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
-    printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-    printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
-    printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
-    printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
-    printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
-    printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
-    printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
-    printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-    printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-    printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-  printf("option name GuideBookFile type string default guide.bin\n");
-  printf("option name MainBookFile type string default rodent.bin\n");
+      printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
+      printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
+      printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
+      printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+      printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
+      printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
+      printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
+      printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
+      printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+      printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+      printf("option name GuideBookFile type string default guide.bin\n");
+      printf("option name MainBookFile type string default rodent.bin\n");
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
