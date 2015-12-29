@@ -174,7 +174,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 3; // check threat bonus
+    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 4; // check threat bonus WAS 3
     bbAllAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
@@ -219,8 +219,6 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
     if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
     bbAllAttacks[sd] |= bbMob;
-
-	Add(sd, F_OTHERS, 0, 3 * own_pawn_cnt);
 
     // Bishop attacks on enemy king zone
 
@@ -322,7 +320,7 @@ void EvaluatePieces(POS *p, int sd) {
 
       // possible bug: queen exchanges are accepted as contact checks
       if (Swap(p, sq, contactSq) >= 0) {
-		att += 12;  //was 10  //30;
+		att += 12;  // 10..?..14
         break;
       }
     }

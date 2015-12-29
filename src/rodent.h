@@ -4,7 +4,7 @@
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4087 lines of code
 
-#define PROG_NAME "Rodent II 0.5.3"
+#define PROG_NAME "Rodent II 0.5.4"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
