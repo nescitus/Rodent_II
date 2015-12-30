@@ -8,9 +8,9 @@
 #define SCALE(x,y) ((x*y)/100)
 
 static const int maxAttUnit = 399;
-static const double maxAttStep = 7.5;
+static const double maxAttStep = 8.0;     // was 7.5
 static const double maxAttScore = 1280;
-static const double attCurveMult = 0.025;
+static const double attCurveMult = 0.027; // was 0.025
 int danger[512];
 
 static const int max_phase = 24;
@@ -174,7 +174,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 4; // check threat bonus WAS 3
+    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 4; // check threat bonus [3... 4 ...?]
     bbAllAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
@@ -217,7 +217,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus
+    if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus  [?... 3 ...4]
     bbAllAttacks[sd] |= bbMob;
 
     // Bishop attacks on enemy king zone
@@ -313,14 +313,14 @@ void EvaluatePieces(POS *p, int sd) {
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
     if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
-    att += 12; 
+    att += 12; // queen check threat: [?... 12 ...14]
     bbContact = bbMob & k_attacks[ksq];
     while (bbContact) {
       int contactSq = PopFirstBit(&bbContact);
 
       // possible bug: queen exchanges are accepted as contact checks
       if (Swap(p, sq, contactSq) >= 0) {
-		att += 12;  // 10..?..14
+		att += 12;  // queen contact check: [10...  12  ...14]
         break;
       }
     }
@@ -335,7 +335,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  q_att++;
-      att += 15 * PopCnt(bbAtt & bbZone);
+      att += 15 * PopCnt(bbAtt & bbZone); // ?...  15  ...16
     }
   }
 

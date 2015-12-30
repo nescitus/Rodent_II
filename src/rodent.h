@@ -1,10 +1,10 @@
-// bench: 677.472
-// bench 12: 6743277 16,9 s 0.976
-// bench 15: 31185289 62,9 1.150
+// bench: 797.460
+// bench 12: 6341201 15,1 s 0.973
+// bench 15: 38379253 77221 1.153
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 4087 lines of code
+// 4101 lines of code
 
-#define PROG_NAME "Rodent II 0.5.4"
+#define PROG_NAME "Rodent II 0.5.5"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
