@@ -50,16 +50,20 @@ void ClearEvalHash(void) {
 
 void InitWeights(void) {
 
+  // default weights: 100%
+  
   for (int fc = 0; fc < N_OF_FACTORS; fc++)
     weights[fc] = 100;
 
   weights[F_TROPISM] = 20;
   mat_perc = 100;
 
-  dyn_weights[DF_OWN_ATT] = 100;
+  // weights for asymmetric factors
+
+  dyn_weights[DF_OWN_ATT] = 110;
   dyn_weights[DF_OPP_ATT] = 100;
   dyn_weights[DF_OWN_MOB] = 100;
-  dyn_weights[DF_OPP_MOB] = 100;
+  dyn_weights[DF_OPP_MOB] = 110;
 }
 
 void InitEval(void) {
