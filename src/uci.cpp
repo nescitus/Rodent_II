@@ -44,8 +44,10 @@ void UciLoop(void) {
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
       printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-      printf("option name Attack type spin default %d min 0 max 500\n", weights[F_ATT]);
-      printf("option name Mobility type spin default %d min 0 max 500\n", weights[F_MOB]);
+	  printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
+	  printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
+	  printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
+	  printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
       printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
       printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
       printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
@@ -121,10 +123,14 @@ void ParseSetoption(char *ptr) {
     mat_perc = atoi(value);
     ResetEngine();
     InitEval();
-  } else if (strcmp(name, "Attack") == 0) {
-    SetWeight(F_ATT, atoi(value));
-  } else if (strcmp(name, "Mobility") == 0) {
-    SetWeight(F_MOB, atoi(value));
+  } else if (strcmp(name, "OwnAttack") == 0) {
+	dyn_weights[DF_OWN_ATT] = atoi(value);
+  } else if (strcmp(name, "OppAttack") == 0) {
+	dyn_weights[DF_OPP_ATT] = atoi(value);
+  } else if (strcmp(name, "OwnMobility") == 0) {
+	dyn_weights[DF_OWN_MOB] = atoi(value);
+  } else if (strcmp(name, "OppMobility") == 0) {
+	dyn_weights[DF_OPP_MOB] = atoi(value);
   } else if (strcmp(name, "KingTropism") == 0) {
     SetWeight(F_TROPISM, atoi(value));
   } else if (strcmp(name, "PassedPawns") == 0) {

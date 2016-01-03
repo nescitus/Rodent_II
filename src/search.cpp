@@ -50,6 +50,8 @@ void Iterate(POS *p, int *pv) {
   Timer.SetIterationTiming();
   int max_root_depth = Timer.GetData(MAX_DEPTH);
 
+  SetAsymmetricEval(p->side);
+
   // Are we operating in slowdown mode?
 
   Timer.slow_play = 0;

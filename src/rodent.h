@@ -7,6 +7,7 @@
 #define PROG_NAME "Rodent II 0.5.5"
 
 enum eColor{WC, BC, NO_CL};
+enum eSide {OWN_SD, OPP_SD, NO_SD};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
 enum ePiece{WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
 enum eFile {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
@@ -15,7 +16,10 @@ enum eCastleFlag { W_KS = 1, W_QS = 2, B_KS = 4, B_QS = 8 };
 enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
 enum eHashEntry{NONE, UPPER, LOWER, EXACT};
 enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
-enum eFactor   {F_PST, F_PAWNS, F_PASSERS, F_ATT, F_MOB, F_TROPISM, F_OUTPOST, F_LINES, F_HANGING, F_OTHERS, N_OF_FACTORS};
+enum eFactor   {F_ATT, F_MOB, F_PST, F_PAWNS, F_PASSERS, F_TROPISM, F_OUTPOST, F_LINES, F_HANGING, F_OTHERS, N_OF_FACTORS };
+enum eDynFactor {DF_OWN_ATT, DF_OPP_ATT, DF_OWN_MOB, DF_OPP_MOB};
+enum eAsymmetric {SD_ATT, SD_MOB, OPP_ATT, OPP_MOB};
+
 enum eSquare{
   A1, B1, C1, D1, E1, F1, G1, H1,
   A2, B2, C2, D2, E2, F2, G2, H2,
@@ -336,6 +340,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);
+void SetAsymmetricEval(int sd);
 int StrToMove(POS *p, char *move_str);
 int Swap(POS *p, int from, int to);
 void Think(POS *p, int *pv);
@@ -374,6 +379,8 @@ extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
 extern int weights[N_OF_FACTORS];
+extern int dyn_weights[5];
+extern int curr_weights[2][2];
 extern int mat_perc;
 
 int DifferentBishops(POS * p);

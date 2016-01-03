@@ -31,6 +31,15 @@ char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", 
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
+void SetAsymmetricEval(int sd) {
+	int op = Opp(sd);
+
+	curr_weights[sd][SD_ATT] = dyn_weights[DF_OWN_ATT];
+	curr_weights[op][SD_ATT] = dyn_weights[DF_OPP_ATT];
+	curr_weights[sd][SD_MOB] = dyn_weights[DF_OWN_MOB];
+	curr_weights[op][SD_MOB] = dyn_weights[DF_OPP_MOB];
+}
+
 void ClearEvalHash(void) {
 
   for (int e = 0; e < EVAL_HASH_SIZE; e++) {
@@ -46,6 +55,11 @@ void InitWeights(void) {
 
   weights[F_TROPISM] = 20;
   mat_perc = 100;
+
+  dyn_weights[DF_OWN_ATT] = 100;
+  dyn_weights[DF_OPP_ATT] = 100;
+  dyn_weights[DF_OWN_MOB] = 100;
+  dyn_weights[DF_OPP_MOB] = 100;
 }
 
 void InitEval(void) {
@@ -130,7 +144,6 @@ void EvaluatePieces(POS *p, int sd) {
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
   int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
-  int own_pawn_cnt;
 
   // Is color OK?
 
@@ -469,12 +482,25 @@ int Evaluate(POS *p, int use_hash) {
   EvalPassers(p, WC);
   EvalPassers(p, BC);
 
-  // Sum all the eval factors
+  // Sum all the symmetric eval factors
 
-  for (int fc = 0; fc < N_OF_FACTORS; fc++) {
+  for (int fc = 2; fc < N_OF_FACTORS; fc++) {
     mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
     eg_score += (eg[WC][fc] - eg[BC][fc]) * weights[fc] / 100;
   }
+
+  // Add asymmetric eval factors
+
+  mg_score += mg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
+  mg_score -= mg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
+  eg_score += eg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
+  eg_score -= eg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
+
+  mg_score += mg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
+  mg_score -= mg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
+  eg_score += eg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
+  eg_score -= eg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
+
 
   // Merge mg/eg scores
 
