@@ -217,7 +217,8 @@ void EvaluatePieces(POS *p, int sd) {
     tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
-  }
+
+  } // end of knight eval
 
   // Bishop
 
@@ -251,7 +252,8 @@ void EvaluatePieces(POS *p, int sd) {
     tmp = pstBishopOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op])
       Add(sd, F_OUTPOST, tmp, tmp);
-  }
+
+  } // end of bishop eval
 
   // Rook
 
@@ -268,9 +270,10 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-	if ((bbMob &~bbPawnTakes[op]) & bbStr8Chk) {         // check threat bonus
+	if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
+	&& p->cnt[sd][Q]) {
 		att += 9; 
-		/**
+		
 		bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
 		
 		while (bbContact) {
@@ -278,7 +281,7 @@ void EvaluatePieces(POS *p, int sd) {
 
 			// possible bug: rook exchanges are accepted as contact checks
 			if (Swap(p, sq, contactSq) >= 0) {
-				att += 15;
+				att += 6;
 				break;
 			}
 		}
@@ -300,8 +303,8 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
     if (!(bbFile & PcBb(p, sd, P))) {
-      if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // beats 10, 10
-      else                            Add(sd, F_LINES,  6,  6);  // beats  5,  5
+      if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
+      else                            Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
     }
 
     // Rook on 7th rank attacking pawns or cutting off enemy king
@@ -312,7 +315,7 @@ void EvaluatePieces(POS *p, int sd) {
       Add(sd, F_LINES, 16, 32);
       }
     }
-  }
+  } // end of rook eval
 
   // Queen
 
@@ -352,9 +355,10 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  q_att++;
-      att += 15 * PopCnt(bbAtt & bbZone); // ?...  15  ...16
+      att += 15 * PopCnt(bbAtt & bbZone); // [?...  15  ...16]
     }
-  }
+
+  } // end of queen eval
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
