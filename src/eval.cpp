@@ -13,8 +13,14 @@ static const double maxAttScore = 1280;
 static const double attCurveMult = 0.027; // was 0.025
 int danger[512];
 
+//                                 P   N   B   R   Q
+static const int king_att  [7] = { 0,  6,  6,  9, 15, 0, 0 };
+static const int chk_threat[7] = { 0,  4,  3,  9, 12, 0, 0 };
+static const int q_contact_check = 24;
+static const int r_contact_check = 16;
+
 static const int max_phase = 24;
-const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 int dist[64][64];
 
 U64 bbAllAttacks[2];
@@ -190,8 +196,12 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
-    Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);          // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) att += 4; // check threat bonus [3... 4 ...?]
+    
+	Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
+
+	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) 
+	   att += chk_threat[N];                       // check threat bonus
+
     bbAllAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
@@ -200,7 +210,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  n_att++;
-      att += 6 * PopCnt(bbAtt & bbZone);
+      att += king_att[N] * PopCnt(bbAtt & bbZone);
     }
 
     // Knight outpost
@@ -234,8 +244,12 @@ void EvaluatePieces(POS *p, int sd) {
 
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
-    Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) att += 3; // check threat bonus  [?... 3 ...4]
+    
+	Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
+
+    if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) 
+		att += chk_threat[B];                            // check threat bonus
+
     bbAllAttacks[sd] |= bbMob;
 
     // Bishop attacks on enemy king zone
@@ -244,7 +258,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  b_att++;
-      att += 6 * PopCnt(bbAtt & bbZone);
+      att += king_att[B] * PopCnt(bbAtt & bbZone);
     }
 
     // Bishop outpost (much simpler than knight outpost)
@@ -272,7 +286,7 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
 	if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
 	&& p->cnt[sd][Q]) {
-		att += 9; 
+	   att += chk_threat[R]; 
 		
 		bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
 		
@@ -281,11 +295,10 @@ void EvaluatePieces(POS *p, int sd) {
 
 			// possible bug: rook exchanges are accepted as contact checks
 			if (Swap(p, sq, contactSq) >= 0) {
-				att += 6;
+				att += r_contact_check;
 				break;
 			}
 		}
-		/**/
 	}
     bbAllAttacks[sd] |= bbMob;
 
@@ -295,7 +308,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  r_att++;
-      att += 9 * PopCnt(bbAtt & bbZone);
+      att += king_att[R] * PopCnt(bbAtt & bbZone);
     }
 
     // Rook on (half) open file
@@ -332,15 +345,19 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = QAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
-    if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus and contact checks
-    att += 12; // queen check threat: [?... 12 ...14]
+
+    if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus
+		att += chk_threat[Q];
+
+    // Queen contact checks
+
     bbContact = bbMob & k_attacks[ksq];
     while (bbContact) {
       int contactSq = PopFirstBit(&bbContact);
 
       // possible bug: queen exchanges are accepted as contact checks
       if (Swap(p, sq, contactSq) >= 0) {
-		att += 12;  // queen contact check: [10...  12  ...14]
+		 att += q_contact_check;
         break;
       }
     }
@@ -355,7 +372,7 @@ void EvaluatePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
 	  q_att++;
-      att += 15 * PopCnt(bbAtt & bbZone); // [?...  15  ...16]
+      att += king_att[Q] * PopCnt(bbAtt & bbZone);
     }
 
   } // end of queen eval
