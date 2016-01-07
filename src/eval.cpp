@@ -7,11 +7,16 @@
 
 #define SCALE(x,y) ((x*y)/100)
 
+int danger[512]; // table for evaluating king safety
+
+// parameters for initializing danger table [4]
+
 static const int maxAttUnit = 399;
-static const double maxAttStep = 8.0;     // was 7.5
+static const double maxAttStep = 8.0;
 static const double maxAttScore = 1280;
-static const double attCurveMult = 0.027; // was 0.025
-int danger[512];
+static const double attCurveMult = 0.027;
+
+// parameters for evaluating king safety [10]
 
 //                                 P   N   B   R   Q
 static const int king_att  [7] = { 0,  6,  6,  9, 15, 0, 0 };
@@ -19,11 +24,15 @@ static const int chk_threat[7] = { 0,  4,  3,  9, 12, 0, 0 };
 static const int q_contact_check = 24;
 static const int r_contact_check = 16;
 
+// parameters for defining game phase [6]
+
 static const int max_phase = 24;
 static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+
 int dist[64][64];
 
 U64 bbAllAttacks[2];
+U64 bbMinorAttacks[2];
 U64 bbPawnTakes[2];
 U64 bbTwoPawnsTake[2];
 U64 bbPawnCanTake[2];
@@ -203,6 +212,7 @@ void EvaluatePieces(POS *p, int sd) {
 	   att += chk_threat[N];                       // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
+	bbMinorAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
 
@@ -251,6 +261,7 @@ void EvaluatePieces(POS *p, int sd) {
 		att += chk_threat[B];                            // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
+	bbMinorAttacks[sd] |= bbMob;
 
     // Bishop attacks on enemy king zone
 
@@ -403,6 +414,11 @@ void EvalHanging(POS *p, int sd) {
   bbHanging &= bbAllAttacks[sd]; // obviously, hanging piece has to be attacked
   bbHanging &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
 
+  U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
+  bbDefended &= bbMinorAttacks[sd];
+  bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
+  bbDefended &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
+
   int pc, sq, val;
 
   while (bbHanging) {
@@ -411,6 +427,14 @@ void EvalHanging(POS *p, int sd) {
     val = tp_value[pc] / 64;
     Add(sd, F_HANGING, 10 + val, 18 + val);
   }
+
+  while (bbDefended) {
+	  sq = PopFirstBit(&bbDefended);
+	  pc = TpOnSq(p, sq);
+	  val = tp_value[pc] / 96;
+	  Add(sd, F_HANGING, 5 + val, 9 + val);
+  }
+
 }
 
 U64 ShiftFwd(U64 bb, int side)
@@ -488,6 +512,7 @@ int Evaluate(POS *p, int use_hash) {
   bbTwoPawnsTake[BC] = GetDoubleBPControl(PcBb(p, BC, P));
   bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
   bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
+  bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;
   bbPawnCanTake[WC] = FillNorth(bbPawnTakes[WC]);
   bbPawnCanTake[BC] = FillSouth(bbPawnTakes[BC]);
 
