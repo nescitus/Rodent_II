@@ -7,29 +7,13 @@
 
 #define SCALE(x,y) ((x*y)/100)
 
-int danger[512]; // table for evaluating king safety
-
-// parameters for initializing danger table [4]
-
-static const int maxAttUnit = 399;
-static const double maxAttStep = 8.0;
-static const double maxAttScore = 1280;
-static const double attCurveMult = 0.027;
-
-// parameters for evaluating king safety [10]
-
-//                                 P   N   B   R   Q
-static const int king_att  [7] = { 0,  6,  6,  9, 15, 0, 0 };
-static const int chk_threat[7] = { 0,  4,  3,  9, 12, 0, 0 };
-static const int q_contact_check = 24;
-static const int r_contact_check = 16;
+int danger[512];   // table for evaluating king safety
+int dist[64][64];  // table for evaluating king tropism
 
 // parameters for defining game phase [6]
 
 static const int max_phase = 24;
 static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
-
-int dist[64][64];
 
 U64 bbAllAttacks[2];
 U64 bbMinorAttacks[2];
@@ -199,7 +183,7 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Knight tropism to enemy king
 
-    Add(sd, F_TROPISM, 3 * dist[sq][ksq], 3 * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[N] * dist[sq][ksq], tropism_eg[N] * dist[sq][ksq]);
     
     // Knight mobility
 
@@ -248,7 +232,7 @@ void EvaluatePieces(POS *p, int sd) {
 
   // Bishop tropism to enemy king
 
-  Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
+  Add(sd, F_TROPISM, tropism_mg[B] * dist[sq][ksq], tropism_eg[B] * dist[sq][ksq]);
 
     // Bishop mobility
 
@@ -288,7 +272,7 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Rook tropism to enemy king
 
-    Add(sd, F_TROPISM, 2 * dist[sq][ksq], 1 * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[R] * dist[sq][ksq], tropism_eg[R] * dist[sq][ksq]);
   
     // Rook mobility
 
@@ -312,6 +296,7 @@ void EvaluatePieces(POS *p, int sd) {
 		}
 	}
     bbAllAttacks[sd] |= bbMob;
+	bbMinorAttacks[sd] |= bbMob;  // TEMPORARY, TESTING
 
     // Rook attacks on enemy king zone
 
@@ -349,7 +334,7 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Queen tropism to enemy king
 
-    Add(sd, F_TROPISM, 2 * dist[sq][ksq], 4 * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[Q] * dist[sq][ksq], tropism_eg[Q] * dist[sq][ksq]);
 
     // Queen mobility
 
