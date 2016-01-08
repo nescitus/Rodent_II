@@ -53,7 +53,7 @@ void FullPawnEval(POS * p, int use_hash) {
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan, bbContact;
+  U64 bbPieces, bbSpan;
   int sq, fl_unopposed, fl_weak; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
@@ -71,7 +71,6 @@ void EvaluatePawns(POS *p, int sd) {
     // Get some information about the pawn we are evaluation
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
-	bbContact = SqBb(sq) ^ ShiftNorth(sq) ^ ShiftSouth(sq);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
 	fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
 
@@ -88,14 +87,6 @@ void EvaluatePawns(POS *p, int sd) {
       else
         Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);    // backward pawn
 	}
-
-	// Losing contact with own pawn mass
-
-    if (!fl_weak
-    &&  !(bbContact & bbPawnTakes[sd])) {
-		Add(sd, F_PAWNS, -4, -8);
-	}
-
   }
 }
 
