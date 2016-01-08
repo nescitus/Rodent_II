@@ -185,8 +185,8 @@ int BadCapture(POS *p, int move) {
   // Bishop takes knight and knight takes bishop are good irrespectively from
   // the way minor pieces' values are tuned
 
-  if (TpOnSq(p, fsq) == B && TpOnSq(p, fsq) == N) return 0;
-  if (TpOnSq(p, fsq) == N && TpOnSq(p, fsq) == B) return 0;
+  if ((TpOnSq(p, fsq) == B) && (TpOnSq(p, tsq) == N)) return 0;
+  if ((TpOnSq(p, fsq) == N) && (TpOnSq(p, tsq) == B)) return 0;
 
   // En passant captures are good by definition
 

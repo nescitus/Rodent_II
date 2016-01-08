@@ -449,7 +449,7 @@ void EvalPassers(POS * p, int sd)
       eg_tmp = passed_bonus_eg[sd][Rank(sq)];
       mul = 100;
 
-      // blocked passers are worth less
+      // blocked passers score less
 
       if (bbStop & OccBb(p)) mul -= 20;
 
