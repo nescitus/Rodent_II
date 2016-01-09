@@ -1,3 +1,22 @@
+/*
+Rodent, a UCI chess playing engine derived from Sungorus 1.4
+Copyright (C) 2009-2011 Pablo Vazquez (Sungorus author)
+Copyright (C) 2011-2016 Pawel Koziol
+
+Rodent is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published
+by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Rodent is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "rodent.h"
 #include "magicmoves.h"
 
@@ -314,56 +333,56 @@ int *GenerateQuiet(POS *p, int *list) {
 
 int *GenerateQuietChecks(POS *p, int *list)
 {
-	U64 bbPieces, bbMoves;
-	int ksq = KingSq(p, Opp(p->side));
-	U64 bbKnightChk = n_attacks[ksq];
-	U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
-	U64 bbDiagChk = BAttacks(OccBb(p), ksq);
-	U64 bbQueenChk = bbStr8Chk | bbDiagChk;
+  U64 bbPieces, bbMoves;
+  int ksq = KingSq(p, Opp(p->side));
+  U64 bbKnightChk = n_attacks[ksq];
+  U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
+  U64 bbDiagChk = BAttacks(OccBb(p), ksq);
+  U64 bbQueenChk = bbStr8Chk | bbDiagChk;
 
-	int side, from, to;
+  int side, from, to;
 
-	side = p->side;
+  side = p->side;
 
-	bbPieces = PcBb(p, side, N);
-	while (bbPieces) {
-		from = PopFirstBit(&bbPieces);
-		bbMoves = (n_attacks[from] & UnoccBb(p)) & bbKnightChk;
-		while (bbMoves) {
-			to = PopFirstBit(&bbMoves);
-			*list++ = (to << 6) | from;
-		}
-	}
+  bbPieces = PcBb(p, side, N);
+  while (bbPieces) {
+    from = PopFirstBit(&bbPieces);
+    bbMoves = (n_attacks[from] & UnoccBb(p)) & bbKnightChk;
+    while (bbMoves) {
+      to = PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | from;
+    }
+  }
 
-	bbPieces = PcBb(p, side, B);
-	while (bbPieces) {
-		from = PopFirstBit(&bbPieces);
-		bbMoves = (BAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
-		while (bbMoves) {
-			to = PopFirstBit(&bbMoves);
-			*list++ = (to << 6) | from;
-		}
-	}
+  bbPieces = PcBb(p, side, B);
+  while (bbPieces) {
+    from = PopFirstBit(&bbPieces);
+    bbMoves = (BAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
+    while (bbMoves) {
+      to = PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | from;
+    }
+  }
 
-	bbPieces = PcBb(p, side, R);
-	while (bbPieces) {
-		from = PopFirstBit(&bbPieces);
-		bbMoves = (RAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
-		while (bbMoves) {
-			to = PopFirstBit(&bbMoves);
-			*list++ = (to << 6) | from;
-		}
-	}
+  bbPieces = PcBb(p, side, R);
+  while (bbPieces) {
+    from = PopFirstBit(&bbPieces);
+    bbMoves = (RAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
+    while (bbMoves) {
+      to = PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | from;
+    }
+  }
 
-	bbPieces = PcBb(p, side, Q);
-	while (bbPieces) {
-		from = PopFirstBit(&bbPieces);
-		bbMoves = (QAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
-		while (bbMoves) {
-			to = PopFirstBit(&bbMoves);
-			*list++ = (to << 6) | from;
-		}
-	}
+  bbPieces = PcBb(p, side, Q);
+  while (bbPieces) {
+    from = PopFirstBit(&bbPieces);
+    bbMoves = (QAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
+    while (bbMoves) {
+      to = PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | from;
+    }
+  }
 
-	return list;
+  return list;
 }
