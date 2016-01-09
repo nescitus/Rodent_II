@@ -5,7 +5,7 @@
 #include "timer.h"
 #include "book.h"
 
-double lmrSize[2][MAX_PLY][MAX_MOVES];
+double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
 
 void InitSearch(void) {
@@ -14,15 +14,15 @@ void InitSearch(void) {
 
   for (int depth = 0; depth < MAX_PLY; depth++)
     for (int moves = 0; moves < MAX_MOVES; moves++) {
-      lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zero window node
-      lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // principal variation node
+      lmr_size[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zero window node
+      lmr_size[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // principal variation node
 
       for (int node = 0; node <= 1; node++) {
-        if (lmrSize[node][depth][moves] < 1) lmrSize[node][depth][moves] = 0; // ultra-small reductions make no sense
-        else lmrSize[node][depth][moves] += 0.5;
+        if (lmr_size[node][depth][moves] < 1) lmr_size[node][depth][moves] = 0; // ultra-small reductions make no sense
+        else lmr_size[node][depth][moves] += 0.5;
 
-        if (lmrSize[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
-          lmrSize[node][depth][moves] = depth - 1;
+        if (lmr_size[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
+          lmr_size[node][depth][moves] = depth - 1;
       }
     }
 }
@@ -187,6 +187,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 	  else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
+	  // Verification search
+
+	  //if (new_depth > 2 && score >= beta )
+	  //   score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
+
       if (abort_search ) return 0;
       if (score >= beta) return score;
     }
@@ -224,7 +229,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Init moves and variables before entering main loop
   
   best = -INF;
-  InitMoves(p, m, move, refutation[Fsq(last_move)][Tsq(last_move)], ply);
+  InitMoves(p, m, move, Refutation(last_move), ply);
   
   // Main loop
   
@@ -269,9 +274,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
   &&  fl_prunable_move
-  && lmrSize[is_pv][depth][mv_tried] > 0
+  && lmr_size[is_pv][depth][mv_tried] > 0
   && MoveType(move) != CASTLE ) {
-    reduction = lmrSize[is_pv][depth][mv_tried];
+    reduction = lmr_size[is_pv][depth][mv_tried];
     new_depth -= reduction;
   }
 

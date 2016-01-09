@@ -300,3 +300,7 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
     killer[ply][0] = move;
   }
 }
+
+int Refutation(int move) {
+	return refutation[Fsq(move)][Tsq(move)];
+}

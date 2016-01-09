@@ -1,10 +1,10 @@
-// bench: 703.958
-// bench 12: 6610945 15,8 s 0.965
-// bench 15: 39903737 81.1 1.142
+// bench: 722.171
+// bench 12: 8082659 18,7 s 1.001
+// bench 15: 40.775.768 82.8 1.141
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4141 lines of code
 
-#define PROG_NAME "Rodent II 0.6"
+#define PROG_NAME "Rodent II 0.6.1"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -340,6 +340,7 @@ void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 void SetWeight(int weight_name, int value);
 int Widen(POS *p, int depth, int * pv, int lastScore);
+int Refutation(int move);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);
