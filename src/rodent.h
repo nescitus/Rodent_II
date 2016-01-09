@@ -1,10 +1,10 @@
-// bench: 732.050
+// bench: 703.958
 // bench 12: 6610945 15,8 s 0.965
 // bench 15: 39903737 81.1 1.142
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4141 lines of code
 
-#define PROG_NAME "Rodent II 0.5.11"
+#define PROG_NAME "Rodent II 0.6"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -289,6 +289,7 @@ U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
+int *GenerateQuietChecks(POS *p, int *list);
 int GetMS(void);
 U64 GetNps(int elapsed);
 U64 GetWPControl(U64 bb);
@@ -314,6 +315,7 @@ void MoveToStr(int move, char *move_str);
 void PrintMove(int move);
 int MvvLva(POS *p, int move);
 int NextCapture(MOVES *m);
+int NextCaptureOrCheck(MOVES * m);
 int NextMove(MOVES *m, int *flag);
 void ParseGo(POS *, char *);
 void ParseMoves(POS *p, char *ptr);
@@ -327,6 +329,7 @@ int PopCnt(U64);
 int PopFirstBit(U64 * bb);
 void PvToStr(int *, char *);
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv);
+int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv);
 int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv);
 U64 Random64(void);
 void ReadLine(char *str, int n);

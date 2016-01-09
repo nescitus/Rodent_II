@@ -14,8 +14,8 @@ void InitSearch(void) {
 
   for (int depth = 0; depth < MAX_PLY; depth++)
     for (int moves = 0; moves < MAX_MOVES; moves++) {
-      lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zw node
-      lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // pv node
+      lmrSize[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zero window node
+      lmrSize[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // principal variation node
 
       for (int node = 0; node <= 1; node++) {
         if (lmrSize[node][depth][moves] < 1) lmrSize[node][depth][moves] = 0; // ultra-small reductions make no sense
@@ -88,7 +88,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     }
   }
 
-  cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv);      // full window search
+  cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
   return cur_val;
 }
 
@@ -105,7 +105,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Quiescence search entry point
 
   if (depth <= 0)
-    return Quiesce(p, ply, alpha, beta, pv);
+    return QuiesceChecks(p, ply, alpha, beta, pv);
 
   // Periodically check for timeout, ponderhit or stop command
 
@@ -147,7 +147,15 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // to pruning/reduction decisions
 
   fl_check = InCheck(p);
-  fl_prunable_node = !fl_check & !is_pv && alpha > -MAX_EVAL && beta < MAX_EVAL;
+
+  // Can we prune this node?
+
+  fl_prunable_node = !fl_check 
+	               && !is_pv 
+				   && alpha > -MAX_EVAL 
+				   && beta < MAX_EVAL;
+
+  // Beta pruning / static null move
 
   if (ply && depth <= 3
   && fl_prunable_node
@@ -165,18 +173,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     int eval = Evaluate(p, 1);
     if (eval > beta) {
 
-      reduction = 4;
-      if (depth > 8) reduction += depth / 4;
+	  new_depth = depth - ((823 + 67 * depth) / 256); // simplified Stockfish formula
 
-    // omit null move search if normal search to the same depth wouldn't exceed beta
-    // (sometimes we can check it for free via hash table)
+      // omit null move search if normal search to the same depth wouldn't exceed beta
+      // (sometimes we can check it for free via hash table)
 
-      if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, depth-reduction, ply)) {
+      if (TransRetrieve(p->hash_key, &move, &null_score, alpha, beta, new_depth, ply)) {
         if (null_score < beta) goto avoid_null;
       }
 
       p->DoNull(u);
-      score = -Search(p, ply + 1, -beta, -beta + 1, depth - reduction, 1, 0, new_pv);
+      if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, new_pv);
+	  else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
       if (abort_search ) return 0;
@@ -199,7 +207,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     int eval = Evaluate(p, 1);
 
     if (eval < threshold) {
-      score = Quiesce(p, ply, alpha, beta, pv);
+      score = QuiesceChecks(p, ply, alpha, beta, pv);
       if (score < threshold) return score;
     }
   } 
@@ -228,7 +236,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   mv_tried++;
   if (mv_type == MV_NORMAL) quiet_tried++;
-  fl_prunable_move = !InCheck(p) & (mv_type == MV_NORMAL);
+  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
   // Set new search depth
 

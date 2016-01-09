@@ -311,3 +311,59 @@ int *GenerateQuiet(POS *p, int *list) {
 
   return list;
 }
+
+int *GenerateQuietChecks(POS *p, int *list)
+{
+	U64 bbPieces, bbMoves;
+	int ksq = KingSq(p, Opp(p->side));
+	U64 bbKnightChk = n_attacks[ksq];
+	U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
+	U64 bbDiagChk = BAttacks(OccBb(p), ksq);
+	U64 bbQueenChk = bbStr8Chk | bbDiagChk;
+
+	int side, from, to;
+
+	side = p->side;
+
+	bbPieces = PcBb(p, side, N);
+	while (bbPieces) {
+		from = PopFirstBit(&bbPieces);
+		bbMoves = (n_attacks[from] & UnoccBb(p)) & bbKnightChk;
+		while (bbMoves) {
+			to = PopFirstBit(&bbMoves);
+			*list++ = (to << 6) | from;
+		}
+	}
+
+	bbPieces = PcBb(p, side, B);
+	while (bbPieces) {
+		from = PopFirstBit(&bbPieces);
+		bbMoves = (BAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
+		while (bbMoves) {
+			to = PopFirstBit(&bbMoves);
+			*list++ = (to << 6) | from;
+		}
+	}
+
+	bbPieces = PcBb(p, side, R);
+	while (bbPieces) {
+		from = PopFirstBit(&bbPieces);
+		bbMoves = (RAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
+		while (bbMoves) {
+			to = PopFirstBit(&bbMoves);
+			*list++ = (to << 6) | from;
+		}
+	}
+
+	bbPieces = PcBb(p, side, Q);
+	while (bbPieces) {
+		from = PopFirstBit(&bbPieces);
+		bbMoves = (QAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
+		while (bbMoves) {
+			to = PopFirstBit(&bbMoves);
+			*list++ = (to << 6) | from;
+		}
+	}
+
+	return list;
+}
