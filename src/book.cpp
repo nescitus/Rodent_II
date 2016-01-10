@@ -516,7 +516,6 @@ void sBook::Init(POS * p)
   bookSize = 0;
 }
 
-
 int sBook::IsInfrequent(int val, int maxFreq)
 {
   if (maxFreq > 2 && val < 2) return 1;     // if possible, pick a move tried at least twice

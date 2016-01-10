@@ -79,17 +79,4 @@ void EvalPatterns(POS * p) {
 
   if ((PcBb(p, BC, K) & king_mask)
   && (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
-
-  // Knight blocking "c" pawn
-  /**
-  if (IsOnSq(p, WC, P, C2)
-  &&  IsOnSq(p, WC, P, D4)
-  && !IsOnSq(p, WC, P, E4)
-  && IsOnSq(p, WC, N, C3))  Add(WC, F_OTHERS, -15, 0);
-
-  if (IsOnSq(p, BC, P, C7)
-  &&  IsOnSq(p, BC, P, D5)
-  && !IsOnSq(p, BC, P, E5)
-  && IsOnSq(p, BC, N, C6)) Add(BC, F_OTHERS, -15, 0);
-  /**/
 }

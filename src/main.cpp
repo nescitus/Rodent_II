@@ -31,6 +31,7 @@ int main() {
   eval_blur = 0;
   draw_score = 0;
   book_filter = 20;
+  use_book = 1;
 
   Timer.Init();
   initmagicmoves();

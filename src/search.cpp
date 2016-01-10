@@ -50,6 +50,8 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
+  // Play move from opening book, if applicable
+
   if (use_book) {
     pv[0] = GuideBook.GetPolyglotMove(p, 1);
     if (pv[0]) return;
@@ -58,11 +60,15 @@ void Think(POS *p, int *pv) {
     if (pv[0]) return;
   }
 
+  // Set basic data
+
   ClearHist();
   tt_date = (tt_date + 1) & 255;
   nodes = 0;
   abort_search = 0;
   Timer.SetStartTime();
+
+  // Search
 
   Iterate(p, pv);
 }
@@ -72,9 +78,10 @@ void Iterate(POS *p, int *pv) {
   int val = 0, cur_val = 0;
   U64 nps = 0;
   Timer.SetIterationTiming();
+  
   int max_root_depth = Timer.GetData(MAX_DEPTH);
-  root_side = p->side;
 
+  root_side = p->side;
   SetAsymmetricEval(p->side);
 
   // Are we operating in slowdown mode?
@@ -294,7 +301,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   reduction = 0;
 
-  if (depth >= 2 
+  if (depth >= 2
   && mv_tried > 3
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
