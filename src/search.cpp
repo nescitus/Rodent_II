@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
+int root_side;
+
 
 void InitSearch(void) {
 
@@ -68,6 +70,7 @@ void Iterate(POS *p, int *pv) {
   U64 nps = 0;
   Timer.SetIterationTiming();
   int max_root_depth = Timer.GetData(MAX_DEPTH);
+  root_side = p->side;
 
   SetAsymmetricEval(p->side);
 
@@ -135,7 +138,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   if (abort_search) return 0;
   if (ply) *pv = 0;
-  if (IsDraw(p) && ply) return 0;
+  if (IsDraw(p) && ply) return DrawScore(p);
 
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
@@ -457,4 +460,9 @@ U64 GetNps(int elapsed)
   U64 nps = 0;
   if (elapsed) nps = (nodes * 1000) / elapsed;
   return nps;
+}
+
+int DrawScore(POS * p) {
+	if (p->side == root_side) return -draw_score;
+	else                      return  draw_score;
 }

@@ -29,6 +29,7 @@ sBook  GuideBook;
 int main() {
   
   eval_blur = 0;
+  draw_score = 0;
   Timer.Init();
   initmagicmoves();
   Init();

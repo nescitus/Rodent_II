@@ -46,6 +46,7 @@ U64 zob_ep[8];
 int pondering;
 int root_depth;
 int eval_blur;
+int draw_score;
 U64 nodes;
 int abort_search;
 ENTRY *tt;
