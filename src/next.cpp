@@ -130,13 +130,13 @@ int NextMove(MOVES *m, int *flag) {
   return 0;
 }
 
-void InitCaptures(POS *p, MOVES *m)
-{
-	m->phase = 0;
-	m->p = p;
-	m->last = GenerateCaptures(m->p, m->move);
-	ScoreCaptures(m);
-	m->next = m->move;
+void InitCaptures(POS *p, MOVES *m) {
+
+  m->phase = 0;
+  m->p = p;
+  m->last = GenerateCaptures(m->p, m->move);
+  ScoreCaptures(m);
+  m->next = m->move;
 }
 
 int NextCapture(MOVES *m) {
@@ -152,32 +152,32 @@ int NextCapture(MOVES *m) {
 
 int NextCaptureOrCheck(MOVES * m)  // used in QuiesceCheck()
 {
-	int move;
+  int move;
 
-	switch (m->phase) {
-	case 0:
-		while (m->next < m->last) {
-			move = SelectBest(m);
-			if (BadCapture(m->p, move))
-				continue;
+  switch (m->phase) {
+  case 0:
+    while (m->next < m->last) {
+      move = SelectBest(m);
+      if (BadCapture(m->p, move))
+        continue;
 
-			return move;
-		}
-		m->phase = 1;
+      return move;
+  }
+  m->phase = 1;
 
-	case 1:
-		m->last = GenerateQuietChecks(m->p, m->move);
-		ScoreQuiet(m);
-		m->phase = 2;
+  case 1:
+    m->last = GenerateQuietChecks(m->p, m->move);
+    ScoreQuiet(m);
+    m->phase = 2;
 
-	case 2:
-		while (m->next < m->last) {
-			move = SelectBest(m);
-			if (Swap(m->p, Fsq(move), Tsq(move)) < 0) continue;
-			return move;
-		}
-	}
-	return 0;
+  case 2:
+    while (m->next < m->last) {
+      move = SelectBest(m);
+      if (Swap(m->p, Fsq(move), Tsq(move)) < 0) continue;
+      return move;
+    }
+  }
+  return 0;
 }
 
 
@@ -321,5 +321,5 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 }
 
 int Refutation(int move) {
-	return refutation[Fsq(move)][Tsq(move)];
+  return refutation[Fsq(move)][Tsq(move)];
 }

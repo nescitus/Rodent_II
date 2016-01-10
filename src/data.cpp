@@ -43,17 +43,21 @@ int killer[MAX_PLY][2];
 U64 zob_piece[12][64];
 U64 zob_castle[16];
 U64 zob_ep[8];
+
 int pondering;
 int root_depth;
 int eval_blur;
 int draw_score;
 int use_book;
+int book_filter;
 U64 nodes;
 int abort_search;
+
 ENTRY *tt;
 int tt_size;
 int tt_mask;
 int tt_date;
+
 int weights[N_OF_FACTORS];
 int dyn_weights[5];
 int curr_weights[2][2];

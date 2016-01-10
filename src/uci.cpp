@@ -37,21 +37,21 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
 
-	if (strstr(command, "setoption name UseBook value"))
-		use_book = (strstr(command, "value true") != 0);
+    if (strstr(command, "setoption name UseBook value"))
+      use_book = (strstr(command, "value true") != 0);
 
     if (strcmp(token, "uci") == 0) {
       printf("id name ");
       printf(PROG_NAME);
-	  printf("\n");
+      printf("\n");
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
       printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-	  printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
-	  printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
-	  printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
-	  printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
+      printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
+      printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
+      printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
+      printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
       printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
       printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
       printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
@@ -59,10 +59,11 @@ void UciLoop(void) {
       printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
       printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
       printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-	  printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
-	  printf("option name UseBook type check default true\n");
+      printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
+      printf("option name UseBook type check default true\n");
       printf("option name GuideBookFile type string default guide.bin\n");
       printf("option name MainBookFile type string default rodent.bin\n");
+      printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -130,17 +131,17 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
     InitEval();
   } else if (strcmp(name, "OwnAttack") == 0) {
-	dyn_weights[DF_OWN_ATT] = atoi(value);
-	ResetEngine();
+    dyn_weights[DF_OWN_ATT] = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "OppAttack") == 0) {
-	dyn_weights[DF_OPP_ATT] = atoi(value);
-	ResetEngine();
+    dyn_weights[DF_OPP_ATT] = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "OwnMobility") == 0) {
-	dyn_weights[DF_OWN_MOB] = atoi(value);
-	ResetEngine();
+    dyn_weights[DF_OWN_MOB] = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "OppMobility") == 0) {
-	dyn_weights[DF_OPP_MOB] = atoi(value);
-	ResetEngine();
+    dyn_weights[DF_OPP_MOB] = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "KingTropism") == 0) {
     SetWeight(F_TROPISM, atoi(value));
   } else if (strcmp(name, "PassedPawns") == 0) {
@@ -153,13 +154,13 @@ void ParseSetoption(char *ptr) {
     SetWeight(F_OUTPOST, atoi(value));
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
-   ResetEngine();
+    ResetEngine();
   } else if (strcmp(name, "EvalBlur") == 0) {
     eval_blur = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "Contempt") == 0) {
-	  draw_score = atoi(value);
-	  ResetEngine();
+    draw_score = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "GuideBookFile") == 0) {
     GuideBook.ClosePolyglot();
     GuideBook.bookName = value;
@@ -168,6 +169,8 @@ void ParseSetoption(char *ptr) {
     MainBook.ClosePolyglot();
     MainBook.bookName = value;
     MainBook.OpenPolyglot();
+  } else if (strcmp(name, "BookFilter") == 0) {
+    book_filter = atoi(value);;
   }
 }
 

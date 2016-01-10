@@ -91,21 +91,21 @@ void EvaluatePawns(POS *p, int sd) {
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
-	fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
+    fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
 
-	// Doubled pawn
+    // Doubled pawn
 
     if (bbSpan & PcBb(p, sd, P))
       Add(sd, F_PAWNS, -12, -24);
 
-	// Weak pawn (two flavours)
+    // Weak pawn (two flavours)
 
     if (fl_weak) {
       if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
         Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20); // isolated pawn
       else
         Add(sd, F_PAWNS, -8 - 8 * fl_unopposed, -8);    // backward pawn
-	}
+    }
   }
 }
 

@@ -50,12 +50,13 @@ char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
 void SetAsymmetricEval(int sd) {
-	int op = Opp(sd);
 
-	curr_weights[sd][SD_ATT] = dyn_weights[DF_OWN_ATT];
-	curr_weights[op][SD_ATT] = dyn_weights[DF_OPP_ATT];
-	curr_weights[sd][SD_MOB] = dyn_weights[DF_OWN_MOB];
-	curr_weights[op][SD_MOB] = dyn_weights[DF_OPP_MOB];
+  int op = Opp(sd);
+
+  curr_weights[sd][SD_ATT] = dyn_weights[DF_OWN_ATT];
+  curr_weights[op][SD_ATT] = dyn_weights[DF_OPP_ATT];
+  curr_weights[sd][SD_MOB] = dyn_weights[DF_OWN_MOB];
+  curr_weights[op][SD_MOB] = dyn_weights[DF_OPP_MOB];
 }
 
 void ClearEvalHash(void) {
@@ -209,20 +210,20 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     
-	Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
+    Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
-	if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) 
-	   att += chk_threat[N];                       // check threat bonus
+    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) 
+       att += chk_threat[N];                       // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
-	bbMinorAttacks[sd] |= bbMob;
+    bbMinorAttacks[sd] |= bbMob;
 
     // Knight attacks on enemy king zone
 
     bbAtt = n_attacks[sq];
     if (bbAtt & bbZone) {
       wood++;
-	  n_att++;
+      n_att++;
       att += king_att[N] * PopCnt(bbAtt & bbZone);
     }
 
@@ -258,20 +259,20 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     
-	Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
+    Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) 
-		att += chk_threat[B];                            // check threat bonus
+      att += chk_threat[B];                            // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
-	bbMinorAttacks[sd] |= bbMob;
+    bbMinorAttacks[sd] |= bbMob;
 
     // Bishop attacks on enemy king zone
 
     bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
     if (bbAtt & bbZone) {
       wood++;
-	  b_att++;
+      b_att++;
       att += king_att[B] * PopCnt(bbAtt & bbZone);
     }
 
@@ -298,31 +299,31 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = RAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-	if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
-	&& p->cnt[sd][Q]) {
-	   att += chk_threat[R]; 
-		
-		bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
-		
-		while (bbContact) {
-			int contactSq = PopFirstBit(&bbContact);
+    if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
+    && p->cnt[sd][Q]) {
+       att += chk_threat[R]; 
 
-			// possible bug: rook exchanges are accepted as contact checks
-			if (Swap(p, sq, contactSq) >= 0) {
-				att += r_contact_check;
-				break;
-			}
-		}
-	}
+    bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
+
+    while (bbContact) {
+      int contactSq = PopFirstBit(&bbContact);
+
+      // possible bug: rook exchanges are accepted as contact checks
+      if (Swap(p, sq, contactSq) >= 0) {
+        att += r_contact_check;
+        break;
+      }
+    }
+  }
     bbAllAttacks[sd] |= bbMob;
-	bbMinorAttacks[sd] |= bbMob;  // TEMPORARY, TESTING
+    bbMinorAttacks[sd] |= bbMob;  // TEMPORARY, TESTING
 
     // Rook attacks on enemy king zone
 
     bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
     if (bbAtt & bbZone) {
       wood++;
-	  r_att++;
+      r_att++;
       att += king_att[R] * PopCnt(bbAtt & bbZone);
     }
 
@@ -362,7 +363,7 @@ void EvaluatePieces(POS *p, int sd) {
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus
-		att += chk_threat[Q];
+      att += chk_threat[Q];
 
     // Queen contact checks
 
@@ -372,7 +373,7 @@ void EvaluatePieces(POS *p, int sd) {
 
       // possible bug: queen exchanges are accepted as contact checks
       if (Swap(p, sq, contactSq) >= 0) {
-		 att += q_contact_check;
+        att += q_contact_check;
         break;
       }
     }
@@ -386,7 +387,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
     if (bbAtt & bbZone) {
       wood++;
-	  q_att++;
+      q_att++;
       att += king_att[Q] * PopCnt(bbAtt & bbZone);
     }
 
@@ -396,11 +397,11 @@ void EvaluatePieces(POS *p, int sd) {
 
   if (wood > 1 && p->cnt[sd][Q]) {
 
-	if (q_att & r_att) att += 6;
-	if (q_att & n_att) att += 3;
-	if (q_att & b_att) att += 3;
-	if (r_att & n_att) att += 1;
-	if (r_att & b_att) att += 1;
+    if (q_att & r_att) att += 6;
+    if (q_att & n_att) att += 3;
+    if (q_att & b_att) att += 3;
+    if (r_att & n_att) att += 1;
+    if (r_att & b_att) att += 1;
 
     if (att > 399) att = 399;
     tmp = danger[att];
@@ -433,18 +434,18 @@ void EvalHanging(POS *p, int sd) {
   }
 
   while (bbDefended) {
-	  sq = PopFirstBit(&bbDefended);
-	  pc = TpOnSq(p, sq);
-	  val = tp_value[pc] / 96;
-	  Add(sd, F_HANGING, 5 + val, 9 + val);
+    sq = PopFirstBit(&bbDefended);
+    pc = TpOnSq(p, sq);
+    val = tp_value[pc] / 96;
+    Add(sd, F_HANGING, 5 + val, 9 + val);
   }
 
 }
 
 U64 ShiftFwd(U64 bb, int side)
 {
-	if (side == WC) return ShiftNorth(bb);
-	return ShiftSouth(bb);
+  if (side == WC) return ShiftNorth(bb);
+  return ShiftSouth(bb);
 }
 
 void EvalPassers(POS * p, int sd) 
@@ -463,7 +464,7 @@ void EvalPassers(POS * p, int sd)
     // Passed pawn
 
     if (!(passed_mask[sd][sq] & PcBb(p, op, P))) {
-		
+
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
       eg_tmp = passed_bonus_eg[sd][Rank(sq)];
       mul = 100;

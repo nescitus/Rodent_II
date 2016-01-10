@@ -63,6 +63,7 @@ void Think(POS *p, int *pv) {
   nodes = 0;
   abort_search = 0;
   Timer.SetStartTime();
+
   Iterate(p, pv);
 }
 
@@ -175,9 +176,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Can we prune this node?
 
   fl_prunable_node = !fl_check 
-	               && !is_pv 
-				   && alpha > -MAX_EVAL 
-				   && beta < MAX_EVAL;
+                   && !is_pv 
+                   && alpha > -MAX_EVAL 
+                   && beta < MAX_EVAL;
 
   // Beta pruning / static null move
 
@@ -197,7 +198,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     int eval = Evaluate(p, 1);
     if (eval > beta) {
 
-	  new_depth = depth - ((823 + 67 * depth) / 256); // simplified Stockfish formula
+      new_depth = depth - ((823 + 67 * depth) / 256); // simplified Stockfish formula
 
       // omit null move search if normal search to the same depth wouldn't exceed beta
       // (sometimes we can check it for free via hash table)
@@ -208,13 +209,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
       p->DoNull(u);
       if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, new_pv);
-	  else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
+      else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
-	  // Verification search
+      // Verification search
 
-	  //if (new_depth > 2 && score >= beta )
-	  //   score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
+      //if (new_depth > 2 && score >= beta )
+      //   score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
 
       if (abort_search ) return 0;
       if (score >= beta) return score;
@@ -387,10 +388,10 @@ int IsDraw(POS *p) {
   // Draw by insufficient material (bare kings or Km vs K)
 
   if (!Illegal(p)) {
-	if (p->cnt[WC][P] + p->cnt[BC][P] + p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0) {
+    if (p->cnt[WC][P] + p->cnt[BC][P] + p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0) {
       if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
-	  // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
-	}
+      // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
+    }
   }
 
   return 0; // default: no draw
@@ -465,6 +466,7 @@ U64 GetNps(int elapsed)
 }
 
 int DrawScore(POS * p) {
-	if (p->side == root_side) return -draw_score;
-	else                      return  draw_score;
+
+  if (p->side == root_side) return -draw_score;
+  else                      return  draw_score;
 }

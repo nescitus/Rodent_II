@@ -520,6 +520,6 @@ void sBook::Init(POS * p)
 int sBook::IsInfrequent(int val, int maxFreq)
 {
   if (maxFreq > 2 && val < 2) return 1;     // if possible, pick a move tried at least twice
-  if (val < ((maxFreq * 10) / 100)) return 1; // filtering out of rare moves
+  if (val < ((maxFreq * book_filter) / 100)) return 1; // rare moves get filtered out
   return 0;
 }
