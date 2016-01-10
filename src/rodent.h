@@ -399,6 +399,7 @@ extern int root_depth;
 extern U64 nodes;
 extern int eval_blur;
 extern int draw_score;
+extern int use_book;
 extern int abort_search;
 extern ENTRY *tt;
 extern int tt_size;

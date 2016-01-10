@@ -36,6 +36,10 @@ void UciLoop(void) {
   for (;;) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
+
+	if (strstr(command, "setoption name UseBook value"))
+		use_book = (strstr(command, "value true") != 0);
+
     if (strcmp(token, "uci") == 0) {
       printf("id name ");
       printf(PROG_NAME);
@@ -56,6 +60,7 @@ void UciLoop(void) {
       printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
       printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
 	  printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
+	  printf("option name UseBook type check default true\n");
       printf("option name GuideBookFile type string default guide.bin\n");
       printf("option name MainBookFile type string default rodent.bin\n");
       printf("uciok\n");
