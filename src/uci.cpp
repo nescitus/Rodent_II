@@ -126,12 +126,16 @@ void ParseSetoption(char *ptr) {
     InitEval();
   } else if (strcmp(name, "OwnAttack") == 0) {
 	dyn_weights[DF_OWN_ATT] = atoi(value);
+	ResetEngine();
   } else if (strcmp(name, "OppAttack") == 0) {
 	dyn_weights[DF_OPP_ATT] = atoi(value);
+	ResetEngine();
   } else if (strcmp(name, "OwnMobility") == 0) {
 	dyn_weights[DF_OWN_MOB] = atoi(value);
+	ResetEngine();
   } else if (strcmp(name, "OppMobility") == 0) {
 	dyn_weights[DF_OPP_MOB] = atoi(value);
+	ResetEngine();
   } else if (strcmp(name, "KingTropism") == 0) {
     SetWeight(F_TROPISM, atoi(value));
   } else if (strcmp(name, "PassedPawns") == 0) {
