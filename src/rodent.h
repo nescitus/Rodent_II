@@ -355,6 +355,7 @@ U64 Random64(void);
 void ReadLine(char *str, int n);
 void ResetEngine(void);
 int IsDraw(POS * p);
+int KPKdraw(POS *p, int sd);
 U64 ShiftFwd(U64 bb, int side);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);

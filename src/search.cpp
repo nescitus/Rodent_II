@@ -392,16 +392,57 @@ int IsDraw(POS *p) {
     if (p->hash_key == p->rep_list[p->head - i])
       return 1;
 
-  // Draw by insufficient material (bare kings or Km vs K)
+  // With no major pieces on the board, we have some heuristic draws to consider
 
-  if (!Illegal(p)) {
-    if (p->cnt[WC][P] + p->cnt[BC][P] + p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0) {
-      if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
-      // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
+  if (p->cnt[WC][Q] + p->cnt[BC][Q] + p->cnt[WC][R] + p->cnt[BC][R] == 0) {
+
+    // Draw by insufficient material (bare kings or Km vs K)
+
+    if (!Illegal(p)) {
+      if (p->cnt[WC][P] + p->cnt[BC][P]) {
+        if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
+        // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
+      }
     }
+
+    // Trivially drawn KPK endgames
+
+    if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] == 0) {
+      if (p->cnt[WC][P] + p->cnt[BC][P] == 1) {
+
+        if (p->cnt[WC][P] == 1 && p->cnt[BC][P] == 0)
+          return KPKdraw(p, WC); // exactly one white pawn
+
+        if (p->cnt[BC][P] == 1 && p->cnt[WC][P] == 0)
+          return KPKdraw(p, BC); // exactly one black pawn
+      }
+    } // pawns only
   }
 
+
   return 0; // default: no draw
+}
+
+int KPKdraw(POS *p, int sd)
+{
+  int op = Opp(sd);
+  U64 bbPawn = PcBb(p, sd, P);
+
+  // opposition through a pawn
+  if (p->side == sd
+  && (SqBb(p->king_sq[op]) & ShiftFwd(bbPawn, sd))
+  && (SqBb(p->king_sq[sd]) & ShiftFwd(bbPawn, op))
+  ) return 1;
+  
+  // weaker side can create opposition through a pawn in one move
+  if (p->side == op
+  && (k_attacks[p->king_sq[op]] & ShiftFwd(bbPawn, sd))
+  && (SqBb(p->king_sq[sd]) & ShiftFwd(bbPawn, op))
+  ) if (!Illegal(p)) return 1;
+
+  // TODO: opposition next to a pawn
+
+  return 0;
 }
 
 void DisplayPv(int score, int *pv) {
