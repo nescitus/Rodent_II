@@ -137,6 +137,7 @@ void EvaluateKing(POS *p, int sd) {
   if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
 
   mg[sd][F_PAWNS] += result;
+  mg[sd][F_PAWNS] += ScoreChains(p, sd);
 }
 
 int EvalKingFile(POS * p, int sd, U64 bbFile) {
@@ -166,4 +167,82 @@ int EvalFileStorm(U64 bbOppPawns, int sd) {
   if (bbOppPawns & bbRelRank[sd][RANK_4]) return -16;
   if (bbOppPawns & bbRelRank[sd][RANK_5]) return -8;
   return 0;
+}
+
+#define SQ(sq) RelSqBb(sq,sd)
+#define opPawns PcBb(p, op, P)
+#define sdPawns PcBb(p, sd, P)
+
+#define OWN_PAWN(sq) (PcBb(p, sd, P) & RelSqBb(sq,sd))
+#define OPP_PAWN(sq) (PcBb(p, op, P) & RelSqBb(sq,sd))
+#define CONTAINS(bb, s1, s2) (bb & SQ(s1)) && (bb & SQ(s2))
+
+static const int bigChainScore = 18;
+static const int smallChainScore = 13;
+
+int ScoreChains(POS *p, int sd)
+{
+  int mgResult = 0;
+  int sq = p->king_sq[sd];
+  int op = Opp(sd);
+
+  // basic pointy chain
+
+  if (SqBb(sq) & bbKSCastle[sd]) {
+
+    if (OPP_PAWN(E4)) {
+      if (CONTAINS(opPawns, D5, C6)) { // c6-d5-e4 triad
+        mgResult -= (CONTAINS(sdPawns, D4, E3)) ? bigChainScore : smallChainScore;
+      }
+
+      if (CONTAINS(opPawns, D5, F3)) { // d5-e4-f3 triad
+        mgResult -= (OWN_PAWN(E3)) ? bigChainScore : smallChainScore;
+      }
+    }
+
+    if (OPP_PAWN(E5)) {
+      if (CONTAINS(opPawns, F4, D6)) { // d6-e5-f4 triad
+        // storm of a "g" pawn in the King's Indian
+        if (OPP_PAWN(G5)) mgResult -= 4;
+        if (OPP_PAWN(G4)) mgResult -= 8;
+
+        mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
+      }
+
+      if (CONTAINS(opPawns, G3, F4)) { // e5-f4-g3 triad
+        mgResult -= (OWN_PAWN(F3)) ? bigChainScore : smallChainScore;
+      }
+    }
+  }
+  
+  if (SqBb(sq) & bbQSCastle[sd]) {
+
+    // basic pointy chain
+
+    if (OPP_PAWN(D4)) {
+      if (CONTAINS(opPawns, E5, F6)) {
+        mgResult -= (CONTAINS(sdPawns, E4, D3)) ? bigChainScore : smallChainScore;
+      }
+			
+      if (CONTAINS(opPawns, F5, C3)) {
+        mgResult -= (SQ(D3) & sdPawns) ? bigChainScore : smallChainScore;
+      }
+    }
+
+    if (OPP_PAWN(D5)) {
+      if (CONTAINS(opPawns, C4, E6)) {
+        // storm of a "b" pawn
+        if (OPP_PAWN(B5)) mgResult -= 4;
+        if (OPP_PAWN(B4)) mgResult -= 8;
+
+        mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
+      }
+
+      if (CONTAINS(opPawns, B3, C4)) {
+        mgResult -= (OWN_PAWN(C3)) ? bigChainScore : smallChainScore;
+      }
+    }
+  }
+
+  return mgResult;
 }
