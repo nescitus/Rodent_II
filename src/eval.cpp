@@ -95,7 +95,7 @@ void InitEval(void) {
     mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5 * file_bonus[File(sq)];
     if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 25;
     if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 10;
-    if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 0;
+    if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
     if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
 
     eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
@@ -165,7 +165,7 @@ void InitEval(void) {
 void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
-  int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
+  int op, sq, cnt, tmp, mul, ksq, osq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
 
   // Is color OK?
@@ -176,6 +176,7 @@ void EvaluatePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
+  osq = KingSq(p, sd);
 
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.

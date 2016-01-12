@@ -30,6 +30,17 @@ static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | S
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 
+#define SQ(sq) RelSqBb(sq,sd)
+#define opPawns PcBb(p, op, P)
+#define sdPawns PcBb(p, sd, P)
+
+#define OWN_PAWN(sq) (PcBb(p, sd, P) & RelSqBb(sq,sd))
+#define OPP_PAWN(sq) (PcBb(p, op, P) & RelSqBb(sq,sd))
+#define CONTAINS(bb, s1, s2) (bb & SQ(s1)) && (bb & SQ(s2))
+
+static const int bigChainScore = 18;
+static const int smallChainScore = 13;
+
 sPawnHashEntry PawnTT[EVAL_HASH_SIZE];
 
 void ClearPawnHash(void) {
@@ -53,12 +64,13 @@ void FullPawnEval(POS * p, int use_hash) {
     return;
   }
 
-  // Pawn eval
+  // Single pawn eval
 
   EvaluatePawns(p, WC);
   EvaluatePawns(p, BC);
 
-  // King's pawn shield and pawn storm on enemy king
+  // King's pawn shield and pawn storm on enemy king,
+  // including pawn chains
 
   EvaluateKing(p, WC);
   EvaluateKing(p, BC);
@@ -169,17 +181,6 @@ int EvalFileStorm(U64 bbOppPawns, int sd) {
   return 0;
 }
 
-#define SQ(sq) RelSqBb(sq,sd)
-#define opPawns PcBb(p, op, P)
-#define sdPawns PcBb(p, sd, P)
-
-#define OWN_PAWN(sq) (PcBb(p, sd, P) & RelSqBb(sq,sd))
-#define OPP_PAWN(sq) (PcBb(p, op, P) & RelSqBb(sq,sd))
-#define CONTAINS(bb, s1, s2) (bb & SQ(s1)) && (bb & SQ(s2))
-
-static const int bigChainScore = 18;
-static const int smallChainScore = 13;
-
 int ScoreChains(POS *p, int sd)
 {
   int mgResult = 0;
@@ -203,7 +204,10 @@ int ScoreChains(POS *p, int sd)
     if (OPP_PAWN(E5)) {
       if (CONTAINS(opPawns, F4, D6)) { // d6-e5-f4 triad
         // storm of a "g" pawn in the King's Indian
-        if (OPP_PAWN(G5)) mgResult -= 4;
+		  if (OPP_PAWN(G5)) {
+            mgResult -= 4; 
+            if (OPP_PAWN(H4)) mgResult += 20; // this is not how you handle pawn chains
+		  }
         if (OPP_PAWN(G4)) mgResult -= 8;
 
         mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
@@ -232,7 +236,10 @@ int ScoreChains(POS *p, int sd)
     if (OPP_PAWN(D5)) {
       if (CONTAINS(opPawns, C4, E6)) {
         // storm of a "b" pawn
-        if (OPP_PAWN(B5)) mgResult -= 4;
+        if (OPP_PAWN(B5)) {
+          mgResult -= 4;
+		  if (OPP_PAWN(A4)) mgResult += 20; // this is not how you handle pawn chains
+        }
         if (OPP_PAWN(B4)) mgResult -= 8;
 
         mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
