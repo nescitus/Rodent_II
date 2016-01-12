@@ -367,7 +367,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Return correct checkmate/stalemate score
 
   if (best == -INF)
-    return InCheck(p) ? -MATE + ply : 0;
+    return InCheck(p) ? -MATE + ply : DrawScore(p);
 
   // Save score in the transposition table
 

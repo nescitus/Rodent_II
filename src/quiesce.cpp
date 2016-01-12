@@ -153,7 +153,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
   if (abort_search) return 0;
   if (ply) *pv = 0;
-  if (IsDraw(p) && ply) return DrawScore(p);
+  if (IsDraw(p) ) return DrawScore(p);
 
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
@@ -211,7 +211,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Return correct checkmate/stalemate score
 
   if (best == -INF)
-    return InCheck(p) ? -MATE + ply : 0;
+    return InCheck(p) ? -MATE + ply : DrawScore(p);
 
   // Save score in the transposition table
 
