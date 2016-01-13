@@ -142,7 +142,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Periodically check for timeout, ponderhit or stop command
 
   nodes++;
-  Check();
+  CheckTimeout();
 
   // Quick exit on a timeout or on a statically detected draw
   
@@ -445,6 +445,15 @@ int KPKdraw(POS *p, int sd)
   return 0;
 }
 
+void DisplaySpeed(void)
+{
+	int elapsed = Timer.GetElapsedTime();
+	U64 nps = GetNps(elapsed);
+
+	printf("info time %d nodes %I64d nps %I64d \n",
+		elapsed, nodes, nps);
+}
+
 void DisplayPv(int score, int *pv) {
 
   char *type, pv_str[512];
@@ -464,16 +473,27 @@ void DisplayPv(int score, int *pv) {
       root_depth, elapsed, nodes, nps, type, score, pv_str);
 }
 
-void Check(void) {
+void CheckTimeout(void) {
 
   char command[80];
   int time;
   U64 nps;
 
+  // Report search speed
+
+  if (!(nodes % 1000000)) DisplaySpeed();
+
+  // We check for timeout or new commands only every so often, 
+  // to save some time, unless the engine is operating
+  // in the weakening mode. In that case, we check for timeout
+  // as often as we can, because slowdown might be extreme.
+  
   if (!Timer.slow_play) {
     if (nodes & 4095 || root_depth == 1)
       return;
   }
+
+  // Slowdown loop
 
   if (Timer.nps_limit && root_depth > 1) {
     time = Timer.GetElapsedTime() + 1;
@@ -489,6 +509,8 @@ void Check(void) {
     }
   }
 
+  // Process commands that might terminatethe search
+
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));
 
@@ -497,6 +519,8 @@ void Check(void) {
     else if (strcmp(command, "ponderhit") == 0)
       pondering = 0;
   }
+
+  // Have we already used our allocated time?
 
   if (Timeout()) abort_search = 1;
 }

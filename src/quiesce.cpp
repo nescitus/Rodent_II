@@ -11,7 +11,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (InCheck(p)) return QuiesceFlee(p, ply, alpha, beta, pv);
 
   nodes++;
-  Check();
+  CheckTimeout();
   if (abort_search) return 0;
   *pv = 0;
   if (IsDraw(p)) return DrawScore(p);
@@ -83,10 +83,10 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
   if (InCheck(p)) return QuiesceFlee(p, ply, alpha, beta, pv);
 
   nodes++;
-  Check();
+  CheckTimeout();
   if (abort_search) return 0;
   *pv = 0;
-
+  
   if (IsDraw(p)) return DrawScore(p);
 
   if (ply >= MAX_PLY - 1)
@@ -147,7 +147,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Periodically check for timeout, ponderhit or stop command
 
   nodes++;
-  Check();
+  CheckTimeout();
 
   // Quick exit on a timeout or on a statically detected draw
 
