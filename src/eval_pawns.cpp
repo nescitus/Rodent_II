@@ -84,10 +84,11 @@ void FullPawnEval(POS * p, int use_hash) {
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan;
+  U64 bbPieces, bbSpan, flagPhalanx1, flagPhalanx2;
   int sq, fl_unopposed, fl_weak; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
+  U64 bbOppPawns = PcBb(p, op, P);
 
   // Is color OK?
 
@@ -104,6 +105,17 @@ void EvaluatePawns(POS *p, int sd) {
     bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
     fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
+
+    // candidate passer (endgame only, in midgame generic phalanx bonus works best)
+
+	if (fl_unopposed) {
+		flagPhalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
+		flagPhalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
+		if (flagPhalanx1 || flagPhalanx2) {
+		if (PopCnt((passed_mask[sd][sq] & PcBb(p, op, P))) == 1)
+			Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
+	}
+	}
 
     // Doubled pawn
 
@@ -204,10 +216,10 @@ int ScoreChains(POS *p, int sd)
     if (OPP_PAWN(E5)) {
       if (CONTAINS(opPawns, F4, D6)) { // d6-e5-f4 triad
         // storm of a "g" pawn in the King's Indian
-		  if (OPP_PAWN(G5)) {
+      if (OPP_PAWN(G5)) {
             mgResult -= 4; 
             if (OPP_PAWN(H4)) mgResult += 20; // this is not how you handle pawn chains
-		  }
+      }
         if (OPP_PAWN(G4)) mgResult -= 8;
 
         mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
@@ -227,7 +239,7 @@ int ScoreChains(POS *p, int sd)
       if (CONTAINS(opPawns, E5, F6)) {
         mgResult -= (CONTAINS(sdPawns, E4, D3)) ? bigChainScore : smallChainScore;
       }
-			
+      
       if (CONTAINS(opPawns, F5, C3)) {
         mgResult -= (SQ(D3) & sdPawns) ? bigChainScore : smallChainScore;
       }
@@ -238,7 +250,7 @@ int ScoreChains(POS *p, int sd)
         // storm of a "b" pawn
         if (OPP_PAWN(B5)) {
           mgResult -= 4;
-		  if (OPP_PAWN(A4)) mgResult += 20; // this is not how you handle pawn chains
+          if (OPP_PAWN(A4)) mgResult += 20; // this is not how you handle pawn chains
         }
         if (OPP_PAWN(B4)) mgResult -= 8;
 

@@ -159,7 +159,6 @@ void InitEval(void) {
       dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
     }
   }
-
 }
 
 void EvaluatePieces(POS *p, int sd) {
@@ -282,6 +281,9 @@ void EvaluatePieces(POS *p, int sd) {
     tmp = pstBishopOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op])
       Add(sd, F_OUTPOST, tmp, tmp);
+
+    // TODO: bishop blocked by defended enemy pawns
+
 
   } // end of bishop eval
 

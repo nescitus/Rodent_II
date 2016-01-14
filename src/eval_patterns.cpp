@@ -39,7 +39,7 @@ void EvalPatterns(POS * p) {
   && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
 
   // Trapped bishop
-
+  
   if (IsOnSq(p, WC, B, A7) && IsOnSq(p, BC, P, B6)) Add(WC, F_OTHERS, -150, -150);
   if (IsOnSq(p, WC, B, B8) && IsOnSq(p, BC, P, C7)) Add(WC, F_OTHERS, -150, -150);
   if (IsOnSq(p, WC, B, H7) && IsOnSq(p, BC, P, G6)) Add(WC, F_OTHERS, -150, -150);
@@ -53,7 +53,7 @@ void EvalPatterns(POS * p) {
   if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(BC, F_OTHERS, -150, -150);
   if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(BC, F_OTHERS, -50, -50);
   if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(BC, F_OTHERS, -50, -50);
-
+  
   // Rook blocked by uncastled king
 
   king_mask = SqBb(F1) | SqBb(G1);

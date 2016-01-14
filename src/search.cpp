@@ -447,11 +447,11 @@ int KPKdraw(POS *p, int sd)
 
 void DisplaySpeed(void)
 {
-	int elapsed = Timer.GetElapsedTime();
-	U64 nps = GetNps(elapsed);
+  int elapsed = Timer.GetElapsedTime();
+  U64 nps = GetNps(elapsed);
 
-	printf("info time %d nodes %I64d nps %I64d \n",
-		elapsed, nodes, nps);
+  printf("info time %d nodes %I64d nps %I64d \n",
+  elapsed, nodes, nps);
 }
 
 void DisplayPv(int score, int *pv) {
