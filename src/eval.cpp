@@ -85,6 +85,16 @@ void InitWeights(void) {
   dyn_weights[DF_OPP_MOB] = 110;
 }
 
+const int pawnAdv[8] = { 0, 1, 1, 3, 5, 8, 12, 0 };
+
+int GetPhalanxPst(int sq)
+{
+	if (sq == D4) return 15;             // D4/E4 pawns
+	if (sq == D3) return 10;             // D3/E3 pawns
+	if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
+	return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes WAS 3
+}
+
 void InitEval(void) {
 
   // Init piece/square values together with material value of the pieces.
@@ -113,6 +123,8 @@ void InitEval(void) {
     eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
     mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
     eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
+
+	phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
     }
   }
 
