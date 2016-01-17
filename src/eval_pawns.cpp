@@ -224,9 +224,9 @@ int ScoreChains(POS *p, int sd)
         // storm of a "g" pawn in the King's Indian
       if (OPP_PAWN(G5)) {
             mgResult -= 4; 
-            if (OPP_PAWN(H4)) mgResult += 20; // this is not how you handle pawn chains
+            if (OPP_PAWN(H4)) return 0; // this is not how you handle pawn chains
       }
-        if (OPP_PAWN(G4)) mgResult -= 8;
+        if (OPP_PAWN(G4)) mgResult -= 12;
 
         mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
       }
@@ -256,9 +256,9 @@ int ScoreChains(POS *p, int sd)
         // storm of a "b" pawn
         if (OPP_PAWN(B5)) {
           mgResult -= 4;
-          if (OPP_PAWN(A4)) mgResult += 20; // this is not how you handle pawn chains
+          if (OPP_PAWN(A4)) return 0; // this is not how you handle pawn chains
         }
-        if (OPP_PAWN(B4)) mgResult -= 8;
+        if (OPP_PAWN(B4)) mgResult -= 12;
 
         mgResult -= (CONTAINS(sdPawns, E4, D5)) ? bigChainScore : smallChainScore;
       }
