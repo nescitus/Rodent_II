@@ -47,23 +47,28 @@ void UciLoop(void) {
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
-      printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-      printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
-      printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
-      printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
-      printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
-      printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
-      printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
-      printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
-      printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
-      printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-      printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-      printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-      printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
-      printf("option name UseBook type check default true\n");
-      printf("option name GuideBookFile type string default guide.bin\n");
-      printf("option name MainBookFile type string default rodent.bin\n");
-      printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
+      if (panel_style == 0) {
+        printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
+        printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
+        printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
+        printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
+        printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
+        printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+        printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
+        printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
+        printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
+        printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
+        printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+        printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+        printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
+        printf("option name UseBook type check default true\n");
+        printf("option name GuideBookFile type string default guide.bin\n");
+        printf("option name MainBookFile type string default rodent.bin\n");
+        printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
+     }
+     if (panel_style == 1) 
+        printf("option name PersonalityFile type string default rodent.txt\n");
+
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
       printf("readyok\n");
@@ -169,6 +174,11 @@ void ParseSetoption(char *ptr) {
     MainBook.ClosePolyglot();
     MainBook.bookName = value;
     MainBook.OpenPolyglot();
+  } else if (strcmp(name, "PersonalityFile") == 0) {
+    printf("info string reading ");
+    printf(value);
+    printf("\n");
+    ReadPersonality(value);
   } else if (strcmp(name, "BookFilter") == 0) {
     book_filter = atoi(value);;
   }
@@ -284,4 +294,29 @@ void ResetEngine(void) {
   ClearTrans();
   ClearEvalHash();
   ClearPawnHash();
+}
+
+void ReadPersonality(char *fileName)
+{
+	FILE *personalityFile;
+	char line[256];
+	int lineNo = 0;
+	char token[120], *ptr;
+
+	// exit if this personality file doesn't exist
+	if ((personalityFile = fopen(fileName, "r")) == NULL)
+		return;
+
+	// read options line by line
+	while (fgets(line, 256, personalityFile)) {
+		ptr = ParseToken(line, token);
+
+		if (strstr(line, "HIDE_OPTIONS")) panel_style = 1;
+		if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
+
+		if (strcmp(token, "setoption") == 0)
+			ParseSetoption(ptr);
+	}
+
+	fclose(personalityFile);
 }

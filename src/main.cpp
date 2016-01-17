@@ -32,6 +32,7 @@ int main() {
   draw_score = 0;
   book_filter = 20;
   use_book = 1;
+  panel_style = 0;
 
   Timer.Init();
   initmagicmoves();
@@ -43,6 +44,7 @@ int main() {
   MainBook.OpenPolyglot();
   GuideBook.bookName = "handmade.bin";
   GuideBook.OpenPolyglot();
+  ReadPersonality("basic.ini");
   UciLoop();
   MainBook.ClosePolyglot();
   GuideBook.ClosePolyglot();

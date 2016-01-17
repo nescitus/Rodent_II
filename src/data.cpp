@@ -63,3 +63,4 @@ int weights[N_OF_FACTORS];
 int dyn_weights[5];
 int curr_weights[2][2];
 int mat_perc;
+int panel_style;
