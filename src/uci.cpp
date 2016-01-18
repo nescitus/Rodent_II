@@ -48,12 +48,20 @@ void UciLoop(void) {
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
       if (panel_style == 0) {
+        printf("option name PawnValue type spin default %d min 0 max 1200\n", pc_value[P]);
+        printf("option name KnightValue type spin default %d min 0 max 1200\n", pc_value[N]);
+        printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
+        printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
+        printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
+		printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
+		printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
         printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
         printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
         printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
         printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+		printf("option name PiecePressure type spin default %d min 0 max 500\n", weights[F_PRESSURE]);
         printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
@@ -135,6 +143,32 @@ void ParseSetoption(char *ptr) {
     mat_perc = atoi(value);
     ResetEngine();
     InitEval();
+  } else if (strcmp(name, "PawnValue") == 0) {
+    pc_value[P] = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "KnightValue") == 0) {
+    pc_value[N] = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "BishopValue") == 0) {
+    pc_value[B] = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "RookValue") == 0) {
+    pc_value[R] = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "QueenValue") == 0) {
+    pc_value[Q] = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "KnightLikedClosed") == 0) {
+    np_bonus = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "RookLikesOpen") == 0) {
+    rp_malus = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "OwnAttack") == 0) {
     dyn_weights[DF_OWN_ATT] = atoi(value);
     ResetEngine();
@@ -149,6 +183,8 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "KingTropism") == 0) {
     SetWeight(F_TROPISM, atoi(value));
+  } else if (strcmp(name, "PiecePressure") == 0) {
+    SetWeight(F_PRESSURE, atoi(value));
   } else if (strcmp(name, "PassedPawns") == 0) {
     SetWeight(F_PASSERS, atoi(value));
   } else if (strcmp(name, "PawnStructure") == 0) {
@@ -298,25 +334,25 @@ void ResetEngine(void) {
 
 void ReadPersonality(char *fileName)
 {
-	FILE *personalityFile;
-	char line[256];
-	int lineNo = 0;
-	char token[120], *ptr;
+  FILE *personalityFile;
+  char line[256];
+  int lineNo = 0;
+  char token[120], *ptr;
 
-	// exit if this personality file doesn't exist
-	if ((personalityFile = fopen(fileName, "r")) == NULL)
-		return;
+  // exit if this personality file doesn't exist
+  if ((personalityFile = fopen(fileName, "r")) == NULL)
+    return;
 
-	// read options line by line
-	while (fgets(line, 256, personalityFile)) {
-		ptr = ParseToken(line, token);
+  // read options line by line
+  while (fgets(line, 256, personalityFile)) {
+    ptr = ParseToken(line, token);
 
-		if (strstr(line, "HIDE_OPTIONS")) panel_style = 1;
-		if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
+    if (strstr(line, "HIDE_OPTIONS")) panel_style = 1;
+    if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
 
-		if (strcmp(token, "setoption") == 0)
-			ParseSetoption(ptr);
-	}
+    if (strcmp(token, "setoption") == 0)
+      ParseSetoption(ptr);
+  }
 
-	fclose(personalityFile);
+  fclose(personalityFile);
 }

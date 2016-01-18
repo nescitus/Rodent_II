@@ -36,8 +36,9 @@ const int bit_table[64] = {
   62, 11, 23, 32, 36, 44, 52, 55,
   61, 22, 43, 51, 60, 42, 59, 58
 };
-//                         P    N    B    R    Q
-const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 };
+//                                 P    N    B    R    Q
+static const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 };
+int pc_value[7] = { 100, 325, 325, 500, 1000, 0, 0 }; // these values might be changed via UCI options
 int history[12][64];
 int refutation[64][64];
 int killer[MAX_PLY][2];
@@ -63,4 +64,6 @@ int weights[N_OF_FACTORS];
 int dyn_weights[5];
 int curr_weights[2][2];
 int mat_perc;
+int np_bonus;
+int rp_malus;
 int panel_style;

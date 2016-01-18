@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4141 lines of code
 
-#define PROG_NAME "Rodent II 0.6.7"
+#define PROG_NAME "Rodent II 0.6.8"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -35,7 +35,7 @@ enum eCastleFlag { W_KS = 1, W_QS = 2, B_KS = 4, B_QS = 8 };
 enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
 enum eHashEntry{NONE, UPPER, LOWER, EXACT};
 enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
-enum eFactor   {F_ATT, F_MOB, F_PST, F_PAWNS, F_PASSERS, F_TROPISM, F_OUTPOST, F_LINES, F_HANGING, F_OTHERS, N_OF_FACTORS };
+enum eFactor   {F_ATT, F_MOB, F_PST, F_PAWNS, F_PASSERS, F_TROPISM, F_OUTPOST, F_LINES, F_PRESSURE, F_OTHERS, N_OF_FACTORS };
 enum eDynFactor {DF_OWN_ATT, DF_OPP_ATT, DF_OWN_MOB, DF_OPP_MOB};
 enum eAsymmetric {SD_ATT, SD_MOB, OPP_ATT, OPP_MOB};
 
@@ -392,6 +392,7 @@ extern int castle_mask[64];
 extern const int bit_table[64];
 extern const int passed_bonus[2][8]; 
 extern const int tp_value[7];
+extern int pc_value[7];
 extern const int phase_value[7];
 extern int refutation[64][64];
 extern int root_side;
@@ -403,20 +404,23 @@ extern U64 zob_ep[8];
 extern int pondering;
 extern int root_depth;
 extern U64 nodes;
-extern int eval_blur;
-extern int draw_score;
-extern int use_book;
-extern int book_filter;
 extern int abort_search;
 extern ENTRY *tt;
 extern int tt_size;
 extern int tt_mask;
 extern int tt_date;
+
 extern int weights[N_OF_FACTORS];
 extern int dyn_weights[5];
 extern int curr_weights[2][2];
 extern int mat_perc;
 extern int panel_style;
+extern int eval_blur;
+extern int draw_score;
+extern int use_book;
+extern int book_filter;
+extern int np_bonus;
+extern int rp_malus;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);

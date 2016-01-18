@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "book.h"
 
 sTimer Timer; // class for setting and observing time limits
-sBook  MainBook;         // opening book
+sBook  MainBook;  // opening book
 sBook  GuideBook;
 
 int main() {
@@ -33,6 +33,8 @@ int main() {
   book_filter = 20;
   use_book = 1;
   panel_style = 0;
+  np_bonus = 6;
+  rp_malus = 3;
 
   Timer.Init();
   initmagicmoves();

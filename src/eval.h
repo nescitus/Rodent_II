@@ -126,13 +126,15 @@ static const int q_mob_mg[28] = { -14, -13, -12, -11, -10,  -9,  -8,  -7,  -6,  
 static const int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -10,  -8,  -6,  -4,  -2,  +0,
                                    +2,  +4,  +6,  +8, +10, +12, +14, +16, +18, +20, +22, +24, +26 };
 
-// parameters for evaluating material imbalance [5]
+// parameters for evaluating material imbalance [5+9+2]
 
 #define A  80 // advantage in both major and minor pieces
 #define Rk 50 // advantage in major pieces only
 #define Nt 40 // advantage in minor pieces only
 #define Ex 10 // exchange disadvantage
 #define Mm 60 // two minors for a rook 
+
+static const int adj[9] = { -4, -3, -2, -1, 0, 1, 2, 3, 4 };
 
 static const int imbalance[9][9] = {
     /* n=-4  n=-3  n=-2  n=-1  n=0   n=+1  n=+2  n=+3  n=+4 */

@@ -45,7 +45,7 @@ int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Hanging   ", "Others    "};
+char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure   ", "Others    "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -89,10 +89,10 @@ const int pawnAdv[8] = { 0, 1, 1, 3, 5, 8, 12, 0 };
 
 int GetPhalanxPst(int sq)
 {
-	if (sq == D4) return 15;             // D4/E4 pawns
-	if (sq == D3) return 10;             // D3/E3 pawns
-	if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
-	return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes WAS 3
+  if (sq == D4) return 15;             // D4/E4 pawns
+  if (sq == D3) return 10;             // D3/E3 pawns
+  if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
+  return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes WAS 3
 }
 
 void InitEval(void) {
@@ -102,29 +102,29 @@ void InitEval(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-    mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5 * file_bonus[File(sq)];
-    if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 25;
-    if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 10;
-    if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
-    if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) + 5;
+    mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + 5 * file_bonus[File(sq)];
+    if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + 25;
+    if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + 10;
+    if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + 5;
+    if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + 5;
 
-    eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(tp_value[P], mat_perc) - file_bonus[File(sq)];
+    eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) - file_bonus[File(sq)];
 
-    mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
-    if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
-    if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100;
+    mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)]));
+    if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5;
+    if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + (5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100;
 
-    eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(tp_value[N], mat_perc) + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
-    mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopMg[sq];
-    eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(tp_value[B], mat_perc) + pstBishopEg[sq];
-    mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc) + file_bonus[File(sq)];
-    eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(tp_value[R], mat_perc);
-    mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) - (5 * (Rank(sq) == RANK_1));
-    eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(tp_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
+    eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + 5 * (knightLine[Rank(sq)] + knightLine[File(sq)]);
+    mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + pstBishopMg[sq];
+    eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + pstBishopEg[sq];
+    mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + file_bonus[File(sq)];
+    eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc);
+    mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) - (5 * (Rank(sq) == RANK_1));
+    eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + (4 * (biased[Rank(sq)] + biased[File(sq)]));
     mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
     eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
 
-	phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
+    phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
     }
   }
 
@@ -178,6 +178,7 @@ void EvaluatePieces(POS *p, int sd) {
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
   int op, sq, cnt, tmp, mul, ksq, osq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
+  int own_pawn_cnt, opp_pawn_cnt;
 
   // Is color OK?
 
@@ -204,9 +205,19 @@ void EvaluatePieces(POS *p, int sd) {
 
   // Piece configurations
 
-  if (PopCnt(PcBb(p, sd, B)) > 1) Add(sd, F_OTHERS, 40,  60); // Bishop pair
-  if (PopCnt(PcBb(p, sd, N)) > 1) Add(sd, F_OTHERS,-10, -10); // Knight pair
+  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 40,  60); // Bishop pair
+
+  if (p->cnt[sd][N] > 1) {
+	  Add(sd, F_OTHERS, -10, -10);                   // Knight pair
+	  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N], 
+		                np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
+  }
   
+  if (p->cnt[sd][R] > 1) {
+	  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
+		                -np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
+  }
+
   // Knight
 
   bbPieces = PcBb(p, sd, N);
@@ -288,11 +299,27 @@ void EvaluatePieces(POS *p, int sd) {
       att += king_att[B] * PopCnt(bbAtt & bbZone);
     }
 
-    // Bishop outpost (much simpler than knight outpost)
+	mul = 0;
+	tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
+	tmp *= mul;
+	tmp /= 2;
 
-    tmp = pstBishopOutpost[REL_SQ(sq, sd)];
-    if (SqBb(sq) & ~bbPawnCanTake[op])
-      Add(sd, F_OUTPOST, tmp, tmp);
+	Add(sd, F_OUTPOST, tmp, tmp);
+
+	// Pawns on the same square color as our bishop
+	
+	if (bbWhiteSq & SqBb(sq)) {
+		own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
+		opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
+	}
+	else {
+		own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
+		opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
+	}
+	Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, -3 * own_pawn_cnt - opp_pawn_cnt);
 
     // TODO: bishop blocked by defended enemy pawns
 
@@ -445,14 +472,14 @@ void EvalHanging(POS *p, int sd) {
     sq = PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 64;
-    Add(sd, F_HANGING, 10 + val, 18 + val);
+    Add(sd, F_PRESSURE, 10 + val, 18 + val);
   }
 
   while (bbDefended) {
     sq = PopFirstBit(&bbDefended);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 96;
-    Add(sd, F_HANGING, 5 + val, 9 + val);
+    Add(sd, F_PRESSURE, 5 + val, 9 + val);
   }
 
 }
