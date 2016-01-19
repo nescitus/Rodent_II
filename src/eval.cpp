@@ -205,7 +205,7 @@ void EvaluatePieces(POS *p, int sd) {
 
   // Piece configurations
 
-  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 40,  60); // Bishop pair
+  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 50,  60); // Bishop pair
 
   if (p->cnt[sd][N] > 1) {
 	  Add(sd, F_OTHERS, -10, -10);                   // Knight pair
@@ -215,7 +215,7 @@ void EvaluatePieces(POS *p, int sd) {
   
   if (p->cnt[sd][R] > 1) {
 	  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
-		                -np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
+		                -np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][R]); // BUG, should be -rp_malus
   }
 
   // Knight

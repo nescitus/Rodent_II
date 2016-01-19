@@ -38,7 +38,7 @@ const int bit_table[64] = {
 };
 //                                 P    N    B    R    Q
 static const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 };
-int pc_value[7] = { 100, 325, 325, 500, 1000, 0, 0 }; // these values might be changed via UCI options
+int pc_value[7] =              { 100, 325, 335, 500, 1000, 0, 0 }; // these values might be changed via UCI options
 int history[12][64];
 int refutation[64][64];
 int killer[MAX_PLY][2];
