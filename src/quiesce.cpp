@@ -26,8 +26,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   // Transposition table read
 
-  if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
-    return score;
+  //if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
+    //return score;
 
   InitCaptures(p, m);
 
@@ -35,13 +35,13 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   while ((move = NextCapture(m))) {
 
-  // Delta pruning
+    // Delta pruning
 
-  if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
+    if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
 
-  // Pruning of bad captures
+    // Pruning of bad captures
 
-  if (BadCapture(p, move)) continue;
+    if (BadCapture(p, move)) continue;
 
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
@@ -52,7 +52,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   // Beta cutoff
 
   if (score >= beta) {
-    TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
+    //TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
     return score;
   }
 
@@ -67,8 +67,8 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
     }
   }
 
-  if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
-  else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+  //if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
+  //else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
 
   return best;
 }

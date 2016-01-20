@@ -87,12 +87,16 @@ void InitWeights(void) {
 
 const int pawnAdv[8] = { 0, 1, 1, 3, 5, 8, 12, 0 };
 
-int GetPhalanxPst(int sq)
-{
+int GetPhalanxPst(int sq) {
+
   if (sq == D4) return 15;             // D4/E4 pawns
   if (sq == D3) return 10;             // D3/E3 pawns
   if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
   return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes WAS 3
+}
+
+int GetDefendedPst(int sq) {
+	return pawnAdv[Rank(sq)];
 }
 
 void InitEval(void) {
@@ -125,6 +129,7 @@ void InitEval(void) {
     eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
 
     phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
+	defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
     }
   }
 
@@ -209,13 +214,13 @@ void EvaluatePieces(POS *p, int sd) {
 
   if (p->cnt[sd][N] > 1) {
 	  Add(sd, F_OTHERS, -10, -10);                   // Knight pair
-	  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N], 
+	  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N], // BUG, applies only to two knights, should start at 1
 		                np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
   }
   
-  if (p->cnt[sd][R] > 1) {
+  if (p->cnt[sd][R] > 1) {                                             // BUG, applies only to two rooks, should start at 1
 	  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
-		                -np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][R]); // BUG, should be -rp_malus
+		                -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
   }
 
   // Knight
@@ -513,7 +518,7 @@ void EvalPassers(POS * p, int sd)
 
       // blocked passers score less
 
-      if (bbStop & OccBb(p)) mul -= 20;
+      if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
 
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }

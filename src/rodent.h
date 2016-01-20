@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4141 lines of code
 
-#define PROG_NAME "Rodent II 0.6.10"
+#define PROG_NAME "Rodent II 0.6.16"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -320,6 +320,7 @@ U64 GetDoubleBPControl(U64 bb);
 U64 GetFrontSpan(U64 bb, int sd);
 int GetDrawFactor(POS *p, int sd);
 int GetPhalanxPst(int sq);
+int GetDefendedPst(int sq);
 void UpdateHistory(POS *p, int last_move, int move, int depth, int ply);
 void Init(void);
 void InitEval(void);
@@ -388,6 +389,7 @@ extern U64 support_mask[2][64];
 extern int mg_pst_data[2][6][64];
 extern int eg_pst_data[2][6][64];
 extern int phalanx_data[2][64];
+extern int defended_data[2][64];
 extern int castle_mask[64];
 extern const int bit_table[64];
 extern const int passed_bonus[2][8]; 

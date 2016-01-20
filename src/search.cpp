@@ -28,6 +28,15 @@ double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
 int root_side;
 
+// switches to facilitate debugging
+
+static const int use_aspiration = 1;
+static const int use_nullmove = 1;
+static const int use_beta_pruning = 1;
+static const int use_futility = 1;
+static const int use_razoring = 1;
+static const int use_lmp = 1;
+static const int use_lmr = 1;
 
 void InitSearch(void) {
 
@@ -95,7 +104,10 @@ void Iterate(POS *p, int *pv) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
-    cur_val = Widen(p, root_depth, pv, cur_val);
+
+	if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
+	else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
   }
@@ -190,6 +202,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta pruning / static null move
 
   if (ply && depth <= 3
+  && use_beta_pruning
   && fl_prunable_node
   && !was_null) {
     int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
@@ -200,8 +213,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   if (depth > 1
   && fl_prunable_node
+  && use_nullmove
   && !was_null
-  && MayNull(p)) {
+  //&& (p->cnt[p->side][N] + p->cnt[p->side][B] + p->cnt[p->side][R] + p->cnt[p->side][Q] > 1)
+  && MayNull(p)
+  ) {
     int eval = Evaluate(p, 1);
     if (eval > beta) {
 
@@ -222,7 +238,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       // Verification search
 
       //if (new_depth > 2 && score >= beta )
-      //   score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
+        // score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
 
       if (abort_search ) return 0;
       if (score >= beta) return score;
@@ -236,6 +252,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Razoring based on Toga II 3.0
 
   if (fl_prunable_node
+  && use_razoring
   && !move
   && !was_null
   && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
@@ -252,8 +269,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // end of razoring code
 
   // Set futility pruning flag
-
+ 
   if (depth <= 6
+  && use_futility
   && fl_prunable_node) {
     if (Evaluate(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
   }
@@ -290,6 +308,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Late move pruning
 
   if (fl_prunable_node
+  && use_lmp
   && quiet_tried > lmp_limit[depth]
   && fl_prunable_move
   && depth <= 3
@@ -302,6 +321,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   reduction = 0;
 
   if (depth >= 2
+  && use_lmr
   && mv_tried > 3
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 

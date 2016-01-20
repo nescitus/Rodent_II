@@ -25,6 +25,7 @@ U64 k_attacks[64];
 U64 passed_mask[2][64];
 U64 adjacent_mask[8];
 int phalanx_data[2][64];
+int defended_data[2][64];
 int castle_mask[64];
 const int bit_table[64] = {
    0,  1,  2,  7,  3, 13,  8, 19,

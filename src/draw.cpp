@@ -67,7 +67,10 @@ int GetDrawFactor(POS *p, int sd)
     }
      
      // K(m) vs K(m) or Km vs Kp(p)
-     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2) return 0;
+     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2 
+     && p->cnt[op][P] == 0 // surprisingly, this solves a bug
+	 ) 
+	 return 0;
 
      // KR vs Km(p)
      if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 32;

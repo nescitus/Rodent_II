@@ -79,4 +79,6 @@ void EvalPatterns(POS * p) {
 
   if ((PcBb(p, BC, K) & king_mask)
   && (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+
+  // TODO "luft" eval
 }

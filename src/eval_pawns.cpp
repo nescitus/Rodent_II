@@ -125,8 +125,9 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Supported pawn
 
-    if (flagPhalanx1 || flagPhalanx2) Add(sd, F_PAWNS, phalanx_data[sd][sq], 2);
-    else if (fl_defended)             Add(sd, F_PAWNS, 1, 1);
+	// TODO: what abour raising endgame values?
+    if (flagPhalanx1 || flagPhalanx2) Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
+	else if (fl_defended)             Add(sd, F_PAWNS, defended_data[sd][sq], 1);
 
     // Weak pawn (two flavours)
 
