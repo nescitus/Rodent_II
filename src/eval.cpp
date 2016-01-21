@@ -490,12 +490,6 @@ void EvalHanging(POS *p, int sd) {
 
 }
 
-U64 ShiftFwd(U64 bb, int side)
-{
-  if (side == WC) return ShiftNorth(bb);
-  return ShiftSouth(bb);
-}
-
 void EvalPassers(POS * p, int sd) 
 {
   U64 bbPieces;
@@ -520,7 +514,14 @@ void EvalPassers(POS * p, int sd)
       // blocked passers score less
 
       if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
-	  else if (bbStop & bbAllAttacks[sd]) mul += 20;
+
+	  // control of stop square
+	  /*
+	  if (bbStop &~bbAllAttacks[op]) {
+		  mul += 20;
+		  if (bbStop & bbAllAttacks[sd]) mul += 20;
+	  }
+	  */
 
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }

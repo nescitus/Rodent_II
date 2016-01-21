@@ -93,3 +93,9 @@ U64 GetFrontSpan(U64 bb, int sd) {
   if (sd == WC) return FillNorth(ShiftNorth(bb));
   else          return FillSouth(ShiftSouth(bb));
 }
+
+U64 ShiftFwd(U64 bb, int side) {
+
+  if (side == WC) return ShiftNorth(bb);
+  return ShiftSouth(bb);
+}
