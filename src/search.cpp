@@ -196,7 +196,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   fl_prunable_node = !fl_check 
                    && !is_pv 
-                   && alpha > -MAX_EVAL 
+                   && alpha > -MAX_EVAL
                    && beta < MAX_EVAL;
 
   // Beta pruning / static null move
@@ -215,7 +215,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && fl_prunable_node
   && use_nullmove
   && !was_null
-  //&& (p->cnt[p->side][N] + p->cnt[p->side][B] + p->cnt[p->side][R] + p->cnt[p->side][Q] > 1)
   && MayNull(p)
   ) {
     int eval = Evaluate(p, 1);

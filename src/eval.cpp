@@ -209,20 +209,21 @@ void EvaluatePieces(POS *p, int sd) {
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
 
   // Piece configurations
-
-  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 50,  60); // Bishop pair
-
-  if (p->cnt[sd][N] > 1) {
-	  Add(sd, F_OTHERS, -10, -10);                   // Knight pair
-	  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N], // BUG, applies only to two knights, should start at 1
-		                np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
-  }
   
-  if (p->cnt[sd][R] > 1) {                                             // BUG, applies only to two rooks, should start at 1
-	  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
-		                -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
-  }
+  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 50,  60);  // Bishop pair
 
+  if (p->cnt[sd][N] > 1) Add(sd, F_OTHERS, -10, -10); // Knight pair
+
+  // Knights lose value as pawns disappear
+	
+  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N],
+	                np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
+  
+  // Rooks gain value as pawns disappear
+
+  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
+	                -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
+  
   // Knight
 
   bbPieces = PcBb(p, sd, N);
@@ -287,7 +288,7 @@ void EvaluatePieces(POS *p, int sd) {
     bbMob = BAttacks(OccBb(p), sq);
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     
-    Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);        // mobility bonus
+    Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) 
       att += chk_threat[B];                            // check threat bonus
@@ -519,6 +520,7 @@ void EvalPassers(POS * p, int sd)
       // blocked passers score less
 
       if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
+	  else if (bbStop & bbAllAttacks[sd]) mul += 20;
 
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
