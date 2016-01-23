@@ -96,7 +96,7 @@ int GetPhalanxPst(int sq) {
 }
 
 int GetDefendedPst(int sq) {
-	return pawnAdv[Rank(sq)];
+  return pawnAdv[Rank(sq)];
 }
 
 void InitEval(void) {
@@ -129,7 +129,7 @@ void InitEval(void) {
     eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
 
     phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
-	defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
+  defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
     }
   }
 
@@ -215,14 +215,14 @@ void EvaluatePieces(POS *p, int sd) {
   if (p->cnt[sd][N] > 1) Add(sd, F_OTHERS, -10, -10); // Knight pair
 
   // Knights lose value as pawns disappear
-	
+  
   Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N],
-	                np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
+                  np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
   
   // Rooks gain value as pawns disappear
 
   Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
-	                -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
+                  -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
   
   // Knight
 
@@ -305,27 +305,27 @@ void EvaluatePieces(POS *p, int sd) {
       att += king_att[B] * PopCnt(bbAtt & bbZone);
     }
 
-	mul = 0;
-	tmp = pstBishopOutpost[REL_SQ(sq, sd)];
-	if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-	if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-	if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-	tmp *= mul;
-	tmp /= 2;
+  mul = 0;
+  tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+  if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+  if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+  if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
+  tmp *= mul;
+  tmp /= 2;
 
-	Add(sd, F_OUTPOST, tmp, tmp);
+  Add(sd, F_OUTPOST, tmp, tmp);
 
-	// Pawns on the same square color as our bishop
-	
-	if (bbWhiteSq & SqBb(sq)) {
-		own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
-		opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
-	}
-	else {
-		own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
-		opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
-	}
-	Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, -3 * own_pawn_cnt - opp_pawn_cnt);
+  // Pawns on the same square color as our bishop
+  
+  if (bbWhiteSq & SqBb(sq)) {
+    own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
+    opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
+  }
+  else {
+    own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
+    opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
+  }
+  Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, -3 * own_pawn_cnt - opp_pawn_cnt);
 
     // TODO: bishop blocked by defended enemy pawns
 
@@ -515,13 +515,13 @@ void EvalPassers(POS * p, int sd)
 
       if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
 
-	  // control of stop square
-	  /*
-	  if (bbStop &~bbAllAttacks[op]) {
-		  mul += 20;
-		  if (bbStop & bbAllAttacks[sd]) mul += 20;
-	  }
-	  */
+    // control of stop square
+    /*
+    if (bbStop &~bbAllAttacks[op]) {
+      mul += 20;
+      if (bbStop & bbAllAttacks[sd]) mul += 20;
+    }
+    */
 
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }

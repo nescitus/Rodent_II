@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 sTimer Timer; // class for setting and observing time limits
 sBook  MainBook;  // opening book
 sBook  GuideBook;
+sInternalBook InternalBook;
+POS p;
 
 int main() {
   
@@ -42,6 +44,7 @@ int main() {
   InitWeights();
   InitEval();
   InitSearch();
+  InternalBook.Init(&p);
   MainBook.bookName = "handmade.bin";
   MainBook.OpenPolyglot();
   GuideBook.bookName = "handmade.bin";

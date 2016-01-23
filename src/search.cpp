@@ -59,6 +59,8 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
+  int flag;
+
   // Play move from opening book, if applicable
 
   if (use_book) {
@@ -67,6 +69,9 @@ void Think(POS *p, int *pv) {
 
     pv[0] = MainBook.GetPolyglotMove(p, 1);
     if (pv[0]) return;
+
+  pv[0] = InternalBook.MoveFromInternal(p);
+  if (pv[0]) return;
   }
 
   // Set basic data
@@ -105,8 +110,8 @@ void Iterate(POS *p, int *pv) {
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 
-	if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
-	else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+  if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
+  else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -327,6 +332,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   &&  fl_prunable_move
   && lmr_size[is_pv][depth][mv_tried] > 0
   && MoveType(move) != CASTLE ) {
+
     reduction = lmr_size[is_pv][depth][mv_tried];
     new_depth -= reduction;
   }
