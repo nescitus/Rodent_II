@@ -32,6 +32,7 @@ int root_side;
 
 static const int use_aspiration = 1;
 static const int use_nullmove = 1;
+static const int use_null_verification = 1;
 static const int use_beta_pruning = 1;
 static const int use_futility = 1;
 static const int use_razoring = 1;
@@ -70,8 +71,8 @@ void Think(POS *p, int *pv) {
     pv[0] = MainBook.GetPolyglotMove(p, 1);
     if (pv[0]) return;
 
-  pv[0] = InternalBook.MoveFromInternal(p);
-  if (pv[0]) return;
+    pv[0] = InternalBook.MoveFromInternal(p);
+    if (pv[0]) return;
   }
 
   // Set basic data
@@ -241,8 +242,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
       // Verification search
 
-      //if (new_depth > 2 && score >= beta )
-        // score = Search(p, ply, alpha, beta, new_depth - 1, 0, move, new_pv);
+      if (new_depth > 6 && score >= beta && use_null_verification)
+         score = Search(p, ply, alpha, beta, new_depth - 5, 0, move, new_pv);
 
       if (abort_search ) return 0;
       if (score >= beta) return score;
