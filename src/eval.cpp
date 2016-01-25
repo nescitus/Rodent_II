@@ -315,6 +315,16 @@ void EvaluatePieces(POS *p, int sd) {
 
   Add(sd, F_OUTPOST, tmp, tmp);
 
+  // Bishop X-rays
+  /*
+  U64 bbPseudo = BAttacks(0ULL, sq);
+  tmp = 0;
+  tmp += 3 * PopCnt(bbPseudo & PcBb(p, op, N));
+  tmp += 4 * PopCnt(bbPseudo & PcBb(p, op, R));
+  tmp += 5 * PopCnt(bbPseudo & (PcBb(p, op, Q) | PcBb(p, op, K)));
+  Add(sd, F_OTHERS, tmp, tmp);
+  */
+
   // Pawns on the same square color as our bishop
   
   if (bbWhiteSq & SqBb(sq)) {
@@ -472,7 +482,11 @@ void EvalHanging(POS *p, int sd) {
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
   bbDefended &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
 
+  U64 bbSpace;
+
   int pc, sq, val;
+
+  // hanging pieces (attacked and undefended)
 
   while (bbHanging) {
     sq = PopFirstBit(&bbHanging);
@@ -481,13 +495,14 @@ void EvalHanging(POS *p, int sd) {
     Add(sd, F_PRESSURE, 10 + val, 18 + val);
   }
 
+  // defended pieces under attack
+
   while (bbDefended) {
     sq = PopFirstBit(&bbDefended);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 96;
     Add(sd, F_PRESSURE, 5 + val, 9 + val);
   }
-
 }
 
 void EvalPassers(POS * p, int sd) 
@@ -515,14 +530,11 @@ void EvalPassers(POS * p, int sd)
 
       if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
 
-    // control of stop square
-    /*
-    if (bbStop &~bbAllAttacks[op]) {
-      mul += 20;
-      if (bbStop & bbAllAttacks[sd]) mul += 20;
-    }
-    */
-
+      // enemy control of stop square
+    
+     // if ( (bbStop & bbAllAttacks[op]) 
+     // &&   (bbStop & ~bbAllAttacks[sd]) ) mul -= 10;
+   
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
   }
