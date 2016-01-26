@@ -45,7 +45,7 @@ int eg_pst_data[2][6][64];
 int mg[2][N_OF_FACTORS];
 int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure   ", "Others    "};
+char *factor_name[] = { "Pst        ", "Pawns      ", "Passers    ", "Attack     ", "Mobility   ", "Tropism    ", "Outpost s  ", "Lines      ", "Pressure   ", "Forwardness", "Others     "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -181,9 +181,10 @@ void InitEval(void) {
 void EvaluatePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
-  int op, sq, cnt, tmp, mul, ksq, osq, att = 0, wood = 0;
+  int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
+  int fwd_cnt = 0, fwd_weight = 0;
 
   // Is color OK?
 
@@ -193,13 +194,14 @@ void EvaluatePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
-  osq = KingSq(p, sd);
 
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
 
   U64 bbZone = k_attacks[ksq];
   (sd == WC) ? bbZone |= ShiftSouth(bbZone) : bbZone |= ShiftNorth(bbZone);
+
+  U64 bbOppSide = bbRelRank[sd][RANK_5] | bbRelRank[sd][RANK_6] | bbRelRank[sd][RANK_7] | bbRelRank[sd][RANK_8];
 
   // Init bitboards to detect check threats
 
@@ -271,6 +273,13 @@ void EvaluatePieces(POS *p, int sd) {
 
     Add(sd, F_OUTPOST, tmp, tmp);
 
+	// knight forward position
+
+	if (SqBb(sq) & bbOppSide) {
+      fwd_cnt ++;
+	  fwd_weight += 1;
+	}
+
   } // end of knight eval
 
   // Bishop
@@ -315,16 +324,6 @@ void EvaluatePieces(POS *p, int sd) {
 
   Add(sd, F_OUTPOST, tmp, tmp);
 
-  // Bishop X-rays
-  /*
-  U64 bbPseudo = BAttacks(0ULL, sq);
-  tmp = 0;
-  tmp += 3 * PopCnt(bbPseudo & PcBb(p, op, N));
-  tmp += 4 * PopCnt(bbPseudo & PcBb(p, op, R));
-  tmp += 5 * PopCnt(bbPseudo & (PcBb(p, op, Q) | PcBb(p, op, K)));
-  Add(sd, F_OTHERS, tmp, tmp);
-  */
-
   // Pawns on the same square color as our bishop
   
   if (bbWhiteSq & SqBb(sq)) {
@@ -339,6 +338,12 @@ void EvaluatePieces(POS *p, int sd) {
 
     // TODO: bishop blocked by defended enemy pawns
 
+  // bishop forward position
+
+  if (SqBb(sq) & bbOppSide) {
+	  fwd_cnt++;
+	  fwd_weight += 1;
+  }
 
   } // end of bishop eval
 
@@ -402,6 +407,14 @@ void EvaluatePieces(POS *p, int sd) {
       Add(sd, F_LINES, 16, 32);
       }
     }
+
+	// rook forward position
+
+	if (SqBb(sq) & bbOppSide) {
+		fwd_cnt++;
+		fwd_weight += 2;
+	}
+
   } // end of rook eval
 
   // Queen
@@ -449,7 +462,22 @@ void EvaluatePieces(POS *p, int sd) {
       att += king_att[Q] * PopCnt(bbAtt & bbZone);
     }
 
+	// bishop forward position
+
+	if (SqBb(sq) & bbOppSide) {
+		fwd_cnt++;
+		fwd_weight += 4;
+	}
+
   } // end of queen eval
+  
+  // Forwardness (values from Toga II 3.0)
+
+  static const int fwd_bonus[16] = {
+	  0, 2, 5, 8, 12, 15, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+  };
+
+  Add(sd, F_FWD, fwd_bonus[fwd_cnt] * fwd_weight, 0);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 

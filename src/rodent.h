@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4141 lines of code
 
-#define PROG_NAME "Rodent II 0.7.3"
+#define PROG_NAME "Rodent II 0.7.4"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -35,7 +35,7 @@ enum eCastleFlag { W_KS = 1, W_QS = 2, B_KS = 4, B_QS = 8 };
 enum eMoveType {NORMAL, CASTLE, EP_CAP, EP_SET, N_PROM, B_PROM, R_PROM, Q_PROM};
 enum eHashEntry{NONE, UPPER, LOWER, EXACT};
 enum eMoveFlag {MV_NORMAL, MV_HASH, MV_CAPTURE, MV_KILLER, MV_BADCAPT};
-enum eFactor   {F_ATT, F_MOB, F_PST, F_PAWNS, F_PASSERS, F_TROPISM, F_OUTPOST, F_LINES, F_PRESSURE, F_OTHERS, N_OF_FACTORS };
+enum eFactor   {F_ATT, F_MOB, F_PST, F_PAWNS, F_PASSERS, F_TROPISM, F_OUTPOST, F_LINES, F_PRESSURE, F_FWD, F_OTHERS, N_OF_FACTORS };
 enum eDynFactor {DF_OWN_ATT, DF_OPP_ATT, DF_OWN_MOB, DF_OPP_MOB};
 enum eAsymmetric {SD_ATT, SD_MOB, OPP_ATT, OPP_MOB};
 
