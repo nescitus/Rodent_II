@@ -60,8 +60,6 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
-  int flag;
-
   // Play move from opening book, if applicable
 
   if (use_book) {

@@ -510,8 +510,6 @@ void EvalHanging(POS *p, int sd) {
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
   bbDefended &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
 
-  U64 bbSpace;
-
   int pc, sq, val;
 
   // hanging pieces (attacked and undefended)
