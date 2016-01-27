@@ -175,6 +175,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     // For move ordering purposes, a cutoff from hash is treated
     // exactly like a cutoff from search
 
+    // TODO: update history only if not in check
     if (score >= beta) UpdateHistory(p, last_move, move, depth, ply);
 
     // In pv nodes only exact scores are returned. This is done because
@@ -199,15 +200,16 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Can we prune this node?
 
   fl_prunable_node = !fl_check 
-                   && !is_pv 
-                   && alpha > -MAX_EVAL
-                   && beta < MAX_EVAL;
+                  && !is_pv 
+                  && alpha > -MAX_EVAL
+                  && beta < MAX_EVAL;
 
   // Beta pruning / static null move
 
   if (ply && depth <= 3
   && use_beta_pruning
   && fl_prunable_node
+  && MayNull(p)
   && !was_null) {
     int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
@@ -361,6 +363,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta cutoff
 
     if (score >= beta) {
+	  // TODO: update history only if not in check
       UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
@@ -395,6 +398,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Save score in the transposition table
 
   if (*pv) {
+	// TODO: update history only if not in check
     UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else

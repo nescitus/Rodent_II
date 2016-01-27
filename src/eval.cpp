@@ -549,7 +549,7 @@ void EvalPassers(POS * p, int sd)
     if (!(passed_mask[sd][sq] & PcBb(p, op, P))) {
 
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
-      eg_tmp = passed_bonus_eg[sd][Rank(sq)];
+	  eg_tmp = passed_bonus_eg[sd][Rank(sq)];
       mul = 100;
 
       // blocked passers score less
