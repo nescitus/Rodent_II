@@ -43,17 +43,17 @@ void InitSearch(void) {
 
   // Set depth of late move reduction using modified Stockfish formula
 
-  for (int depth = 0; depth < MAX_PLY; depth++)
-    for (int moves = 0; moves < MAX_MOVES; moves++) {
-      lmr_size[0][depth][moves] = (0.33 + log((double)(depth)) * log((double)(moves)) / 2.25); // zero window node
-      lmr_size[1][depth][moves] = (0.00 + log((double)(depth)) * log((double)(moves)) / 3.50); // principal variation node
+  for (int dp = 0; dp < MAX_PLY; dp++)
+    for (int mv = 0; mv < MAX_MOVES; mv++) {
+      lmr_size[0][dp][mv] = (0.33 + log((double)(dp)) * log((double)(Min(mv,63))) / 2.25); // zero window node
+      lmr_size[1][dp][mv] = (0.00 + log((double)(dp)) * log((double)(Min(mv,63))) / 3.50); // principal variation node
 
       for (int node = 0; node <= 1; node++) {
-        if (lmr_size[node][depth][moves] < 1) lmr_size[node][depth][moves] = 0; // ultra-small reductions make no sense
-        else lmr_size[node][depth][moves] += 0.5;
+        if (lmr_size[node][dp][mv] < 1) lmr_size[node][dp][mv] = 0; // ultra-small reductions make no sense
+        else lmr_size[node][dp][mv] += 0.5;
 
-        if (lmr_size[node][depth][moves] > depth - 1) // reduction cannot exceed actual depth
-          lmr_size[node][depth][moves] = depth - 1;
+        if (lmr_size[node][dp][mv] > dp - 1) // reduction cannot exceed actual depth
+          lmr_size[node][dp][mv] = dp - 1;
       }
     }
 }
@@ -331,7 +331,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   &&  fl_prunable_move
   && lmr_size[is_pv][depth][mv_tried] > 0
   && MoveType(move) != CASTLE ) {
-
     reduction = lmr_size[is_pv][depth][mv_tried];
     new_depth -= reduction;
   }
