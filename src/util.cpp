@@ -110,8 +110,8 @@ void MoveToStr(int move, char *move_str) {
   }
 }
 
-void PrintMove(int move)
-{
+void PrintMove(int move) {
+
   char moveString[6];
   MoveToStr(move, moveString);
   printf("%s", moveString);

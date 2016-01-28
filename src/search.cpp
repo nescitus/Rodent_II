@@ -295,6 +295,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Update move statistics (needed for reduction/pruning decisions)
 
   mv_tried++;
+  if (!ply && depth > 9) DisplayCurrmove(move, mv_tried);
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
@@ -498,6 +499,14 @@ void DisplayPv(int score, int *pv) {
   PvToStr(pv, pv_str);
   printf("info depth %d time %d nodes %I64d nps %I64d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
+}
+
+void DisplayCurrmove(int move, int tried)
+{
+	printf("info currmove ");
+	PrintMove(move);
+	printf(" currmovenumber %d \n", tried);
+	DisplaySpeed();
 }
 
 void CheckTimeout(void) {

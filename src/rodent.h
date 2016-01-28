@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // bench: 764.858
-// bench 12: 7274685 17,8 s 0.947
-// bench 15: 39.141.537 81,9 1.108
+// bench 12: 7132935 17,5 s 0.943
+// bench 15: 37.490.213 79,3 1.096
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 8267 lines of code
 
@@ -292,6 +292,7 @@ void ClearEvalHash(void);
 void ClearPawnHash(void);
 void ClearHist(void);
 void ClearTrans(void);
+void DisplayCurrmove(int move, int tried);
 void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);
 int DrawScore(POS * p);
