@@ -166,6 +166,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (ply) *pv = 0;
   if (IsDraw(p) && ply) return DrawScore(p);
 
+  // Are we in check? Knowing that is useful when it comes 
+  // to pruning/reduction decisions and has impact on move sorting
+
+  fl_check = InCheck(p);
+
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
 
@@ -175,8 +180,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     // For move ordering purposes, a cutoff from hash is treated
     // exactly like a cutoff from search
 
-    // TODO: update history only if not in check
-    if (score >= beta) UpdateHistory(p, last_move, move, depth, ply);
+    if (score >= beta && !fl_check) 
+      UpdateHistory(p, last_move, move, depth, ply);
 
     // In pv nodes only exact scores are returned. This is done because
     // there is much more pruning and reductions in zero-window nodes,
@@ -191,11 +196,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   if (ply >= MAX_PLY - 1)
     return Evaluate(p, 1);
-
-  // Are we in check? Knowing that is useful when it comes 
-  // to pruning/reduction decisions
-
-  fl_check = InCheck(p);
 
   // Can we prune this node?
 
@@ -364,8 +364,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta cutoff
 
     if (score >= beta) {
-	  // TODO: update history only if not in check
-      UpdateHistory(p, last_move, move, depth, ply);
+	  if (!fl_check)
+        UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
     // If beta cutoff occurs at the root, change the best move
@@ -399,8 +399,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Save score in the transposition table
 
   if (*pv) {
-	// TODO: update history only if not in check
-    UpdateHistory(p, last_move, *pv, depth, ply);
+	if (!fl_check)
+      UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);
