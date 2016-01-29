@@ -46,13 +46,20 @@ void EvalPatterns(POS * p) {
   if (IsOnSq(p, WC, B, G8) && IsOnSq(p, BC, P, F7)) Add(WC, F_OTHERS, -150, -150);
   if (IsOnSq(p, WC, B, A6) && IsOnSq(p, BC, P, B5)) Add(WC, F_OTHERS, -50, -50);
   if (IsOnSq(p, WC, B, H6) && IsOnSq(p, BC, P, G5)) Add(WC, F_OTHERS, -50, -50);
-
+  
   if (IsOnSq(p, BC, B, A2) && IsOnSq(p, WC, P, B3)) Add(BC, F_OTHERS, -150, -150);
   if (IsOnSq(p, BC, B, B1) && IsOnSq(p, WC, P, C2)) Add(BC, F_OTHERS, -150, -150);
   if (IsOnSq(p, BC, B, H2) && IsOnSq(p, WC, P, G3)) Add(BC, F_OTHERS, -150, -150);
   if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(BC, F_OTHERS, -150, -150);
   if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(BC, F_OTHERS, -50, -50);
   if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(BC, F_OTHERS, -50, -50);
+
+  // Stifled fianchettoed bishop
+
+  if (IsOnSq(p, WC, B, B2) && IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5) ) ) Add(WC, F_OTHERS, -10, -10);
+  if (IsOnSq(p, WC, B, G2) && IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5) ) ) Add(WC, F_OTHERS, -10, -10);
+  if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4) ) ) Add(BC, F_OTHERS, -10, -10);
+  if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4) ) ) Add(BC, F_OTHERS, -10, -10);
   
   // Rook blocked by uncastled king
 
