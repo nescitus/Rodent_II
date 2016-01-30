@@ -23,43 +23,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void EvalPatterns(POS * p) {
 
   U64 king_mask, rook_mask;
+  static const U64 wb_mask = {SqBb(F1) | SqBb(C1) | SqBb(A7) | SqBb(B8) | SqBb(H7) | SqBb(G8) | SqBb(A6) | SqBb(H6) | SqBb(B2) | SqBb(G2) };
+  static const U64 bb_mask = {SqBb(F8) | SqBb(C8) | SqBb(A2) | SqBb(B1) | SqBb(H2) | SqBb(G1) | SqBb(A3) | SqBb(H3) | SqBb(B7) | SqBb(G7) };
 
-  // Blockage of a central pawn on its initial square
+  if (PcBb(p, WC, B) & wb_mask) {
 
-  if (IsOnSq(p, WC, P, D2) && IsOnSq(p, WC, B, C1)
-  && OccBb(p) & SqBb(D3)) Add(WC, F_OTHERS, -50, 0);
+    // Blockage of a central pawn on its initial square
 
-  if (IsOnSq(p, WC, P, E2) && IsOnSq(p, WC, B, F1)
-  && OccBb(p) & SqBb(E3)) Add(WC, F_OTHERS, -50, 0);
+    if (IsOnSq(p, WC, P, D2) && IsOnSq(p, WC, B, C1)
+      && OccBb(p) & SqBb(D3)) Add(WC, F_OTHERS, -50, 0);
 
-  if (IsOnSq(p, BC, P, D7) && IsOnSq(p, BC, B, C8)
-  && OccBb(p) & SqBb(D6)) Add(BC, F_OTHERS, -50, 0);
+    if (IsOnSq(p, WC, P, E2) && IsOnSq(p, WC, B, F1)
+      && OccBb(p) & SqBb(E3)) Add(WC, F_OTHERS, -50, 0);
 
-  if (IsOnSq(p, BC, P, E7) && IsOnSq(p, BC, B, F8)
-  && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
+    // Trapped bishop
 
-  // Trapped bishop
-  
-  if (IsOnSq(p, WC, B, A7) && IsOnSq(p, BC, P, B6)) Add(WC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, WC, B, B8) && IsOnSq(p, BC, P, C7)) Add(WC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, WC, B, H7) && IsOnSq(p, BC, P, G6)) Add(WC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, WC, B, G8) && IsOnSq(p, BC, P, F7)) Add(WC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, WC, B, A6) && IsOnSq(p, BC, P, B5)) Add(WC, F_OTHERS, -50, -50);
-  if (IsOnSq(p, WC, B, H6) && IsOnSq(p, BC, P, G5)) Add(WC, F_OTHERS, -50, -50);
-  
-  if (IsOnSq(p, BC, B, A2) && IsOnSq(p, WC, P, B3)) Add(BC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, BC, B, B1) && IsOnSq(p, WC, P, C2)) Add(BC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, BC, B, H2) && IsOnSq(p, WC, P, G3)) Add(BC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(BC, F_OTHERS, -150, -150);
-  if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(BC, F_OTHERS, -50, -50);
-  if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(BC, F_OTHERS, -50, -50);
+    if (IsOnSq(p, WC, B, A7) && IsOnSq(p, BC, P, B6)) Add(WC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, WC, B, B8) && IsOnSq(p, BC, P, C7)) Add(WC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, WC, B, H7) && IsOnSq(p, BC, P, G6)) Add(WC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, WC, B, G8) && IsOnSq(p, BC, P, F7)) Add(WC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, WC, B, A6) && IsOnSq(p, BC, P, B5)) Add(WC, F_OTHERS, -50, -50);
+    if (IsOnSq(p, WC, B, H6) && IsOnSq(p, BC, P, G5)) Add(WC, F_OTHERS, -50, -50);
 
-  // Stifled fianchettoed bishop
+    // Stifled fianchettoed bishop
 
-  if (IsOnSq(p, WC, B, B2) && IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5) ) ) Add(WC, F_OTHERS, -10, -10);
-  if (IsOnSq(p, WC, B, G2) && IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5) ) ) Add(WC, F_OTHERS, -10, -10);
-  if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4) ) ) Add(BC, F_OTHERS, -10, -10);
-  if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4) ) ) Add(BC, F_OTHERS, -10, -10);
+    if (IsOnSq(p, WC, B, B2) && IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5))) Add(WC, F_OTHERS, -10, -10);
+    if (IsOnSq(p, WC, B, G2) && IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5))) Add(WC, F_OTHERS, -10, -10);
+
+  }
+
+  if (PcBb(p, BC, B) & bb_mask) {
+
+    // Blockage of a central pawn on its initial square
+
+    if (IsOnSq(p, BC, P, D7) && IsOnSq(p, BC, B, C8)
+      && OccBb(p) & SqBb(D6)) Add(BC, F_OTHERS, -50, 0);
+
+    if (IsOnSq(p, BC, P, E7) && IsOnSq(p, BC, B, F8)
+      && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
+
+    // Trapped bishop
+
+    if (IsOnSq(p, BC, B, A2) && IsOnSq(p, WC, P, B3)) Add(BC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, BC, B, B1) && IsOnSq(p, WC, P, C2)) Add(BC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, BC, B, H2) && IsOnSq(p, WC, P, G3)) Add(BC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(BC, F_OTHERS, -150, -150);
+    if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(BC, F_OTHERS, -50, -50);
+    if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(BC, F_OTHERS, -50, -50);
+
+    // Stifled fianchettoed bishop
+
+    if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4))) Add(BC, F_OTHERS, -10, -10);
+    if (IsOnSq(p, BC, B, G7) && IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4))) Add(BC, F_OTHERS, -10, -10);
+
+  }
   
   // Rook blocked by uncastled king
 
