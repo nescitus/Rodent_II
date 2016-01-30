@@ -180,7 +180,7 @@ void InitEval(void) {
 
 void EvaluatePieces(POS *p, int sd) {
 
-  U64 bbPieces, bbMob, bbAtt, bbStop, bbFile, bbContact;
+  U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
   int op, sq, cnt, tmp, mul, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
@@ -260,9 +260,6 @@ void EvaluatePieces(POS *p, int sd) {
 
     // Knight outpost
 
-    if (sd == WC) bbStop = ShiftNorth(SqBb(sq));
-    if (sd == BC) bbStop = ShiftSouth(SqBb(sq));
-
     mul = 0;
     tmp = pstKnightOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
@@ -273,7 +270,7 @@ void EvaluatePieces(POS *p, int sd) {
 
     Add(sd, F_OUTPOST, tmp, tmp);
 
-	// knight forward position
+	// Knight forward position
 
 	if (SqBb(sq) & bbOppSide) {
       fwd_cnt ++;
@@ -313,6 +310,8 @@ void EvaluatePieces(POS *p, int sd) {
       b_att++;
       att += king_att[B] * PopCnt(bbAtt & bbZone);
     }
+
+  // Bishop outpost
 
   mul = 0;
   tmp = pstBishopOutpost[REL_SQ(sq, sd)];
