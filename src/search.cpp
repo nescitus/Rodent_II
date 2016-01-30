@@ -110,8 +110,8 @@ void Iterate(POS *p, int *pv) {
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 
-  if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
-  else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+    if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
+    else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -207,8 +207,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Beta pruning / static null move
 
-  if (ply && depth <= 3
-  && use_beta_pruning
+  if (use_beta_pruning
+  && ply 
+  && depth <= 3 
   && fl_prunable_node
   && MayNull(p)
   && !was_null) {
@@ -218,7 +219,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Null move
 
-  if (depth > 1
+  if (use_nullmove
+  && depth > 1
   && fl_prunable_node
   && use_nullmove
   && !was_null
@@ -257,8 +259,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Razoring based on Toga II 3.0
 
-  if (fl_prunable_node
-  && use_razoring
+  if (use_razoring
+  && fl_prunable_node
   && !move
   && !was_null
   && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
@@ -276,8 +278,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Set futility pruning flag
  
-  if (depth <= 6
-  && use_futility
+  if (use_futility
+  && depth <= 6
   && fl_prunable_node) {
     if (Evaluate(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
   }
@@ -293,79 +295,80 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-  // Update move statistics (needed for reduction/pruning decisions)
+    // Update move statistics (needed for reduction/pruning decisions)
 
-  mv_tried++;
-  if (!ply && depth > 9 && verbose) DisplayCurrmove(move, mv_tried);
-  if (mv_type == MV_NORMAL) quiet_tried++;
-  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+    mv_tried++;
+    if (!ply && depth > 9 && verbose) DisplayCurrmove(move, mv_tried);
+    if (mv_type == MV_NORMAL) quiet_tried++;
+    fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
-  // Set new search depth
+    // Set new search depth
 
-  new_depth = depth - 1 + InCheck(p);
+    new_depth = depth - 1 + InCheck(p);
 
-  // Futility pruning
+    // Futility pruning
 
-  if (fl_futility
-  &&  fl_prunable_move
-  &&  mv_tried > 1) {
-    p->UndoMove(move, u); continue;
-  }
+    if (fl_futility
+    &&  fl_prunable_move
+    &&  mv_tried > 1) {
+      p->UndoMove(move, u); continue;
+    }
 
-  // Late move pruning
+    // Late move pruning
 
-  if (fl_prunable_node
-  && use_lmp
-  && quiet_tried > lmp_limit[depth]
-  && fl_prunable_move
-  && depth <= 3
-  && MoveType(move) != CASTLE ) {
-    p->UndoMove(move, u); continue;
-  }
+    if (use_lmp
+    && fl_prunable_node
+    && quiet_tried > lmp_limit[depth]
+    && fl_prunable_move
+    && depth <= 3
+    && MoveType(move) != CASTLE ) {
+      p->UndoMove(move, u); continue;
+    }
 
-  // Late move reduction
+    // Late move reduction
 
-  reduction = 0;
-
-  if (depth >= 2
-  && use_lmr
-  && mv_tried > 3
-  && alpha > -MAX_EVAL && beta < MAX_EVAL
-  && !fl_check 
-  &&  fl_prunable_move
-  && lmr_size[is_pv][depth][mv_tried] > 0
-  && MoveType(move) != CASTLE ) {
-    reduction = lmr_size[is_pv][depth][mv_tried];
-    new_depth -= reduction;
-  }
-
-  re_search:
-   
-  // PVS
-
-  if (best == -INF)
-    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-  else {
-    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
-    if (!abort_search && score > alpha && score < beta)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-  }
-
-  // Reduced move scored above alpha - we need to re-search it
-
-  if (reduction && score > alpha) {
-    new_depth += reduction;
     reduction = 0;
-    goto re_search;
-  }
+
+    if (use_lmr
+    && depth >= 2
+    && mv_tried > 3
+    && alpha > -MAX_EVAL && beta < MAX_EVAL
+    && !fl_check 
+    &&  fl_prunable_move
+    && lmr_size[is_pv][depth][mv_tried] > 0
+    && MoveType(move) != CASTLE ) {
+      reduction = lmr_size[is_pv][depth][mv_tried];
+      new_depth -= reduction;
+    }
+
+    re_search:
+   
+    // PVS
+
+    if (best == -INF)
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+    else {
+      score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+      if (!abort_search && score > alpha && score < beta)
+        score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+    }
+
+    // Reduced move scored above alpha - we need to re-search it
+
+    if (reduction 
+    && score > alpha) {
+      new_depth += reduction;
+      reduction = 0;
+      goto re_search;
+    }
 
     p->UndoMove(move, u);
     if (abort_search) return 0;
 
-  // Beta cutoff
+    // Beta cutoff
 
     if (score >= beta) {
-	  if (!fl_check)
+      if (!fl_check)
         UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
@@ -400,7 +403,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Save score in the transposition table
 
   if (*pv) {
-	if (!fl_check)
+    if (!fl_check)
       UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else

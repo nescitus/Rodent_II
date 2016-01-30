@@ -93,24 +93,24 @@ int GetDrawFactor(POS *p, int sd)
 
   if (PcMatR(p, sd) && PcMatR(p, op) && p->cnt[sd][P] == 1 && p->cnt[op][P] == 0) {
 
-	  // good defensive position with a king on pawn's path increases drawing chances
+    // good defensive position with a king on pawn's path increases drawing chances
 
-	  if ((SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd)))
-		  return 32; // 1/2
+    if ((SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd)))
+      return 32; // 1/2
 
-	  // draw code for rook endgame with edge pawn
+    // draw code for rook endgame with edge pawn
 
-	  if ((RelSqBb(A7, sd) & PcBb(p, sd, P))
-	  && ( RelSqBb(A8, sd) & PcBb(p, sd, R))
-	  && ( FILE_A_BB & PcBb(p, op, R))
-	  && ((RelSqBb(H7, sd) & PcBb(p, op, K)) || (RelSqBb(G7, sd) & PcBb(p, op, K)))
-	  ) return 0; // dead draw
+    if ((RelSqBb(A7, sd) & PcBb(p, sd, P))
+    && ( RelSqBb(A8, sd) & PcBb(p, sd, R))
+    && ( FILE_A_BB & PcBb(p, op, R))
+    && ((RelSqBb(H7, sd) & PcBb(p, op, K)) || (RelSqBb(G7, sd) & PcBb(p, op, K)))
+    ) return 0; // dead draw
 
-	  if ((RelSqBb(H7, sd) & PcBb(p, sd, P))
-	  && ( RelSqBb(H8, sd) & PcBb(p, sd, R))
-	  && ( FILE_H_BB & PcBb(p, op, R))
-	  && ((RelSqBb(A7, sd) & PcBb(p, op, K)) || (RelSqBb(B7, sd) & PcBb(p, op, K)))
-	  ) return 0; // dead draw
+    if ((RelSqBb(H7, sd) & PcBb(p, sd, P))
+    && ( RelSqBb(H8, sd) & PcBb(p, sd, R))
+    && ( FILE_H_BB & PcBb(p, op, R))
+    && ((RelSqBb(A7, sd) & PcBb(p, op, K)) || (RelSqBb(B7, sd) & PcBb(p, op, K)))
+    ) return 0; // dead draw
 
   }
 
