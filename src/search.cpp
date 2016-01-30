@@ -79,6 +79,7 @@ void Think(POS *p, int *pv) {
   tt_date = (tt_date + 1) & 255;
   nodes = 0;
   abort_search = 0;
+  verbose = 1;
   Timer.SetStartTime();
 
   // Search
@@ -295,7 +296,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Update move statistics (needed for reduction/pruning decisions)
 
   mv_tried++;
-  if (!ply && depth > 9) DisplayCurrmove(move, mv_tried);
+  if (!ply && depth > 9 && verbose) DisplayCurrmove(move, mv_tried);
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 

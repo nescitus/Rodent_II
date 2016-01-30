@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 8267 lines of code
 
-#define PROG_NAME "Rodent II 0.7.7"
+#define PROG_NAME "Rodent II 0.7.8"
 
 enum eColor{WC, BC, NO_CL};
 enum eSide {OWN_SD, OPP_SD, NO_SD};
@@ -398,6 +398,7 @@ extern const int tp_value[7];
 extern int pc_value[7];
 extern const int phase_value[7];
 extern int refutation[64][64];
+extern int verbose;
 extern int root_side;
 extern int history[12][64];
 extern int killer[MAX_PLY][2];
@@ -408,6 +409,7 @@ extern int pondering;
 extern int root_depth;
 extern U64 nodes;
 extern int abort_search;
+
 extern ENTRY *tt;
 extern int tt_size;
 extern int tt_mask;
