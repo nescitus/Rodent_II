@@ -54,19 +54,18 @@ void UciLoop(void) {
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-        printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
-        printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
+    printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
+    printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
         printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
         printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
         printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
         printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
-        printf("option name PiecePressure type spin default %d min 0 max 500\n", weights[F_PRESSURE]);
+    printf("option name PiecePressure type spin default %d min 0 max 500\n", weights[F_PRESSURE]);
         printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-		printf("option name Forwardness type spin default %d min 0 max 500\n", weights[F_FWD]);
         printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
         printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
@@ -194,8 +193,6 @@ void ParseSetoption(char *ptr) {
    SetWeight(F_LINES, atoi(value));
   } else if (strcmp(name, "Outposts") == 0) {
     SetWeight(F_OUTPOST, atoi(value));
-  } else if (strcmp(name, "Forwardness") == 0) {
-    SetWeight(F_FWD, atoi(value));
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();

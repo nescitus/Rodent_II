@@ -70,7 +70,6 @@ void Bench(int depth) {
 
   ResetEngine();
   nodes = 0;
-  verbose = 0;
   Timer.SetData(MAX_DEPTH, depth);
   Timer.SetData(FLAG_INFINITE, 1);
   Timer.SetStartTime();

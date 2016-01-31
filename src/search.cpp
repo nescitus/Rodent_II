@@ -60,6 +60,8 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
+  int flag;
+
   // Play move from opening book, if applicable
 
   if (use_book) {
@@ -67,9 +69,6 @@ void Think(POS *p, int *pv) {
     if (pv[0]) return;
 
     pv[0] = MainBook.GetPolyglotMove(p, 1);
-    if (pv[0]) return;
-
-    pv[0] = InternalBook.MoveFromInternal(p);
     if (pv[0]) return;
   }
 
@@ -79,7 +78,6 @@ void Think(POS *p, int *pv) {
   tt_date = (tt_date + 1) & 255;
   nodes = 0;
   abort_search = 0;
-  verbose = 1;
   Timer.SetStartTime();
 
   // Search
@@ -110,8 +108,8 @@ void Iterate(POS *p, int *pv) {
     if (elapsed) nps = nodes * 1000 / elapsed;
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 
-    if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
-    else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+  if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
+  else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -167,11 +165,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (ply) *pv = 0;
   if (IsDraw(p) && ply) return DrawScore(p);
 
-  // Are we in check? Knowing that is useful when it comes 
-  // to pruning/reduction decisions and has impact on move sorting
-
-  fl_check = InCheck(p);
-
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
 
@@ -181,8 +174,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     // For move ordering purposes, a cutoff from hash is treated
     // exactly like a cutoff from search
 
-    if (score >= beta && !fl_check) 
-      UpdateHistory(p, last_move, move, depth, ply);
+    if (score >= beta) UpdateHistory(p, last_move, move, depth, ply);
 
     // In pv nodes only exact scores are returned. This is done because
     // there is much more pruning and reductions in zero-window nodes,
@@ -198,20 +190,23 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (ply >= MAX_PLY - 1)
     return Evaluate(p, 1);
 
+  // Are we in check? Knowing that is useful when it comes 
+  // to pruning/reduction decisions
+
+  fl_check = InCheck(p);
+
   // Can we prune this node?
 
   fl_prunable_node = !fl_check 
-                  && !is_pv 
-                  && alpha > -MAX_EVAL
-                  && beta < MAX_EVAL;
+                   && !is_pv 
+                   && alpha > -MAX_EVAL
+                   && beta < MAX_EVAL;
 
   // Beta pruning / static null move
 
-  if (use_beta_pruning
-  && ply 
-  && depth <= 3 
+  if (ply && depth <= 3
+  && use_beta_pruning
   && fl_prunable_node
-  && MayNull(p)
   && !was_null) {
     int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
@@ -219,8 +214,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Null move
 
-  if (use_nullmove
-  && depth > 1
+  if (depth > 1
   && fl_prunable_node
   && use_nullmove
   && !was_null
@@ -259,8 +253,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Razoring based on Toga II 3.0
 
-  if (use_razoring
-  && fl_prunable_node
+  if (fl_prunable_node
+  && use_razoring
   && !move
   && !was_null
   && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
@@ -278,8 +272,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Set futility pruning flag
  
-  if (use_futility
-  && depth <= 6
+  if (depth <= 6
+  && use_futility
   && fl_prunable_node) {
     if (Evaluate(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
   }
@@ -295,81 +289,79 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-    // Update move statistics (needed for reduction/pruning decisions)
+  // Update move statistics (needed for reduction/pruning decisions)
 
-    mv_tried++;
-    if (!ply && depth > 9 && verbose) DisplayCurrmove(move, mv_tried);
-    if (mv_type == MV_NORMAL) quiet_tried++;
-    fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+  mv_tried++;
+  if (mv_type == MV_NORMAL) quiet_tried++;
+  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
-    // Set new search depth
+  // Set new search depth
 
-    new_depth = depth - 1 + InCheck(p);
+  new_depth = depth - 1 + InCheck(p);
 
-    // Futility pruning
+  // Futility pruning
 
-    if (fl_futility
-    &&  fl_prunable_move
-    &&  mv_tried > 1) {
-      p->UndoMove(move, u); continue;
-    }
+  if (fl_futility
+  &&  fl_prunable_move
+  &&  mv_tried > 1) {
+    p->UndoMove(move, u); continue;
+  }
 
-    // Late move pruning
+  // Late move pruning
 
-    if (use_lmp
-    && fl_prunable_node
-    && quiet_tried > lmp_limit[depth]
-    && fl_prunable_move
-    && depth <= 3
-    && MoveType(move) != CASTLE ) {
-      p->UndoMove(move, u); continue;
-    }
+  if (fl_prunable_node
+  && use_lmp
+  && quiet_tried > lmp_limit[depth]
+  && fl_prunable_move
+  && depth <= 3
+  && MoveType(move) != CASTLE ) {
+    p->UndoMove(move, u); continue;
+  }
 
-    // Late move reduction
+  // Late move reduction
 
-    reduction = 0;
+  reduction = 0;
 
-    if (use_lmr
-    && depth >= 2
-    && mv_tried > 3
-    && alpha > -MAX_EVAL && beta < MAX_EVAL
-    && !fl_check 
-    &&  fl_prunable_move
-    && lmr_size[is_pv][depth][mv_tried] > 0
-    && MoveType(move) != CASTLE ) {
-      reduction = lmr_size[is_pv][depth][mv_tried];
-      new_depth -= reduction;
-    }
+  if (depth >= 2
+  && use_lmr
+  && mv_tried > 3
+  && alpha > -MAX_EVAL && beta < MAX_EVAL
+  && !fl_check 
+  &&  fl_prunable_move
+  && lmr_size[is_pv][depth][mv_tried] > 0
+  && MoveType(move) != CASTLE ) {
 
-    re_search:
+    reduction = lmr_size[is_pv][depth][mv_tried];
+    new_depth -= reduction;
+  }
+
+  re_search:
    
-    // PVS
+  // PVS
 
-    if (best == -INF)
+  if (best == -INF)
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+  else {
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+    if (!abort_search && score > alpha && score < beta)
       score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-    else {
-      score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
-      if (!abort_search && score > alpha && score < beta)
-        score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
-    }
+  }
 
-    // Reduced move scored above alpha - we need to re-search it
+  // Reduced move scored above alpha - we need to re-search it
 
-    if (reduction 
-    && score > alpha) {
-      new_depth += reduction;
-      reduction = 0;
-      goto re_search;
-    }
+  if (reduction && score > alpha) {
+    new_depth += reduction;
+    reduction = 0;
+    goto re_search;
+  }
 
     p->UndoMove(move, u);
     if (abort_search) return 0;
 
-    // Beta cutoff
+  // Beta cutoff
 
     if (score >= beta) {
-      if (!fl_check)
-        UpdateHistory(p, last_move, move, depth, ply);
+      UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
     // If beta cutoff occurs at the root, change the best move
@@ -403,8 +395,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Save score in the transposition table
 
   if (*pv) {
-    if (!fl_check)
-      UpdateHistory(p, last_move, *pv, depth, ply);
+    UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);
@@ -503,14 +494,6 @@ void DisplayPv(int score, int *pv) {
   PvToStr(pv, pv_str);
   printf("info depth %d time %d nodes %I64d nps %I64d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
-}
-
-void DisplayCurrmove(int move, int tried)
-{
-	printf("info currmove ");
-	PrintMove(move);
-	printf(" currmovenumber %d \n", tried);
-	DisplaySpeed();
 }
 
 void CheckTimeout(void) {

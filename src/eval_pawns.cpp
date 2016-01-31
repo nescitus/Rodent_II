@@ -126,7 +126,7 @@ void EvaluatePawns(POS *p, int sd) {
     // Supported pawn
 
     if (flagPhalanx1 || flagPhalanx2) Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
-    else if (fl_defended)             Add(sd, F_PAWNS, defended_data[sd][sq], 1);
+  else if (fl_defended)             Add(sd, F_PAWNS, defended_data[sd][sq], 1);
 
     // Weak pawn (two flavours)
 
@@ -134,7 +134,7 @@ void EvaluatePawns(POS *p, int sd) {
       if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
         Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20); // isolated pawn
       else
-        Add(sd, F_PAWNS,  -8 - file_bonus[File(sq)] -  8 * fl_unopposed,  -8); // backward pawn
+        Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8);    // backward pawn
     }
   }
 }
