@@ -426,6 +426,7 @@ extern int rp_malus;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);
+int PcMatNone(POS *p, int sd);
 int PcMat1Minor(POS *p, int sd);
 int PcMat2Minors(POS *p, int sd);
 int PcMatBN(POS *p, int sd);

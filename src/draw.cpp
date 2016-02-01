@@ -22,13 +22,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static const U64 bbHomeZone[2] = { RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB,
                                    RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB };
 
+static const U64 bbKingBlockH[2] = { SqBb(H8) | SqBb(H7) | SqBb(G8) | SqBb(G7),
+                                     SqBb(H1) | SqBb(H2) | SqBb(G1) | SqBb(G2) };
+
+static const U64 bbKingBlockA[2] = { SqBb(A8) | SqBb(A7) | SqBb(B8) | SqBb(B7),
+                                     SqBb(A1) | SqBb(A2) | SqBb(B1) | SqBb(B2) };
+
 int GetDrawFactor(POS *p, int sd) 
 {
   int op = Opp(sd);
 
   // Case 1: KBP vs Km
-  // drawn when defending king stands on pawn's path and can't be driven out by a bishop
-  // (must be dealt with before opposite bishops ending)
+  // drawn when defending king stands on pawn's path and can't be driven out 
+  // by a bishop (must be dealt with before opposite bishops ending)
+
   if (PcMatB(p, sd)
   && PcMat1Minor(p, op)
   && p->cnt[sd][P] == 1
@@ -54,6 +61,20 @@ int GetDrawFactor(POS *p, int sd)
 
      // 2d: halve the score for pure BOC endings
      return 32;
+  }
+
+  // Case 3: KPK with edge pawn (else KBPK recognizer would break)
+
+  if (PcMatNone(p, sd)
+  && PcMatNone(p, op)
+  && p->cnt[sd][P] == 1    // TODO: all pawns of a stronger side on a rim
+  && p->cnt[op][P] == 0) { // TODO: accept pawns for a weaker side
+
+    if (PcBb(p, sd, P) & FILE_H_BB
+    &&  PcBb(p, op, K) & bbKingBlockH[sd]) return 0;
+
+    if (PcBb(p, sd, P) & FILE_A_BB
+    &&  PcBb(p, op, K) & bbKingBlockA[sd]) return 0;
   }
 
   if (p->cnt[sd][P] == 0) {
@@ -135,6 +156,9 @@ int NotOnBishColor(POS * p, int bishSide, int sq) {
   return 0;
 }
 
+int PcMatNone(POS * p, int sd) {
+  return (p->cnt[sd][B] + p->cnt[sd][N] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+}
 
 int PcMat1Minor(POS *p, int sd) {
   return (p->cnt[sd][B] + p->cnt[sd][N] == 1 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
