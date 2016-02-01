@@ -77,6 +77,22 @@ int GetDrawFactor(POS *p, int sd)
     &&  PcBb(p, op, K) & bbKingBlockA[sd]) return 0;
   }
 
+  // Case 4: KBPK(P) draws with edge pawn and wrong bishop
+
+  if (PcMatB(p, sd)
+  && PcMatNone(p, op)
+  &&  p->cnt[sd][P]  == 1 ) { // TODO: all pawns of a stronger side on a rim
+
+    if (PcBb(p, sd, P) & FILE_H_BB
+    && NotOnBishColor(p, sd, REL_SQ(H8,sd))
+    && PcBb(p, op, K)  & bbKingBlockH[sd]) return 0;
+
+    if (PcBb(p, sd, P) & FILE_H_BB
+    && NotOnBishColor(p, sd, REL_SQ(H8,sd))
+    && PcBb(p, op, K)  & bbKingBlockH[sd]) return 0;
+  }
+
+
   if (p->cnt[sd][P] == 0) {
 
     // low and almost equal material with no pawns
