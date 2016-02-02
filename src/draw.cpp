@@ -95,7 +95,7 @@ int GetDrawFactor(POS *p, int sd)
 
   if (p->cnt[sd][P] == 0) {
 
-    // low and almost equal material with no pawns
+    // Case 5: low and almost equal material with no pawns
 
     if (p->cnt[op][P] == 0) {
       if (PcMatRm(p, sd) && PcMatRm(p, op)) return 8;
@@ -108,34 +108,34 @@ int GetDrawFactor(POS *p, int sd)
     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2 ) 
     return 0;
 
-     // KR vs Km(p)
+     // Case 6: KR vs Km(p)
      if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 32;
 
-     // KRm vs KR(p)
+     // Case 7: KRm vs KR(p)
      if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
      &&  PcMatR(p, op) ) return 32;
 
-     // KQm vs KQ(p)
+     // Case 8: KQm vs KQ(p)
      if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
      &&  PcMatQ(p, op) ) return 32;
 
-     // Kmm vs KB(p)
+     // Case 9: Kmm vs KB(p)
      if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
 
-     // KBN vs Km(p)
+     // Case 10: KBN vs Km(p)
      if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
   }
 
-  // KRP vs KR
+  // Case 11: KRP vs KR
 
   if (PcMatR(p, sd) && PcMatR(p, op) && p->cnt[sd][P] == 1 && p->cnt[op][P] == 0) {
 
-    // good defensive position with a king on pawn's path increases drawing chances
+    // 11a: good defensive position with a king on pawn's path increases drawing chances
 
     if ((SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd)))
       return 32; // 1/2
 
-    // draw code for rook endgame with edge pawn
+    // 11b: draw code for rook endgame with edge pawn
 
     if ((RelSqBb(A7, sd) & PcBb(p, sd, P))
     && ( RelSqBb(A8, sd) & PcBb(p, sd, R))

@@ -527,10 +527,10 @@ void EvalPassers(POS * p, int sd)
 
       if (bbStop & OccBb(p)) mul -= 20; // TODO: only with a blocker of opp color
 
-      // enemy control of stop square
+      // our control of stop square
     
-     // if ( (bbStop & bbAllAttacks[op]) 
-     // &&   (bbStop & ~bbAllAttacks[sd]) ) mul -= 10;
+      else if ( (bbStop & bbAllAttacks[sd]) 
+      &&   (bbStop & ~bbAllAttacks[op]) ) mul += 10;
    
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
