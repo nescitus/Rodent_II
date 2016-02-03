@@ -28,6 +28,29 @@ static const U64 bbKingBlockH[2] = { SqBb(H8) | SqBb(H7) | SqBb(G8) | SqBb(G7),
 static const U64 bbKingBlockA[2] = { SqBb(A8) | SqBb(A7) | SqBb(B8) | SqBb(B7),
                                      SqBb(A1) | SqBb(A2) | SqBb(B1) | SqBb(B2) };
 
+static const int BN_wb[64] = {
+    0,    0,  15,  30,  45,  60,  85, 100,
+    0,   15,  30,  45,  60,  85, 100,  85,
+    15,  30,  45,  60,  85, 100,  85,  60,
+    30,  45,  60,  85, 100,  85,  60,  45,
+    45,  60,  85, 100,  85,  60,  45,  30,
+    60,  85, 100,  85,  60,  45,  30,  15,
+    85, 100,  85,  60,  45,  30,  15,   0,
+   100,  85,  60,  45,  30,  15,   0,   0
+};
+
+static const int BN_bb[64] = {
+    100, 85,  60,  45,  30,  15,   0,   0,
+    85, 100,  85,  60,  45,  30,  15,   0,
+    60,  85, 100,  85,  60,  45,  30,  15,
+    45,  60,  85, 100,  85,  60,  45,  30,
+    30,  45,  60,  85, 100,  85,  60,  45,
+    15,  30,  45,  60,  85, 100,  85,  60,
+    0,   15,  30,  45,  60,  85, 100,  85,
+    0,   0,   15,  30,  45,  60,  85, 100
+};
+
+
 int GetDrawFactor(POS *p, int sd) 
 {
   int op = Opp(sd);
@@ -171,6 +194,28 @@ int NotOnBishColor(POS * p, int bishSide, int sq) {
 
   return 0;
 }
+
+int CheckmateHelper(POS *p)
+{
+   int result = 0;
+
+   if (p->cnt[WC][P] == 0
+   &&  p->cnt[BC][P] == 0) {
+
+      if (PcMatBN(p, WC) && PcMatNone(p,BC) ) { // mate with bishop and knight
+         if ( PcBb(p, WC, B) & bbWhiteSq) result -= 2*BN_bb[p->king_sq[BC]];
+         if ( PcBb(p, WC, B) & bbBlackSq) result -= 2*BN_wb[p->king_sq[BC]];
+      }
+        
+      if (PcMatBN(p, BC) && PcMatNone(p,WC)) { // mate with bishop and knight
+         if ( PcBb(p, BC, B) & bbWhiteSq) result += 2*BN_bb[p->king_sq[WC]];
+         if ( PcBb(p, BC, B) & bbBlackSq) result += 2*BN_wb[p->king_sq[WC]];
+      }  
+}
+
+    return result;
+}
+
 
 int PcMatNone(POS * p, int sd) {
   return (p->cnt[sd][B] + p->cnt[sd][N] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);

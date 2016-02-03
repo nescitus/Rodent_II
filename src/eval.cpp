@@ -636,6 +636,8 @@ int Evaluate(POS *p, int use_hash) {
 
   score += imbalance[x][y];
 
+  score += CheckmateHelper(p);
+
   // Scale down drawish endgames
 
   int draw_factor = 64;

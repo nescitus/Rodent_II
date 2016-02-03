@@ -288,6 +288,7 @@ int BadCapture(POS *p, int move);
 void Bench(int depth);
 void BuildPv(int *dst, int *src, int move);
 void CheckTimeout(void);
+int CheckmateHelper(POS *p);
 void ClearEvalHash(void);
 void ClearPawnHash(void);
 void ClearHist(void);
