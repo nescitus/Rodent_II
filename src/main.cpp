@@ -43,9 +43,9 @@ int main() {
   InitWeights();
   InitEval();
   InitSearch();
-  MainBook.bookName = "handmade.bin";
+  MainBook.bookName = "guide.bin";
   MainBook.OpenPolyglot();
-  GuideBook.bookName = "handmade.bin";
+  GuideBook.bookName = "rodent.bin";
   GuideBook.OpenPolyglot();
   ReadPersonality("basic.ini");
   UciLoop();

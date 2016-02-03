@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void Init(void) {
 
-  int i, j, k, l, x, y;
+  int i, j, k, x;
   static const int dirs[4][2] = {{1, -1}, {16, -16}, {17, -17}, {15, -15}};
   static const int p_moves[2][2] = {{15, 17}, {-17, -15}};
   static const int n_moves[8] = {-33, -31, -18, -14, 14, 18, 31, 33};
