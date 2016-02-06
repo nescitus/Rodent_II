@@ -359,7 +359,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta cutoff
 
     if (score >= beta) {
-      UpdateHistory(p, last_move, move, depth, ply);
+		if (!fl_check)
+          UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
     // If beta cutoff occurs at the root, change the best move
@@ -393,7 +394,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Save score in the transposition table
 
   if (*pv) {
-    UpdateHistory(p, last_move, *pv, depth, ply);
+    if (!fl_check)
+      UpdateHistory(p, last_move, *pv, depth, ply);
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);
