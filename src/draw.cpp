@@ -110,9 +110,9 @@ int GetDrawFactor(POS *p, int sd)
     && NotOnBishColor(p, sd, REL_SQ(H8,sd))
     && PcBb(p, op, K)  & bbKingBlockH[sd]) return 0;
 
-    if (PcBb(p, sd, P) & FILE_H_BB
-    && NotOnBishColor(p, sd, REL_SQ(H8,sd))
-    && PcBb(p, op, K)  & bbKingBlockH[sd]) return 0;
+    if (PcBb(p, sd, P) & FILE_A_BB
+    && NotOnBishColor(p, sd, REL_SQ(A8,sd))
+    && PcBb(p, op, K)  & bbKingBlockA[sd]) return 0;
   }
 
 
