@@ -54,6 +54,7 @@ void UciLoop(void) {
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
+		printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
         printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
@@ -145,6 +146,10 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "Material") == 0) {
     mat_perc = atoi(value);
+    ResetEngine();
+    InitEval();
+  } else if (strcmp(name, "PiecePlacement") == 0) {
+    pst_perc = atoi(value);
     ResetEngine();
     InitEval();
   } else if (strcmp(name, "PawnValue") == 0) {

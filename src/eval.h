@@ -125,7 +125,7 @@ static const int q_mob_mg[28] = { -14, -13, -12, -11, -10,  -9,  -8,  -7,  -6,  
                                    +1,  +2,  +3,  +4,  +5,  +6,  +7,  +8,  +9, +10, +11, +12, +13 };
 static const int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -10,  -8,  -6,  -4,  -2,  +0,
                                    +2,  +4,  +6,  +8, +10, +12, +14, +16, +18, +20, +22, +24, +26 };
-
+								   
 // parameters for evaluating material imbalance [5+9+2]
 
 #define A  80 // advantage in both major and minor pieces
