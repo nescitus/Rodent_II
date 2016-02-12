@@ -385,10 +385,17 @@ void EvaluatePieces(POS *p, int sd) {
       att += king_att[R] * PopCnt(bbAtt & bbZone);
     }
 
-    // Rook on (half) open file
-    // (failed with reducing bonus for half open files blocked by defended pawn)
+	// Get rook file
 
     bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
+
+	// Queen on rook file (which might be closed)
+
+	if (bbFile & PcBb(p, op, Q)) Add(sd, F_LINES, 5, 5);
+
+	// Rook on (half) open file
+	// (failed with reducing bonus for half open files blocked by defended pawn)
+
     if (!(bbFile & PcBb(p, sd, P))) {
       if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
       else                            Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
