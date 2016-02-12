@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4934 lines of code
 
+#pragma once
 #define PROG_NAME "Rodent II 0.8.4"
 
 enum eColor{WC, BC, NO_CL};

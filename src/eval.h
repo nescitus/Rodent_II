@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // (http://members.aon.at/josefd/Toga%20LOG.html)
 // and modified slightly.
 
+#pragma once
+
 static const int pstBishopMg[64] = {
 //A1                                H1
  -2,  -5, -16,  -5,  -5, -16,  -5,  -2,
