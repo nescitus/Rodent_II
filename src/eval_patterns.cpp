@@ -93,6 +93,28 @@ void EvalPatterns(POS * p) {
     }
 
   }
+
+  // Trapped knight
+
+  if (IsOnSq(p, WC, N, A7)) {
+	  if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
+	  if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
+  }
+
+  if (IsOnSq(p, WC, N, H7)) {
+	  if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
+	  if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
+  }
+
+  if (IsOnSq(p, BC, N, A2)) {
+	  if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
+	  if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
+  }
+
+  if (IsOnSq(p, BC, N, H2)) {
+	  if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
+	  if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
+  }
   
   // Rook blocked by uncastled king
 
@@ -100,25 +122,25 @@ void EvalPatterns(POS * p) {
   rook_mask = SqBb(G1) | SqBb(H1) | SqBb(H2);
 
   if ((PcBb(p, WC, K) & king_mask)
-  && (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  &&  (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(A1) | SqBb(B1);
   rook_mask = SqBb(A1) | SqBb(B1) | SqBb(A2);
 
   if ((PcBb(p, WC, K) & king_mask)
-  && (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  &&  (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(F8) | SqBb(G8);
   rook_mask = SqBb(G8) | SqBb(H8) | SqBb(H7);
 
   if ((PcBb(p, BC, K) & king_mask)
-  && (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  &&  (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(C8) | SqBb(B8);
   rook_mask = SqBb(C8) | SqBb(B8) | SqBb(B7);
 
   if ((PcBb(p, BC, K) & king_mask)
-  && (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  &&  (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
   // TODO "luft" eval
 }

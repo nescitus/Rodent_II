@@ -321,7 +321,9 @@ void EvaluatePieces(POS *p, int sd) {
     own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
     opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
   }
-  Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, -3 * own_pawn_cnt - opp_pawn_cnt);
+
+  Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
+                    -3 * own_pawn_cnt - opp_pawn_cnt);
 
     // TODO: bishop blocked by defended enemy pawns
 
