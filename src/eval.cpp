@@ -32,7 +32,7 @@ int dist[64][64];  // table for evaluating king tropism
 // parameters for defining game phase [6]
 
 static const int max_phase = 24;
-static const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
+const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
 U64 bbAllAttacks[2];
 U64 bbMinorAttacks[2];
