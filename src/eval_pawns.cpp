@@ -103,10 +103,10 @@ void EvaluatePawns(POS *p, int sd) {
     // Get some information about the pawn we are evaluation
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
-    fl_defended = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
+    fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
-    fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
-    fl_phalanx = (ShiftEast(SqBb(sq)) & bbOwnPawns) | (ShiftWest(SqBb(sq)) & bbOwnPawns);
+    fl_weak      = ((support_mask[sd][sq] & bbOwnPawns) == 0);
+    fl_phalanx   = (ShiftEast(SqBb(sq)) & bbOwnPawns) | (ShiftWest(SqBb(sq)) & bbOwnPawns);
 
     // Candidate passer
 

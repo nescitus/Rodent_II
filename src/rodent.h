@@ -17,17 +17,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 726.421
+// bench: 813.814
 // bench 12: 7188688 16,8 s 0.990
 // bench 15: 42.767.584 86,2 1.151
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 4934 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.6"
+#define PROG_NAME "Rodent II 0.8.7"
 
 enum eColor{WC, BC, NO_CL};
-enum eSide {OWN_SD, OPP_SD, NO_SD};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
 enum ePiece{WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
 enum eFile {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
@@ -394,7 +393,6 @@ extern int phalanx_data[2][64];
 extern int defended_data[2][64];
 extern int castle_mask[64];
 extern const int bit_table[64];
-extern const int passed_bonus[2][8]; 
 extern const int tp_value[7];
 extern int pc_value[7];
 extern const int phase_value[7];
