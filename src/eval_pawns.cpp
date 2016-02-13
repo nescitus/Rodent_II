@@ -84,7 +84,7 @@ void FullPawnEval(POS * p, int use_hash) {
 
 void EvaluatePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan, flagPhalanx1, flagPhalanx2;
+  U64 bbPieces, bbSpan, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
@@ -106,13 +106,12 @@ void EvaluatePawns(POS *p, int sd) {
     fl_defended = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
     fl_weak = ((support_mask[sd][sq] & bbOwnPawns) == 0);
-    flagPhalanx1 = ShiftEast(SqBb(sq)) & bbOwnPawns;
-    flagPhalanx2 = ShiftWest(SqBb(sq)) & bbOwnPawns;
+    fl_phalanx = (ShiftEast(SqBb(sq)) & bbOwnPawns) | (ShiftWest(SqBb(sq)) & bbOwnPawns);
 
     // Candidate passer
 
     if (fl_unopposed) {
-      if (flagPhalanx1 || flagPhalanx2) {
+      if (fl_phalanx) {
       if (PopCnt((passed_mask[sd][sq] & PcBb(p, op, P))) == 1)
         Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
       }
@@ -125,8 +124,8 @@ void EvaluatePawns(POS *p, int sd) {
 
     // Supported pawn
 
-    if (flagPhalanx1 || flagPhalanx2) Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
-  else if (fl_defended)             Add(sd, F_PAWNS, defended_data[sd][sq], 1);
+    if (fl_phalanx)       Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
+    else if (fl_defended) Add(sd, F_PAWNS, defended_data[sd][sq], 1);
 
     // Weak pawn (two flavours)
 
