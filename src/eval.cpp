@@ -210,20 +210,16 @@ void EvaluatePieces(POS *p, int sd) {
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
 
   // Piece configurations
-  
-  if (p->cnt[sd][B] > 1) Add(sd, F_OTHERS, 50,  60);  // Bishop pair
 
-  if (p->cnt[sd][N] > 1) Add(sd, F_OTHERS, -10, -10); // Knight pair
+  tmp = np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
+	  - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
-  // Knights lose value as pawns disappear
+  if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
   
-  Add(sd, F_OTHERS, np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N],
-                  np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]);
-  
-  // Rooks gain value as pawns disappear
+  if (p->cnt[sd][B] > 1) 
+	 Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair
 
-  Add(sd, F_OTHERS, -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R], 
-                  -rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R]);
+  Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
   
   // Knight
 
@@ -314,16 +310,6 @@ void EvaluatePieces(POS *p, int sd) {
     tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
-
-  // Bishop X-rays
-  /*
-  U64 bbPseudo = BAttacks(0ULL, sq);
-  tmp = 0;
-  tmp += 3 * PopCnt(bbPseudo & PcBb(p, op, N));
-  tmp += 4 * PopCnt(bbPseudo & PcBb(p, op, R));
-  tmp += 5 * PopCnt(bbPseudo & (PcBb(p, op, Q) | PcBb(p, op, K)));
-  Add(sd, F_OTHERS, tmp, tmp);
-  */
 
   // Pawns on the same square color as our bishop
   
@@ -642,7 +628,7 @@ int Evaluate(POS *p, int use_hash) {
   int y = Max(minorBalance + 4, 0);
   if (y > 8) y = 8;
 
-  score += imbalance[x][y];
+  score += SCALE(imbalance[x][y], mat_perc);
 
   score += CheckmateHelper(p);
 
