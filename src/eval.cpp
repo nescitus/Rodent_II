@@ -578,8 +578,7 @@ int Evaluate(POS *p, int use_hash) {
 
   // Tempo bonus
 
-  mg[p->side][F_OTHERS] += 10;
-  eg[p->side][F_OTHERS] += 5;
+  Add(p->side, F_OTHERS, 10, 5);
 
   // Evaluate pieces and pawns
 

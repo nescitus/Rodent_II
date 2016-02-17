@@ -235,11 +235,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
-      // Verification search
+      // Verification search (prohibiting immediate null move)
 
       if (new_depth > 6 && score >= beta && use_null_verification)
-         score = Search(p, ply, alpha, beta, new_depth - 5, 0, move, new_pv);
-
+         score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, new_pv);
       if (abort_search ) return 0;
       if (score >= beta) return score;
     }
