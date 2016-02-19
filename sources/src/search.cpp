@@ -107,7 +107,7 @@ void Iterate(POS *p, int *pv) {
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 
   if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
-  else                cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+  else                cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -125,7 +125,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     for (int margin = 10; margin < 500; margin *= 2) {
       alpha = lastScore - margin;
       beta  = lastScore + margin;
-      cur_val = Search(p, 0, alpha, beta, depth, 0, -1, pv);
+      cur_val = SearchRoot(p, 0, alpha, beta, depth, pv);
       if (abort_search) break;
       if (cur_val > alpha && cur_val < beta) 
       return cur_val;                // we have finished within the window
@@ -133,8 +133,157 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     }
   }
 
-  cur_val = Search(p, 0, -INF, INF, root_depth, 0, -1, pv); // full window search
+  cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
   return cur_val;
+}
+
+int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
+
+  int best, score, move, new_depth, new_pv[MAX_PLY];
+  int fl_check, fl_prunable_move, mv_type, reduction;
+  int mv_tried = 0, quiet_tried = 0;
+
+  MOVES m[1];
+  UNDO u[1];
+
+  // Periodically check for timeout, ponderhit or stop command
+
+  nodes++;
+  CheckTimeout();
+
+  // Quick exit
+  
+  if (abort_search) return 0;
+
+  // Retrieving data from transposition table. We hope for a cutoff
+  // or at least for a move to improve move ordering.
+
+  move = 0;
+  if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply)) {
+    
+    // For move ordering purposes, a cutoff from hash is treated
+    // exactly like a cutoff from search
+
+    if (score >= beta) UpdateHistory(p, -1, move, depth, ply);
+
+    // In pv nodes only exact scores are returned. This is done because
+    // there is much more pruning and reductions in zero-window nodes,
+    // so retrieving such scores in pv nodes works like retrieving scores
+    // from slightly lower depth.
+
+    if (score > alpha && score < beta)
+      return score;
+  }
+  
+  // Are we in check? Knowing that is useful when it comes 
+  // to pruning/reduction decisions
+
+  fl_check = InCheck(p);
+
+  // Init moves and variables before entering main loop
+  
+  best = -INF;
+  InitMoves(p, m, move, Refutation(-1), ply);
+  
+  // Main loop
+  
+  while ((move = NextMove(m, &mv_type))) {
+    p->DoMove(move, u);
+    if (Illegal(p)) { p->UndoMove(move, u); continue; }
+
+  // Update move statistics (needed for reduction/pruning decisions)
+
+  mv_tried++;
+  if (mv_type == MV_NORMAL) quiet_tried++;
+  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+
+  // Set new search depth
+
+  new_depth = depth - 1 + InCheck(p);
+
+  // Late move reduction
+  
+  reduction = 0;
+  
+  if (depth >= 2
+  && use_lmr
+  && mv_tried > 3
+  && alpha > -MAX_EVAL && beta < MAX_EVAL
+  && !fl_check 
+  &&  fl_prunable_move
+  && lmr_size[1][depth][mv_tried] > 0
+  && MoveType(move) != CASTLE ) {
+
+    reduction = lmr_size[1][depth][mv_tried];
+    new_depth -= reduction;
+  }
+
+  re_search:
+   
+  // PVS
+
+  if (best == -INF)
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+  else {
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+    if (!abort_search && score > alpha && score < beta)
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+  }
+
+  // Reduced move scored above alpha - we need to re-search it
+
+  if (reduction && score > alpha) {
+    new_depth += reduction;
+    reduction = 0;
+    goto re_search;
+  }
+
+    p->UndoMove(move, u);
+    if (abort_search) return 0;
+
+  // Beta cutoff
+
+    if (score >= beta) {
+      if (!fl_check)
+        UpdateHistory(p, -1, move, depth, ply);
+      TransStore(p->hash_key, move, score, LOWER, depth, ply);
+
+      // Change the best move and show the new pv
+
+      BuildPv(pv, new_pv, move);
+      DisplayPv(score, pv);
+
+      return score;
+    }
+
+  // Updating score and alpha
+
+    if (score > best) {
+      best = score;
+      if (score > alpha) {
+        alpha = score;
+        BuildPv(pv, new_pv, move);
+        DisplayPv(score, pv);
+      }
+    }
+
+  } // end of the main loop
+
+  // Return correct checkmate/stalemate score
+
+  if (best == -INF)
+    return InCheck(p) ? -MATE + ply : DrawScore(p);
+
+  // Save score in the transposition table
+
+  if (*pv) {
+    if (!fl_check)
+      UpdateHistory(p, -1, *pv, depth, ply);
+    TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
+  } else
+    TransStore(p->hash_key, 0, best, UPPER, depth, ply);
+
+  return best;
 }
 
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv) {
@@ -235,7 +384,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
-      // Verification search (prohibiting immediate null move)
+      // Verification search (nb. immediate null move within it is prohibited)
 
       if (new_depth > 6 && score >= beta && use_null_verification)
          score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, new_pv);
@@ -358,16 +507,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta cutoff
 
     if (score >= beta) {
-		if (!fl_check)
-          UpdateHistory(p, last_move, move, depth, ply);
+	  if (!fl_check)
+        UpdateHistory(p, last_move, move, depth, ply);
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
-
-    // If beta cutoff occurs at the root, change the best move
-
-    if (!ply) {
-      BuildPv(pv, new_pv, move);
-      DisplayPv(score, pv);
-    }
 
       return score;
     }

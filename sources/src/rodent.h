@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 813.814
 // bench 12: 7314200 16,8 s 0.957
-// bench 15: 34.807.843 75,2 1.074
+// bench 15: 34.807.843 75,2 1.081
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 4967 lines of code
+// 5042 lines of code
 
 #pragma once
 #define PROG_NAME "Rodent II 0.8.8"
@@ -368,6 +368,7 @@ void SetWeight(int weight_name, int value);
 int Widen(POS *p, int depth, int * pv, int lastScore);
 int Refutation(int move);
 void ReadPersonality(char *fileName);
+int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv);
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);

@@ -163,8 +163,8 @@ static const double attCurveMult = 0.027;
 //                                 P   N   B   R   Q
 static const int king_att  [7] = { 0,  6,  6,  9, 15,  0,  0 };
 static const int chk_threat[7] = { 0,  4,  3,  9, 12,  0,  0 };
-static const int q_contact_check = 36; // 24
-static const int r_contact_check = 24; // 16
+static const int q_contact_check = 36; // [24..36..?]
+static const int r_contact_check = 24; // [16..24..?]
 
 // parameters for piece/king tropism [8]
 
