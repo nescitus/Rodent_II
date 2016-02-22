@@ -6,6 +6,12 @@ To use Rodent II in Linux, it first must be compiled.  Go to the sources directo
 
 make
 
-This will compile the program and create an executable file called rodentII.  Move this file to your executable files directory (usually /usr/bin).  Move any desired personalities and all the books to a data directory /usr/share/RodentII.  You are now ready to play.  See the rodent documents for further information on Rodent II playing styles.
+This will compile the program and create an executable file called rodentII.  It will also create the basic.ini file.
 
-note:  The compiled program assumes the data directory is /usr/share/RodentII.  If you wish to use a different directory, edit the variable DATADIR in file Makefile before compiling. 
+To install the files from the command line type:
+
+make install
+
+You may require super user or administrative rights to install the files.  The rodentII file will be installed into /usr/bin and the books, personalities and basic.ini files will be installed into a data directory /usr/share/rodentII.  You are now ready to play.  See the rodent documents for further information on Rodent II playing styles.
+
+note:  The compiled program assumes the data directory is /usr/share/rodentII.  If you wish to use a different directory, edit the variable DATADIR in file Makefile before compiling.  The install program assumes the executable directory /usr/bin.  To use a different directory, edit the variable BINDIR in file Makefile before installing.

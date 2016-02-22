@@ -13,9 +13,9 @@ LDFLAGS= -s -static -lm
 BINDIR = /usr/bin
 
 #define the directory for the data files
-DATADIR = /usr/share/RodentII
+DATADIR = /usr/share/rodentII
 
-.PHONY: clean
+.PHONY: clean install
 
 default: rodent
 
@@ -24,6 +24,7 @@ rodent:
 	sed -i s\@rodent.bin@$(DATADIR)/rodent.bin@ src/main.cpp
 	sed -i s\@basic.ini@$(DATADIR)/basic.ini@ src/main.cpp
 	$(CC) $(LDFLAGS) $(CFLAGS) -o rodentII -x c++ compile.linux
+	echo "SHOW_OPTIONS" > basic.ini
 
 %.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
@@ -34,3 +35,12 @@ rodent:
 clean:
 	rm -f rodentII
 
+install:
+	mkdir -p $(BINDIR)
+	mkdir -p $(DATADIR)
+	cp rodentII $(BINDIR)
+	cp basic.ini $(DATADIR)
+	cp ../books/* $(DATADIR)
+	cp -r ../personalities/*/*.ini $(DATADIR)
+	chmod 755 $(BINDIR)/rodentII
+	chmod 644 $(DATADIR)/*
