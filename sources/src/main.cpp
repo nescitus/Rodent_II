@@ -34,6 +34,7 @@ int main() {
   book_filter = 20;
   use_book = 1;
   panel_style = 0;
+  verbose = 1;
   np_bonus = 6;
   rp_malus = 3;
 

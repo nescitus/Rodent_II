@@ -69,3 +69,4 @@ int pst_perc;
 int np_bonus;
 int rp_malus;
 int panel_style;
+int verbose;

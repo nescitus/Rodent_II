@@ -76,6 +76,7 @@ void Think(POS *p, int *pv) {
   tt_date = (tt_date + 1) & 255;
   nodes = 0;
   abort_search = 0;
+  verbose = 1;
   Timer.SetStartTime();
 
   // Search
@@ -166,10 +167,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
     if (score >= beta) UpdateHistory(p, -1, move, depth, ply);
 
-    // In pv nodes only exact scores are returned. This is done because
-    // there is much more pruning and reductions in zero-window nodes,
-    // so retrieving such scores in pv nodes works like retrieving scores
-    // from slightly lower depth.
+    // Root node is a pv node, so we return only exact scores
 
     if (score > alpha && score < beta)
       return score;
@@ -194,6 +192,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Update move statistics (needed for reduction/pruning decisions)
 
   mv_tried++;
+  if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
@@ -607,6 +606,13 @@ int KPKdraw(POS *p, int sd)
   // TODO: opposition next to a pawn
 
   return 0;
+}
+
+void DisplayCurrmove(int move, int tried)
+{
+  printf("info currmove ");
+  PrintMove(move);
+  printf(" currmovenumber %d \n", tried);
 }
 
 void DisplaySpeed(void)
