@@ -40,10 +40,8 @@ void UciLoop(void) {
     if (strstr(command, "setoption name UseBook value"))
       use_book = (strstr(command, "value true") != 0);
 
-    if (strcmp(token, "uci") == 0) {
-      printf("id name ");
-      printf(PROG_NAME);
-      printf("\n");
+	if (strcmp(token, "uci") == 0) {
+	  printf("id name %s\n", PROG_NAME);
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
