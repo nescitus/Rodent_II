@@ -136,7 +136,7 @@ int GetDrawFactor(POS *p, int sd)
 
      // Case 7: KRm vs KR(p)
      if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
-     &&  PcMatR(p, op) ) return 32;
+     &&  PcMatR(p, op) ) return 16;
 
      // Case 8: KQm vs KQ(p)
      if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
