@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "rodent.h"
 #include "timer.h"
 #include "book.h"
@@ -204,8 +205,8 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   
   reduction = 0;
   
-  if (depth >= 2
-  && use_lmr
+  if (use_lmr
+  && depth >= 2
   && mv_tried > 3
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
@@ -295,6 +296,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   MOVES m[1];
   UNDO u[1];
 
+  assert(ply > 0);
+
   // Quiescence search entry point
 
   if (depth <= 0)
@@ -309,7 +312,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   if (abort_search) return 0;
   if (ply) *pv = 0;
-  if (IsDraw(p) && ply) return DrawScore(p);
+  if (IsDraw(p)) return DrawScore(p);
 
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
@@ -350,9 +353,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Beta pruning / static null move
 
-  if (ply && depth <= 3
-  && use_beta_pruning
+  if (use_beta_pruning
   && fl_prunable_node
+  && depth <= 3
   && !was_null) {
     int sc = Evaluate(p, 1) - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
@@ -360,9 +363,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Null move
 
-  if (depth > 1
+  if (use_nullmove
   && fl_prunable_node
-  && use_nullmove
+  && depth > 1
   && !was_null
   && MayNull(p)
   ) {
@@ -398,8 +401,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Razoring based on Toga II 3.0
 
-  if (fl_prunable_node
-  && use_razoring
+  if (use_razoring
+  && fl_prunable_node
   && !move
   && !was_null
   && !(PcBb(p, p->side, P) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
@@ -417,9 +420,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Set futility pruning flag
  
-  if (depth <= 6
-  && use_futility
-  && fl_prunable_node) {
+  if (use_futility
+  && fl_prunable_node
+  && depth <= 6 ) {
     if (Evaluate(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
   }
 
@@ -454,10 +457,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Late move pruning
 
-  if (fl_prunable_node
-  && use_lmp
-  && quiet_tried > lmp_limit[depth]
+  if (use_lmp
+  && fl_prunable_node
   && fl_prunable_move
+  && quiet_tried > lmp_limit[depth]
   && depth <= 3
   && MoveType(move) != CASTLE ) {
     p->UndoMove(move, u); continue;
@@ -467,8 +470,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   reduction = 0;
 
-  if (depth >= 2
-  && use_lmr
+  if (use_lmr 
+  && depth >= 2
   && mv_tried > 3
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
