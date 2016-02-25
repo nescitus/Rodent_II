@@ -135,5 +135,5 @@ void sTimer::WasteTime(int miliseconds) {
 void sTimer::Init(void) {
 
   nps_limit = 0;
-  slow_play = 0;
+  special_mode = 0;
 }

@@ -31,7 +31,7 @@ private:
   int BulletCorrection(int time);
 public:
   int nps_limit;
-  int slow_play;
+  int special_mode;
   void Clear(void);
   void SetStartTime();
   void SetMoveTiming(void);

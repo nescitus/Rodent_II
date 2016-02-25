@@ -311,6 +311,10 @@ void ParseGo(POS *p, char *ptr) {
     } else if (strcmp(token, "movestogo") == 0) {
       ptr = ParseToken(ptr, token);
       Timer.SetData(MOVES_TO_GO, atoi(token));
+    } else if (strcmp(token, "nodes") == 0) {
+      ptr = ParseToken(ptr, token);
+	  Timer.SetData(FLAG_INFINITE, 1);
+      Timer.SetData(MAX_NODES, atoi(token));
     } else if (strcmp(token, "depth") == 0) {
       ptr = ParseToken(ptr, token);
       Timer.SetData(FLAG_INFINITE, 1);

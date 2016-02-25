@@ -96,10 +96,11 @@ void Iterate(POS *p, int *pv) {
   root_side = p->side;
   SetAsymmetricEval(p->side);
 
-  // Are we operating in slowdown mode?
+  // Are we operating in slowdown mode or on node limit?
 
-  Timer.slow_play = 0;
-  if (Timer.nps_limit) Timer.slow_play = 1;
+  Timer.special_mode = 0;
+  if (Timer.nps_limit 
+  || Timer.GetData(MAX_NODES) > 0) Timer.special_mode = 1;
 
   // TODO: only single move available
 
@@ -658,12 +659,18 @@ void CheckTimeout(void) {
 
   // We check for timeout or new commands only every so often, 
   // to save some time, unless the engine is operating
-  // in the weakening mode. In that case, we check for timeout
-  // as often as we can, because slowdown might be extreme.
+  // in the weakening mode or has received "go nodes" command. 
+  // In that cases, we check for timeout as often as we can.
   
-  if (!Timer.slow_play) {
+  if (!Timer.special_mode) {
     if (nodes & 4095 || root_depth == 1)
       return;
+  }
+
+  if (Timer.GetData(MAX_NODES) > 0
+  && nodes >= Timer.GetData(MAX_NODES) ) {
+	 abort_search = 1;
+	 return;
   }
 
   // Slowdown loop
