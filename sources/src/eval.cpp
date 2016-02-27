@@ -37,6 +37,7 @@ const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
+int sp_pst_data[2][6][64];
 
 char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure  ", "Others    "};
 
@@ -97,33 +98,37 @@ void InitEval(void) {
 
   // Init piece/square values together with material value of the pieces.
 
-for (int sq = 0; sq < 64; sq++) {
+  for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-    mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(5 * file_bonus[File(sq)], pst_perc);
-    if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(25, pst_perc);
-	if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(10, pst_perc);
-	if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE( 5, pst_perc);
-	if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE( 5, pst_perc);
+      mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(5 * file_bonus[File(sq)], pst_perc);
+      if (sq == D4 || sq == E4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(25, pst_perc);
+	  if (sq == C4 || sq == F4) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(10, pst_perc);
+	  if (sq == C2 || sq == F2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE( 5, pst_perc);
+	  if (sq == D2 || sq == E2) mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE( 5, pst_perc);
 
-    eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) - SCALE(file_bonus[File(sq)], pst_perc);
+      eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) - SCALE(file_bonus[File(sq)], pst_perc);
 
-    mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(5 * (knightLine[File(sq)] + knightRank[Rank(sq)]),pst_perc);
-    if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(((5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5),pst_perc);
-    if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(((5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100), pst_perc);
+      mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(5 * (knightLine[File(sq)] + knightRank[Rank(sq)]),pst_perc);
+      if (sq == D2 || sq == E2) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(((5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) + 5),pst_perc);
+      if (sq == A8 || sq == H8) mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(((5 * (knightLine[File(sq)] + knightRank[Rank(sq)])) - 100), pst_perc);
 
-    eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(5 * (knightLine[Rank(sq)] + knightLine[File(sq)]), pst_perc);
-    mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
-    eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
-    mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(file_bonus[File(sq)], pst_perc);
-    eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc);
-    mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) - SCALE((5 * (Rank(sq) == RANK_1)), pst_perc);
-    eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE((4 * (biased[Rank(sq)] + biased[File(sq)])), pst_perc);
+      eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(5 * (knightLine[Rank(sq)] + knightLine[File(sq)]), pst_perc);
+      mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
+      eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
+      mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(file_bonus[File(sq)], pst_perc);
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc);
+      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) - SCALE((5 * (Rank(sq) == RANK_1)), pst_perc);
+      eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE((4 * (biased[Rank(sq)] + biased[File(sq)])), pst_perc);
 
-    mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
-    eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
-      phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
+      mg_pst_data[sd][K][REL_SQ(sq, sd)] = 10 * (kingRank[Rank(sq)] + kingFile[File(sq)]);
+      eg_pst_data[sd][K][REL_SQ(sq, sd)] = 12 * (biased[Rank(sq)] + biased[File(sq)]);
+      
+	  phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
       defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
+
+	  sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
+	  sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];
     }
   }
 
@@ -249,7 +254,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Knight outpost
 
     mul = 0;
-    tmp = pstKnightOutpost[REL_SQ(sq, sd)];
+	tmp = sp_pst_data[sd][N][sq];//pstKnightOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
     if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
     if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
@@ -295,7 +300,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 	// Bishop outpost
 
     mul = 0;
-    tmp = pstBishopOutpost[REL_SQ(sq, sd)];
+	tmp = sp_pst_data[sd][B][sq]; // pstBishopOutpost[REL_SQ(sq, sd)];
     if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
     if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
     if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
