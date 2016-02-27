@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 716.217
 // bench 12: 7289773 17,6 s 0.960
-// bench 15: 43.507.962 89,3 1.130
+// bench 15: 43.507.962 88,1 1.145
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5042 lines of code
+// 5092 lines of code
 
 #pragma once
 #define PROG_NAME "Rodent II 0.8.13"

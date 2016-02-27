@@ -254,14 +254,16 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Knight outpost
 
     mul = 0;
-	tmp = sp_pst_data[sd][N][sq];//pstKnightOutpost[REL_SQ(sq, sd)];
-    if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-    if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-    if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-    tmp *= mul;
-    tmp /= 2;
+    tmp = sp_pst_data[sd][N][sq];
+    if (tmp) {
+      if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+      if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+      if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
+      tmp *= mul;
+      tmp /= 2;
 
-    Add(sd, F_OUTPOST, tmp, tmp);
+      Add(sd, F_OUTPOST, tmp, tmp);
+	}
 
   } // end of knight eval
 
@@ -300,12 +302,14 @@ void cEval::ScorePieces(POS *p, int sd) {
 	// Bishop outpost
 
     mul = 0;
-	tmp = sp_pst_data[sd][B][sq]; // pstBishopOutpost[REL_SQ(sq, sd)];
-    if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-    if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-    if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-    tmp *= mul;
-    tmp /= 2;
+    tmp = sp_pst_data[sd][B][sq];
+    if (tmp) {
+      if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
+      if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
+      if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
+      tmp *= mul;
+      tmp /= 2;
+	}
 
     Add(sd, F_OUTPOST, tmp, tmp);
 
