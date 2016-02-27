@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 716.217
 // bench 12: 7289773 17,6 s 0.960
-// bench 15: 43.507.962 90,2 1.118
+// bench 15: 43.507.962 89,3 1.130
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5042 lines of code
 
@@ -255,6 +255,36 @@ public:
   void UndoNull(UNDO * u);
 } POS;
 
+typedef class {
+private:
+  U64 bbAllAttacks[2];
+  U64 bbMinorAttacks[2];
+  U64 bbPawnTakes[2];
+  U64 bbTwoPawnsTake[2];
+  U64 bbPawnCanTake[2];
+  int mg[2][N_OF_FACTORS];
+  int eg[2][N_OF_FACTORS];
+
+  void Add(int sd, int factor, int mg_bonus, int eg_bonus);
+  void ScorePassers(POS * p, int sd);
+  void ScorePieces(POS * p, int sd);
+  void ScoreHanging(POS *p, int sd);
+  void ScorePatterns(POS *p);
+  void ScoreKing(POS *p, int sd);
+  int ScoreKingFile(POS * p, int sd, U64 bbFile);
+  int ScoreFileShelter(U64 bbOwnPawns, int sd);
+  int ScoreFileStorm(U64 bbOppPawns, int sd);
+  int ScoreChains(POS *p, int sd);
+  void ScorePawns(POS * p, int sd);
+  void FullPawnEval(POS * p, int use_hash);
+
+public:
+  int Return(POS * p, int use_hash);
+  void Print(POS *p);
+} cEval;
+
+extern cEval Eval;
+
 typedef struct {
   POS *p;
   int phase;
@@ -279,7 +309,6 @@ typedef struct {
   unsigned char depth;
 } ENTRY;
 
-void Add(int sd, int factor, int mg_bonus, int eg_bonus);
 void AllocTrans(int mbsize);
 int Attacked(POS *p, int sq, int side);
 U64 AttacksFrom(POS *p, int sq);
@@ -297,17 +326,6 @@ void DisplayCurrmove(int move, int tried);
 void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);
 int DrawScore(POS * p);
-int Evaluate(POS * p, int use_hash);
-void EvaluateKing(POS *p, int sd);
-int EvalKingFile(POS * p, int sd, U64 bbFile);
-int EvalFileShelter(U64 bbOwnPawns, int sd);
-int EvalFileStorm(U64 bbOppPawns, int sd);
-void EvalHanging(POS *p, int sd);
-void EvaluatePieces(POS * p, int sd);
-void EvaluatePawns(POS * p, int sd);
-void EvalPatterns(POS * p);
-void EvalPassers(POS * p, int sd);
-void FullPawnEval(POS * p, int use_hash);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
@@ -348,7 +366,6 @@ void ParsePosition(POS *, char *);
 void ParseSetoption(char *);
 int Perft(POS *p, int ply, int depth);
 void PrintBoard(POS *p);
-void PrintEval(POS *p);
 char *ParseToken(char *, char *);
 int PopCnt(U64);
 int PopFirstBit(U64 * bb);
@@ -362,7 +379,6 @@ void ResetEngine(void);
 int IsDraw(POS * p);
 int KPKdraw(POS *p, int sd);
 U64 ShiftFwd(U64 bb, int side);
-int ScoreChains(POS *p, int sd);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 void SetWeight(int weight_name, int value);

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "eval.h"
 
-void EvalPatterns(POS * p) {
+void cEval::ScorePatterns(POS * p) {
 
   U64 king_mask, rook_mask;
 

@@ -97,7 +97,7 @@ void UciLoop(void) {
     } else if (strcmp(token, "print") == 0) {
       PrintBoard(p);
     } else if (strcmp(token, "eval") == 0) {
-      PrintEval(p);
+      Eval.Print(p);
     } else if (strcmp(token, "step") == 0) {
       ParseMoves(p, ptr);
     } else if (strcmp(token, "go") == 0) {

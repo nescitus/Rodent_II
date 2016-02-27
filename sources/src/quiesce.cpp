@@ -15,12 +15,12 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (abort_search) return 0;
   *pv = 0;
   if (IsDraw(p)) return DrawScore(p);
-  if (ply >= MAX_PLY - 1) return Evaluate(p, 1);
+  if (ply >= MAX_PLY - 1) return Eval.Return(p, 1);
 
   // Get a stand-pat score and adjust bounds
   // (exiting if eval exceeds beta)
 
-  best = Evaluate(p, 1);
+  best = Eval.Return(p, 1);
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
@@ -90,9 +90,9 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
   if (IsDraw(p)) return DrawScore(p);
 
   if (ply >= MAX_PLY - 1)
-    return Evaluate(p, 1);
+    return Eval.Return(p, 1);
 
-  best = stand_pat = Evaluate(p, 1);
+  best = stand_pat = Eval.Return(p, 1);
 
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
@@ -165,7 +165,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Safeguard against exceeding ply limit
 
   if (ply >= MAX_PLY - 1)
-    return Evaluate(p, 1);
+    return Eval.Return(p, 1);
 
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions

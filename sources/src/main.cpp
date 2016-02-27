@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 sTimer Timer; // class for setting and observing time limits
 sBook  MainBook;  // opening book
 sBook  GuideBook;
+cEval Eval;
 POS p;
 
 int main() {

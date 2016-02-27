@@ -34,18 +34,11 @@ int dist[64][64];  // table for evaluating king tropism
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
-U64 bbAllAttacks[2];
-U64 bbMinorAttacks[2];
-U64 bbPawnTakes[2];
-U64 bbTwoPawnsTake[2];
-U64 bbPawnCanTake[2];
 U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
-int mg[2][N_OF_FACTORS];
-int eg[2][N_OF_FACTORS];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure   ", "Others    "};
+char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure  ", "Others    "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -179,7 +172,7 @@ for (int sq = 0; sq < 64; sq++) {
   }
 }
 
-void EvaluatePieces(POS *p, int sd) {
+void cEval::ScorePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
   int op, sq, cnt, tmp, mul, ksq, osq, att = 0, wood = 0;
@@ -463,7 +456,7 @@ void EvaluatePieces(POS *p, int sd) {
 
 }
 
-void EvalHanging(POS *p, int sd) {
+void cEval::ScoreHanging(POS *p, int sd) {
 
   int op = Opp(sd);
   U64 bbHanging = p->cl_bb[op]    & ~bbPawnTakes[op];
@@ -498,7 +491,7 @@ void EvalHanging(POS *p, int sd) {
   }
 }
 
-void EvalPassers(POS * p, int sd) 
+void cEval::ScorePassers(POS * p, int sd) 
 {
   U64 bbPieces;
   int sq, mul, mg_tmp, eg_tmp;
@@ -533,7 +526,7 @@ void EvalPassers(POS * p, int sd)
   }
 }
 
-int Evaluate(POS *p, int use_hash) {
+int cEval::Return(POS *p, int use_hash) {
 
   // Try to retrieve score from eval hashtable
 
@@ -582,14 +575,14 @@ int Evaluate(POS *p, int use_hash) {
 
   // Evaluate pieces and pawns
 
-  EvaluatePieces(p, WC);
-  EvaluatePieces(p, BC);
+  ScorePieces(p, WC);
+  ScorePieces(p, BC);
   FullPawnEval(p, use_hash);
-  EvalHanging(p, WC);
-  EvalHanging(p, BC);
-  EvalPatterns(p);
-  EvalPassers(p, WC);
-  EvalPassers(p, BC);
+  ScoreHanging(p, WC);
+  ScoreHanging(p, BC);
+  ScorePatterns(p);
+  ScorePassers(p, WC);
+  ScorePassers(p, BC);
 
   // Sum all the symmetric eval factors
 
@@ -665,19 +658,19 @@ int Evaluate(POS *p, int use_hash) {
   return p->side == WC ? score : -score;
 }
 
-void Add(int sd, int factor, int mg_bonus, int eg_bonus) {
+void cEval::Add(int sd, int factor, int mg_bonus, int eg_bonus) {
 
   mg[sd][factor] += mg_bonus;
   eg[sd][factor] += eg_bonus;
 }
 
-void PrintEval(POS * p) {
+void cEval::Print(POS * p) {
 
   int mg_score, eg_score, total;
   int mg_phase = Min(max_phase, p->phase);
   int eg_phase = max_phase - mg_phase;
 
-  printf("Total score: %d\n", Evaluate(p, 0));
+  printf("Total score: %d\n", Return(p, 0));
   printf("-----------------------------------------------------------------\n");
   printf("Factor     | Val (perc) |   Mg (  WC,   BC) |   Eg (  WC,   BC) |\n");
   printf("-----------------------------------------------------------------\n");

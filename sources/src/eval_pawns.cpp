@@ -52,7 +52,7 @@ void ClearPawnHash(void) {
   }
 }
 
-void FullPawnEval(POS * p, int use_hash) {
+void cEval::FullPawnEval(POS * p, int use_hash) {
 
   // Try to retrieve score from pawn hashtable
 
@@ -66,14 +66,14 @@ void FullPawnEval(POS * p, int use_hash) {
 
   // Single pawn eval
 
-  EvaluatePawns(p, WC);
-  EvaluatePawns(p, BC);
+  ScorePawns(p, WC);
+  ScorePawns(p, BC);
 
   // King's pawn shield and pawn storm on enemy king,
   // including pawn chains
 
-  EvaluateKing(p, WC);
-  EvaluateKing(p, BC);
+  ScoreKing(p, WC);
+  ScoreKing(p, BC);
 
   // Save stuff in pawn hashtable
 
@@ -82,7 +82,7 @@ void FullPawnEval(POS * p, int use_hash) {
   PawnTT[addr].eg_pawns = eg[WC][F_PAWNS] - eg[BC][F_PAWNS];
 }
 
-void EvaluatePawns(POS *p, int sd) {
+void cEval::ScorePawns(POS *p, int sd) {
 
   U64 bbPieces, bbSpan, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
@@ -138,7 +138,7 @@ void EvaluatePawns(POS *p, int sd) {
   }
 }
 
-void EvaluateKing(POS *p, int sd) {
+void cEval::ScoreKing(POS *p, int sd) {
 
   const int startSq[2] = { E1, E8 };
   const int qCastle[2] = { B1, B8 };
@@ -157,27 +157,27 @@ void EvaluateKing(POS *p, int sd) {
   // Evaluate shielding and storming pawns on each file.
 
   bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
-  result += EvalKingFile(p, sd, bbKingFile);
+  result += ScoreKingFile(p, sd, bbKingFile);
 
   bbNextFile = ShiftEast(bbKingFile);
-  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  if (bbNextFile) result += ScoreKingFile(p, sd, bbNextFile);
 
   bbNextFile = ShiftWest(bbKingFile);
-  if (bbNextFile) result += EvalKingFile(p, sd, bbNextFile);
+  if (bbNextFile) result += ScoreKingFile(p, sd, bbNextFile);
 
   mg[sd][F_PAWNS] += result;
   mg[sd][F_PAWNS] += ScoreChains(p, sd);
 }
 
-int EvalKingFile(POS * p, int sd, U64 bbFile) {
+int cEval::ScoreKingFile(POS * p, int sd, U64 bbFile) {
 
-  int shelter = EvalFileShelter(bbFile & PcBb(p, sd, P), sd);
-  int storm = EvalFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
+  int shelter = ScoreFileShelter(bbFile & PcBb(p, sd, P), sd);
+  int storm = ScoreFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
   if (bbFile & bbCentralFile) return (shelter / 2) + storm;
   else return shelter + storm;
 }
 
-int EvalFileShelter(U64 bbOwnPawns, int sd) {
+int cEval::ScoreFileShelter(U64 bbOwnPawns, int sd) {
 
   if (!bbOwnPawns) return -36;
   if (bbOwnPawns & bbRelRank[sd][RANK_2]) return    2;
@@ -189,7 +189,7 @@ int EvalFileShelter(U64 bbOwnPawns, int sd) {
   return 0;
 }
 
-int EvalFileStorm(U64 bbOppPawns, int sd) {
+int cEval::ScoreFileStorm(U64 bbOppPawns, int sd) {
 
   if (!bbOppPawns) return -16;
   if (bbOppPawns & bbRelRank[sd][RANK_3]) return -32;
@@ -198,7 +198,7 @@ int EvalFileStorm(U64 bbOppPawns, int sd) {
   return 0;
 }
 
-int ScoreChains(POS *p, int sd)
+int cEval::ScoreChains(POS *p, int sd)
 {
   int mgResult = 0;
   int sq = p->king_sq[sd];
