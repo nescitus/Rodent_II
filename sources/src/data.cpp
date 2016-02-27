@@ -51,6 +51,7 @@ int pondering;
 int root_depth;
 int eval_blur;
 int draw_score;
+int time_percentage;
 int use_book;
 int book_filter;
 U64 nodes;

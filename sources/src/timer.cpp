@@ -55,6 +55,12 @@ void sTimer::SetMoveTiming(void) {
     if (data[MOVES_TO_GO] == 1) data[TIME] -= Min(1000, data[TIME] / 10);
     allocated_time = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
 
+	// make a percentage correction to playing speed (unless too risky)
+	if (((allocated_time * time_percentage) / 100) < (data[TIME] / 2)) {
+      allocated_time *= time_percentage;
+      allocated_time /= 100;
+	}
+
     // assign less time per move on extremely short time controls
     allocated_time = BulletCorrection(allocated_time);
 
