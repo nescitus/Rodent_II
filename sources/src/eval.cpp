@@ -39,7 +39,7 @@ int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
 int sp_pst_data[2][6][64];
 
-char *factor_name[] = { "Pst       ", "Pawns     ", "Passers   ", "Attack    ", "Mobility  ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure  ", "Others    "};
+char *factor_name[] = { "Attack    ", "Mobility  ", "Pst       ", "Pawns     ", "Passers   ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure  ", "Others    "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
@@ -678,6 +678,8 @@ void cEval::Print(POS * p) {
   int mg_score, eg_score, total;
   int mg_phase = Min(max_phase, p->phase);
   int eg_phase = max_phase - mg_phase;
+
+  // BUG: eval asymmetry not shown
 
   printf("Total score: %d\n", Return(p, 0));
   printf("-----------------------------------------------------------------\n");
