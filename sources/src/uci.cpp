@@ -68,7 +68,7 @@ void UciLoop(void) {
         printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
         printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
-		printf("option name PlaySpeed type spin default %d min 10 max 500\n", time_percentage);
+		printf("option name MoveTime type spin default %d min 10 max 500\n", time_percentage);
         printf("option name UseBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
@@ -210,7 +210,7 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Contempt") == 0) {
     draw_score = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "PlaySpeed") == 0) {
+  } else if (strcmp(name, "MoveTime") == 0) {
 	time_percentage = atoi(value);
   } else if (strcmp(name, "GuideBookFile") == 0) {
     GuideBook.ClosePolyglot();

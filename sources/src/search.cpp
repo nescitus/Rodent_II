@@ -107,7 +107,12 @@ void Iterate(POS *p, int *pv) {
   for (root_depth = 1; root_depth <= max_root_depth; root_depth++) {
     int elapsed = Timer.GetElapsedTime();
     if (elapsed) nps = nodes * 1000 / elapsed;
+
+#if defined _WIN32 || defined _WIN64 
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
+#else
+	printf("info depth %d time %d nodes %lld nps %lld\n", root_depth, elapsed, nodes, nps);
+#endif
 
   if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
   else                cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
@@ -624,9 +629,12 @@ void DisplaySpeed(void)
 {
   int elapsed = Timer.GetElapsedTime();
   U64 nps = GetNps(elapsed);
-
-  printf("info time %d nodes %I64d nps %I64d \n",
-  elapsed, nodes, nps);
+#if defined _WIN32 || defined _WIN64 
+  printf("info time %d nodes %I64d nps %I64d \n", elapsed, nodes, nps);
+#else
+  printf("info time %d nodes %lld nps %lld \n", elapsed, nodes, nps);
+#endif
+  
 }
 
 void DisplayPv(int score, int *pv) {
@@ -644,8 +652,13 @@ void DisplayPv(int score, int *pv) {
     type = "cp";
 
   PvToStr(pv, pv_str);
+#if defined _WIN32 || defined _WIN64 
   printf("info depth %d time %d nodes %I64d nps %I64d score %s %d pv %s\n",
       root_depth, elapsed, nodes, nps, type, score, pv_str);
+#else
+  printf("info depth %d time %d nodes %lld nps %lld score %s %d pv %s\n",
+	  root_depth, elapsed, nodes, nps, type, score, pv_str);
+#endif
 }
 
 void CheckTimeout(void) {
