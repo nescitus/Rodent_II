@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 716.217
-// bench 12: 7289773 17,6 s 0.960
-// bench 15: 43.507.962 88,1 1.145
+// bench: 806.349
+// bench 12: 8170896 18,9 s 1.002
+// bench 15: 42.918.588 89,2 1.116
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5092 lines of code
+// 5104 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.13"
+#define PROG_NAME "Rodent II 0.8.14"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -81,8 +81,8 @@ static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_B
 #define FILE_G_BB       (U64)0x4040404040404040
 #define FILE_H_BB       (U64)0x8080808080808080
 
-#define bbWhiteSq    (U64)0x55AA55AA55AA55AA
-#define bbBlackSq    (U64)0xAA55AA55AA55AA55
+#define bbWhiteSq       (U64)0x55AA55AA55AA55AA
+#define bbBlackSq       (U64)0xAA55AA55AA55AA55
 
 #define DIAG_A1H8_BB    (U64)0x8040201008040201
 #define DIAG_A8H1_BB    (U64)0x0102040810204080

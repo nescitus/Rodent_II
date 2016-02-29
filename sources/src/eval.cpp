@@ -518,7 +518,7 @@ void cEval::ScorePassers(POS * p, int sd)
     if (!(passed_mask[sd][sq] & PcBb(p, op, P))) {
 
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
-      eg_tmp = passed_bonus_eg[sd][Rank(sq)];
+	  eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
       mul = 100;
 
       // blocked passers score less
@@ -611,7 +611,6 @@ int cEval::Return(POS *p, int use_hash) {
   mg_score -= mg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
   eg_score += eg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
   eg_score -= eg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
-
 
   // Merge mg/eg scores
 
