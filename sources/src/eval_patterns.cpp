@@ -24,11 +24,13 @@ void cEval::ScorePatterns(POS * p) {
 
   U64 king_mask, rook_mask;
 
-  // bishop masks offer a minor speedup: pattern eval, using a lot of if statements,
-  // is activated only when there is a bishop that might constitute a part of the pattern.
+  // piece masks offer a minor speedup: pattern eval, using a lot of if statements,
+  // is activated only when there is a piece that might constitute a part of the pattern.
 
   static const U64 wb_mask = {SqBb(F1) | SqBb(C1) | SqBb(A7) | SqBb(B8) | SqBb(H7) | SqBb(G8) | SqBb(A6) | SqBb(H6) | SqBb(B2) | SqBb(G2) };
   static const U64 bb_mask = {SqBb(F8) | SqBb(C8) | SqBb(A2) | SqBb(B1) | SqBb(H2) | SqBb(G1) | SqBb(A3) | SqBb(H3) | SqBb(B7) | SqBb(G7) };
+  static const U64 wn_mask = {SqBb(A7) | SqBb(H7)};
+  static const U64 bn_mask = {SqBb(A2) | SqBb(H2)};
 
   if (PcBb(p, WC, B) & wb_mask) {
 
@@ -100,24 +102,28 @@ void cEval::ScorePatterns(POS * p) {
 
   // Trapped knight
 
-  if (IsOnSq(p, WC, N, A7)) {
-	  if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
-	  if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
+  if (PcBb(p, WC, N) & wn_mask) {
+	  if (IsOnSq(p, WC, N, A7)) {
+		  if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
+		  if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
+	  }
+
+	  if (IsOnSq(p, WC, N, H7)) {
+		  if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
+		  if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
+	  }
   }
 
-  if (IsOnSq(p, WC, N, H7)) {
-	  if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
-	  if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
-  }
+  if (PcBb(p, BC, N) & bn_mask) {
+	  if (IsOnSq(p, BC, N, A2)) {
+		  if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
+		  if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
+	  }
 
-  if (IsOnSq(p, BC, N, A2)) {
-	  if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
-	  if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
-  }
-
-  if (IsOnSq(p, BC, N, H2)) {
-	  if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
-	  if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
+	  if (IsOnSq(p, BC, N, H2)) {
+		  if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
+		  if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
+	  }
   }
   
   // Rook blocked by uncastled king
