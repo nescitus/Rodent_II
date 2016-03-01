@@ -279,6 +279,7 @@ private:
   void FullPawnEval(POS * p, int use_hash);
 
 public:
+  int prog_side;
   int Return(POS * p, int use_hash);
   void Print(POS *p);
 } cEval;

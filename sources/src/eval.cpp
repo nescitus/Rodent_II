@@ -46,6 +46,7 @@ sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 void SetAsymmetricEval(int sd) {
 
   int op = Opp(sd);
+  Eval.prog_side = sd;
 
   curr_weights[sd][SD_ATT] = dyn_weights[DF_OWN_ATT];
   curr_weights[op][SD_ATT] = dyn_weights[DF_OPP_ATT];
@@ -95,6 +96,8 @@ int GetDefendedPst(int sq) {
 }
 
 void InitEval(void) {
+
+  Eval.prog_side = NO_CL;
 
   // Init piece/square values together with material value of the pieces.
 
@@ -536,6 +539,8 @@ void cEval::ScorePassers(POS * p, int sd)
 }
 
 int cEval::Return(POS *p, int use_hash) {
+
+  assert(prog_side == WC || prog_side == BC);
 
   // Try to retrieve score from eval hashtable
 
