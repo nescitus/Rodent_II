@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5104 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.14"
+#define PROG_NAME "Rodent II 0.8.15"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -439,6 +439,11 @@ extern int pst_perc;
 extern int panel_style;
 extern int verbose;
 extern int eval_blur;
+extern int keep_queen;
+extern int keep_rook;
+extern int keep_bishop;
+extern int keep_knight;
+extern int keep_pawn;
 extern int draw_score;
 extern int time_percentage;
 extern int use_book;

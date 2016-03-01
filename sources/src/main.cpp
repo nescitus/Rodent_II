@@ -39,7 +39,11 @@ int main() {
   verbose = 1;
   np_bonus = 6;
   rp_malus = 3;
-
+  keep_queen = 0;
+  keep_rook = 0;
+  keep_bishop = 0;
+  keep_knight = 0;
+  keep_pawn = 0;
   Timer.Init();
   initmagicmoves();
   Init();

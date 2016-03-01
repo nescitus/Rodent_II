@@ -598,6 +598,14 @@ int cEval::Return(POS *p, int use_hash) {
   ScorePassers(p, WC);
   ScorePassers(p, BC);
 
+  // Add stylistic asymmetric stuff
+
+  mg[prog_side][F_OTHERS] += keep_queen  * p->cnt[prog_side][Q];
+  mg[prog_side][F_OTHERS] += keep_rook   * p->cnt[prog_side][R];
+  mg[prog_side][F_OTHERS] += keep_bishop * p->cnt[prog_side][B];
+  mg[prog_side][F_OTHERS] += keep_knight * p->cnt[prog_side][N];
+  mg[prog_side][F_OTHERS] += keep_pawn   * p->cnt[prog_side][P];
+
   // Sum all the symmetric eval factors
 
   for (int fc = 2; fc < N_OF_FACTORS; fc++) {
