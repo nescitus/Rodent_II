@@ -32,6 +32,8 @@ void cEval::ScorePatterns(POS * p) {
   static const U64 wn_mask = {SqBb(A7) | SqBb(H7)};
   static const U64 bn_mask = {SqBb(A2) | SqBb(H2)};
 
+  // White bishop patterns
+
   if (PcBb(p, WC, B) & wb_mask) {
 
     // Blockage of a central pawn on its initial square
@@ -65,6 +67,8 @@ void cEval::ScorePatterns(POS * p) {
 	}
 
   }
+
+  // Black bishop patterns
 
   if (PcBb(p, BC, B) & bb_mask) {
 
