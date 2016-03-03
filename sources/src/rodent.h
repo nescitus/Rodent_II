@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 806.349
 // bench 12: 8170896 18,9 s 1.002
-// bench 15: 42.918.588 88,6 1.123
+// bench 15: 42.918.588 88,3 1.127
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5104 lines of code
 
@@ -403,9 +403,6 @@ extern U64 p_attacks[2][64];
 extern U64 n_attacks[64];
 extern U64 k_attacks[64];
 extern U64 bbKingZone[2][64];
-extern U64 bbRCanAttack[64][64];
-extern U64 bbBCanAttack[64][64];
-extern U64 bbQCanAttack[64][64];
 extern int dist[64][64];
 extern U64 passed_mask[2][64];
 extern U64 adjacent_mask[8];
