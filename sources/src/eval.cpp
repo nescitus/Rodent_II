@@ -132,6 +132,14 @@ void InitEval(void) {
     danger[i] = (t * 100) / 256; // rescale to centipawns
   }
 
+  // Init king zone
+
+  for (int i = 0; i < 64; i++) {
+	  bbKingZone[WC][i] = bbKingZone[BC][i] = k_attacks[i];
+	  bbKingZone[WC][i] |= ShiftSouth(bbKingZone[WC][i]);
+	  bbKingZone[BC][i] |= ShiftNorth(bbKingZone[BC][i]);
+  }
+
   // Can a piece on a given square attack zone around enemy king?
 
   for (int i = 0; i < 64; i++) {
@@ -209,8 +217,9 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
 
-  U64 bbZone = k_attacks[ksq];
-  (sd == WC) ? bbZone |= ShiftSouth(bbZone) : bbZone |= ShiftNorth(bbZone);
+  U64 bbZone = bbKingZone[sd][ksq];
+  //U64 bbZone = k_attacks[ksq];
+  //(sd == WC) ? bbZone |= ShiftSouth(bbZone) : bbZone |= ShiftNorth(bbZone);
 
   // Init bitboards to detect check threats
 
@@ -361,20 +370,22 @@ void cEval::ScorePieces(POS *p, int sd) {
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
     && p->cnt[sd][Q]) {
-       att += chk_threat[R]; 
+      att += chk_threat[R]; 
 
-    bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
+      bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
 
-    while (bbContact) {
-      int contactSq = PopFirstBit(&bbContact);
+      while (bbContact) {
+        int contactSq = PopFirstBit(&bbContact);
 
-      // possible bug: rook exchanges are accepted as contact checks
-      if (Swap(p, sq, contactSq) >= 0) {
-        att += r_contact_check;
-        break;
+        // possible bug: rook exchanges are accepted as contact checks
+
+        if (Swap(p, sq, contactSq) >= 0) {
+          att += r_contact_check;
+          break;
+        }
       }
     }
-  }
+
     bbAllAttacks[sd] |= bbMob;
     bbMinorAttacks[sd] |= bbMob;  // TEMPORARY, TESTING
 
@@ -438,15 +449,16 @@ void cEval::ScorePieces(POS *p, int sd) {
     while (bbContact) {
       int contactSq = PopFirstBit(&bbContact);
 
-      // possible bug: queen exchanges are accepted as contact checks
-      if (Swap(p, sq, contactSq) >= 0) {
-        att += q_contact_check;
-        break;
+        // possible bug: queen exchanges are accepted as contact checks
+
+        if (Swap(p, sq, contactSq) >= 0) {
+          att += q_contact_check;
+          break;
+        }
       }
     }
-  }
 
-  bbAllAttacks[sd] |= bbMob;
+    bbAllAttacks[sd] |= bbMob;
 
     // Queen attacks on enemy king zone
    
