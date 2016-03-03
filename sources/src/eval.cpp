@@ -132,6 +132,25 @@ void InitEval(void) {
     danger[i] = (t * 100) / 256; // rescale to centipawns
   }
 
+  // Can a piece on a given square attack zone around enemy king?
+
+  for (int i = 0; i < 64; i++) {
+    for (int j = 0; j < 64; j++) {
+
+      bbRCanAttack[i][j] = bbBCanAttack[i][j] = bbQCanAttack[i][j] = 0ULL;
+		  
+      if (RAttacks(0ULL, i) & k_attacks[j]) {
+        bbRCanAttack[i][j] = 1;
+        bbQCanAttack[i][j] = 1;
+      };
+		  
+      if (BAttacks(0ULL, i) & k_attacks[j]) {
+        bbBCanAttack[i][j] = 1;
+        bbQCanAttack[i][j] = 1;
+      };
+    }
+  }
+
   // Init mask for passed pawn detection
 
   for (int sq = 0; sq < 64; sq++) {
