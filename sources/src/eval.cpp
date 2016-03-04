@@ -444,7 +444,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Queen attacks on enemy king zone
    
     bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-    bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
+    bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, R) ^ PcBb(p, sd, Q), sq);
     if (bbAtt & bbZone) {
       wood++;
       q_att++;
