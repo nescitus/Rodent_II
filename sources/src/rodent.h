@@ -19,12 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 731.842
 // bench 12: 7905896 18,5 s 0.988
-// bench 15: 37.585.122 77,6 1.123
+// bench 15: 37.585.122 76,5 1.140
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5388 lines of code
+// 5387 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.16"
+#define PROG_NAME "Rodent II 0.8.17"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};

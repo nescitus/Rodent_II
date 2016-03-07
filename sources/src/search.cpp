@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
 int root_side;
+int fl_has_choice;
 
 // switches to facilitate debugging
 
@@ -102,7 +103,7 @@ void Iterate(POS *p, int *pv) {
   if (Timer.nps_limit 
   || Timer.GetData(MAX_NODES) > 0) Timer.special_mode = 1;
 
-  // TODO: only single move available
+  // Search with increasing depth
 
   for (root_depth = 1; root_depth <= max_root_depth; root_depth++) {
     int elapsed = Timer.GetElapsedTime();
@@ -114,8 +115,14 @@ void Iterate(POS *p, int *pv) {
 	printf("info depth %d time %d nodes %lld nps %lld\n", root_depth, elapsed, nodes, nps);
 #endif
 
-  if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
-  else                cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
+    if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
+    else                cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
+
+	// don't search too deep with only one move available
+
+	if (root_depth == 8 
+	&& !fl_has_choice 
+	&& !Timer.IsInfiniteMode() ) break;
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -125,7 +132,7 @@ void Iterate(POS *p, int *pv) {
 int Widen(POS *p, int depth, int * pv, int lastScore) {
   
   // Function performs aspiration search, progressively widening the window.
-  // Code structere modelled after Senpai 1.0.
+  // Code structure modelled after Senpai 1.0.
 
   int cur_val = lastScore, alpha, beta;
 
@@ -150,6 +157,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_move, mv_type, reduction;
   int mv_tried = 0, quiet_tried = 0;
+  fl_has_choice = 0;
 
   MOVES m[1];
   UNDO u[1];
@@ -199,6 +207,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Update move statistics (needed for reduction/pruning decisions)
 
   mv_tried++;
+  if (mv_tried > 1) fl_has_choice = 1;
   if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
@@ -530,7 +539,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       if (score > alpha) {
         alpha = score;
         BuildPv(pv, new_pv, move);
-        if (!ply) DisplayPv(score, pv);
       }
     }
 
