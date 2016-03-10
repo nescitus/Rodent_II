@@ -82,11 +82,6 @@ extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
 static const int file_bonus[8] = { -3,  -1,   1,   3,   3,   1,  -1,  -3 };
-static const int biased[8]     = { -3,  -1,   0,   1,   1,   0,  -1,  -3 };
-static const int kingFile[8]   = { +4,  +5,  +3,  +1,  +1,  +3,  +5,  +4 };
-static const int kingRank[8]   = { +0,  -1,  -3,  -4,  -5,  -6,  -7,  -8 };
-static const int knightLine[8] = { -4,  -2,  +0,  +2,  +2,  +0,  -2,  -4 }; // mg: file only, eg: both rank and file
-static const int knightRank[8] = { -6,  -3,  +0,  +2,  +3,  +3,  +0,  -3 };
 
 // mobility parameters [130]
 // (could be decreased to 16)

@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 731.842
-// bench 12: 7905896 18,5 s 0.988
-// bench 15: 37.585.122 76,5 1.140
+// bench: 731.829
+// bench 12: 7320739 17,3 s 0.979
+// bench 15: 40.515.376 82,8 1.140
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5387 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.17"
+#define PROG_NAME "Rodent II 0.8.18"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -275,6 +275,7 @@ private:
   int ScoreFileShelter(U64 bbOwnPawns, int sd);
   int ScoreFileStorm(U64 bbOppPawns, int sd);
   int ScoreChains(POS *p, int sd);
+  void ScoreOutpost(int sd, int pc, int sq);
   void ScorePawns(POS * p, int sd);
   void FullPawnEval(POS * p, int use_hash);
 

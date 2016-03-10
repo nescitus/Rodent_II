@@ -181,7 +181,7 @@ void InitEval(void) {
 void cEval::ScorePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
-  int op, sq, cnt, tmp, mul, ksq, osq, att = 0, wood = 0;
+  int op, sq, cnt, tmp, ksq, osq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
 
@@ -199,8 +199,6 @@ void cEval::ScorePieces(POS *p, int sd) {
   // can move plus two or three more squares facing enemy position.
 
   U64 bbZone = bbKingZone[sd][ksq];
-  //U64 bbZone = k_attacks[ksq];
-  //(sd == WC) ? bbZone |= ShiftSouth(bbZone) : bbZone |= ShiftNorth(bbZone);
 
   // Init bitboards to detect check threats
 
@@ -255,17 +253,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight outpost
 
-    mul = 0;
-    tmp = sp_pst_data[sd][N][sq];
-    if (tmp) {
-      if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-      if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-      if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-      tmp *= mul;
-      tmp /= 2;
-
-      Add(sd, F_OUTPOST, tmp, tmp);
-	}
+	ScoreOutpost(sd, N, sq);
 
   } // end of knight eval
 
@@ -303,34 +291,22 @@ void cEval::ScorePieces(POS *p, int sd) {
 
 	// Bishop outpost
 
-    mul = 0;
-    tmp = sp_pst_data[sd][B][sq];
-    if (tmp) {
-      if (SqBb(sq) & ~bbPawnCanTake[op]) mul += 2;  // in the hole of enemy pawn structure
-      if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;     // defended by own pawn
-      if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;  // defended by two pawns
-      tmp *= mul;
-      tmp /= 2;
-	}
+	ScoreOutpost(sd, B, sq);
 
-    Add(sd, F_OUTPOST, tmp, tmp);
-
-  // Pawns on the same square color as our bishop
+    // Pawns on the same square color as our bishop
   
-  if (bbWhiteSq & SqBb(sq)) {
-    own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
-    opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
-  }
-  else {
-    own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
-    opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
-  }
+    if (bbWhiteSq & SqBb(sq)) {
+      own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
+      opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
+    } else {
+      own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
+      opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
+    }
 
-  Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
-                    -3 * own_pawn_cnt - opp_pawn_cnt);
+    Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
+                      -3 * own_pawn_cnt - opp_pawn_cnt);
 
     // TODO: bishop blocked by defended enemy pawns
-
 
   } // end of bishop eval
 
@@ -395,7 +371,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       else                            Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
     }
 
-    // Rook on 7th rank attacking pawns or cutting off enemy king
+    // Rook on the 7th rank attacking pawns or cutting off enemy king
 
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (PcBb(p, op, P) & bbRelRank[sd][RANK_7]
@@ -403,6 +379,16 @@ void cEval::ScorePieces(POS *p, int sd) {
       Add(sd, F_LINES, 16, 32);
       }
     }
+
+	// Rook on the 6th rank attacking base of enemy pawns
+
+	if (SqBb(sq) & bbRelRank[sd][RANK_6]) {
+		if (PcBb(p, op, P) & bbRelRank[sd][RANK_6]
+		&& !((PcBb(p, op, P) & bbRelRank[sd][RANK_7] ))) {
+			Add(sd, F_LINES, 0, 8);
+		}
+	}
+
   } // end of rook eval
 
   // Queen
@@ -468,6 +454,21 @@ void cEval::ScorePieces(POS *p, int sd) {
     Add(sd, F_ATT, tmp, tmp);
   }
 
+}
+
+void cEval::ScoreOutpost(int sd, int pc, int sq) {
+
+  int mul = 0;
+  int tmp = sp_pst_data[sd][pc][sq];
+  if (tmp) {
+    if (SqBb(sq) & ~bbPawnCanTake[Opp(sd)]) mul += 2;  // in the hole of enemy pawn structure
+    if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;          // defended by own pawn
+    if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;       // defended by two pawns
+    tmp *= mul;
+    tmp /= 2;
+
+    Add(sd, F_OUTPOST, tmp, tmp);
+	}
 }
 
 void cEval::ScoreHanging(POS *p, int sd) {
