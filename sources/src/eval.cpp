@@ -88,7 +88,7 @@ int GetPhalanxPst(int sq) {
   if (sq == D4) return 15;             // D4/E4 pawns
   if (sq == D3) return 10;             // D3/E3 pawns
   if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
-  return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes WAS 3
+  return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes
 }
 
 int GetDefendedPst(int sq) {
@@ -181,7 +181,7 @@ void InitEval(void) {
 void cEval::ScorePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
-  int op, sq, cnt, tmp, ksq, osq, att = 0, wood = 0;
+  int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
 
@@ -193,7 +193,6 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
-  osq = KingSq(p, sd);
 
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
@@ -201,7 +200,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   U64 bbZone = bbKingZone[sd][ksq];
 
   // Init bitboards to detect check threats
-
+  
   U64 bbKnightChk = n_attacks[ksq];
   U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BAttacks(OccBb(p), ksq);

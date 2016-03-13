@@ -102,7 +102,7 @@ static const int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -
 #define A  80 // advantage in both major and minor pieces
 #define Rk 50 // advantage in major pieces only
 #define Nt 40 // advantage in minor pieces only
-#define Ex 20 // exchange disadvantage [10..20..?]
+#define Ex 25 // exchange disadvantage [20..25..?]
 #define Mm 60 // two minors for a rook 
 
 static const int adj[9] = { -4, -3, -2, -1, 0,  1,  2,  3,  4 };
