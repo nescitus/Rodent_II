@@ -132,7 +132,7 @@ int GetDrawFactor(POS *p, int sd)
     return 0;
 
      // Case 6: KR vs Km(p)
-     if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 16; // TODO: test 16
+     if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 16;
 
      // Case 7: KRm vs KR(p)
      if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
@@ -147,18 +147,25 @@ int GetDrawFactor(POS *p, int sd)
 
      // Case 10: KBN vs Km(p)
      if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
+
+	 // Case 11: KRR vs KRm(p)
+	 if (PcMatRR(p, sd) && PcMatRm(p, op)) return 16;
+
+	 // Case 12: KRRm vs KRR(p)
+	 if (p->cnt[sd][R] == 2 && p->cnt[sd][Q] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
+		 && PcMatRR(p, op)) return 16;
   }
 
-  // Case 11: KRP vs KR
+  // Case 13: KRP vs KR
 
   if (PcMatR(p, sd) && PcMatR(p, op) && p->cnt[sd][P] == 1 && p->cnt[op][P] == 0) {
 
-    // 11a: good defensive position with a king on pawn's path increases drawing chances
+    // 13a: good defensive position with a king on pawn's path increases drawing chances
 
     if ((SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd)))
       return 32; // 1/2
 
-    // 11b: draw code for rook endgame with edge pawn
+    // 13b: draw code for rook endgame with edge pawn
 
     if ((RelSqBb(A7, sd) & PcBb(p, sd, P))
     && ( RelSqBb(A8, sd) & PcBb(p, sd, R))
@@ -247,4 +254,12 @@ int PcMatR(POS *p, int sd) {
 
 int PcMatRm(POS *p, int sd) {
   return (p->cnt[sd][R] == 1 && p->cnt[sd][N] + p->cnt[sd][B] == 1 && p->cnt[sd][Q] == 0);
+}
+
+int PcMatRR(POS *p, int sd) {
+	return (p->cnt[sd][R] == 2 && p->cnt[sd][N] + p->cnt[sd][B] + p->cnt[sd][Q] == 0);
+}
+
+int PcMatRRm(POS *p, int sd) {
+	return (p->cnt[sd][R] == 2 && p->cnt[sd][N] + p->cnt[sd][B] == 1 && p->cnt[sd][Q] == 0);
 }

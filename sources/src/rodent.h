@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5387 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.19"
+#define PROG_NAME "Rodent II 0.8.20"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -463,3 +463,5 @@ int PcMatB(POS *p, int sd);
 int PcMatQ(POS *p, int sd);
 int PcMatR(POS *p, int sd);
 int PcMatRm(POS *p, int sd);
+int PcMatRR(POS *p, int sd);
+int PcMatRRm(POS *p, int sd);
