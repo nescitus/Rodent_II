@@ -81,7 +81,7 @@ void sTimer::SetMoveTiming(void) {
 	// (i.e. to modify base thinking time based on how often root
 	// move changes )
 
-    if (2 * allocated_time > data[TIME]) smart_management = 1;
+    if (2 * allocated_time < data[TIME]) smart_management = 1;
 
 	// make a percentage correction to playing speed (unless too risky)
 
