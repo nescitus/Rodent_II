@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include <assert.h>
 
+#define HIST_LIMIT (1 << 15)
+
 void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply) {
 
   m->p = p;
@@ -278,6 +280,12 @@ void ClearHist(void) {
   }
 }
 
+void TrimHistory(void) {
+  for (int i = 0; i < 12; i++)
+    for (int j = 0; j < 64; j++)
+      history[i][j] /= 2;
+}
+
 void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Don't update stuff used for move ordering if a move changes material balance
@@ -298,11 +306,8 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Prevent history counters from growing too high
 
-  if (history[p->pc[Fsq(move)]][Tsq(move)] > (1 << 15)) {
-    for (int i = 0; i < 12; i++)
-      for (int j = 0; j < 64; j++)
-        history[i][j] /= 2;
-  }
+  if (history[p->pc[Fsq(move)]][Tsq(move)] > HIST_LIMIT)
+     TrimHistory();
 
   // Update refutation table, saving new move in the table indexed
   // by the coordinates of last move. last_move == 0 is a null move,

@@ -395,6 +395,7 @@ void SetAsymmetricEval(int sd);
 int StrToMove(POS *p, char *move_str);
 int Swap(POS *p, int from, int to);
 void Think(POS *p, int *pv);
+void TrimHistory(void);
 int Timeout(void);
 int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth, int ply);
 void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
