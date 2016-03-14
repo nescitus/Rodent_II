@@ -28,11 +28,16 @@ private:
   int start_time;         // when we have begun searching
   int iteration_time;     // when we are allowed to start new iteration
   int allocated_time;     // basic time allocated for a move
+  int adjustement;
+  int smart_management;
   int BulletCorrection(int time);
 public:
   int nps_limit;
   int special_mode;
   void Clear(void);
+  void OnOldRootMove(void);
+  void OnNewRootMove(void);
+  void OnFailLow(void);
   void SetStartTime();
   void SetMoveTiming(void);
   void SetIterationTiming(void);

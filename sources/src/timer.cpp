@@ -13,6 +13,8 @@
 void sTimer::Clear(void) {
 
   iteration_time = MAX_INT;
+  adjustement = 0;
+  smart_management = 0;
   SetData(MAX_DEPTH, 64);
   allocated_time = -1;
   SetData(W_TIME,-1);
@@ -23,6 +25,26 @@ void sTimer::Clear(void) {
   SetData(MAX_NODES, 0);
   SetData(MOVES_TO_GO, 40);
   SetData(FLAG_INFINITE, 0);
+}
+
+void sTimer::OnOldRootMove(void) {
+  if (smart_management) {
+    adjustement -= 1;
+    if (adjustement < -30) adjustement = -30;
+  }
+}
+
+void sTimer::OnNewRootMove(void) {
+  if (smart_management) {
+	adjustement += 3;
+	if (adjustement > 30) adjustement = 30;
+  }
+}
+
+void sTimer::OnFailLow(void) {
+  if (smart_management) {
+    if (adjustement < 0) adjustement = 0;
+  }
 }
 
 void sTimer::SetStartTime(void) {
@@ -55,25 +77,37 @@ void sTimer::SetMoveTiming(void) {
     if (data[MOVES_TO_GO] == 1) data[TIME] -= Min(1000, data[TIME] / 10);
     allocated_time = ( data[TIME] + data[INC] * ( data[MOVES_TO_GO] - 1)) / data[MOVES_TO_GO];
 
+	// Is it safe to use more advanced time management heuristics?
+	// (i.e. to modify base thinking time based on how often root
+	// move changes )
+
+    if (2 * allocated_time > data[TIME]) smart_management = 1;
+
 	// make a percentage correction to playing speed (unless too risky)
-	if (((allocated_time * time_percentage) / 100) < (data[TIME] / 2)) {
+
+	if (smart_management) {
       allocated_time *= time_percentage;
       allocated_time /= 100;
 	}
 
     // assign less time per move on extremely short time controls
+
     allocated_time = BulletCorrection(allocated_time);
 
     // while in time trouble, try to save a bit on increment
+
     if (allocated_time < data[INC] ) allocated_time -= ( (data[INC] * 4) / 5);
 
     // ensure that our limit does not exceed total time available
+
     if (allocated_time > data[TIME]) allocated_time = data[TIME];
 
     // safeguard against a lag
+
     allocated_time -= 10;
 
     // ensure that we have non-zero time
+
     if (allocated_time < 1) allocated_time = 1;
   }
 }
@@ -84,6 +118,7 @@ void sTimer::SetIterationTiming(void) {
   else                    iteration_time = MAX_INT;
 
   // assign less time per iteration on extremely short time controls
+
   iteration_time = BulletCorrection(iteration_time);
 }
 
@@ -112,7 +147,7 @@ int sTimer::IsInfiniteMode(void) {
 }
 
 int sTimer::TimeHasElapsed(void) {
-  return (GetElapsedTime() >= allocated_time);
+  return (GetElapsedTime() >= (allocated_time * (100 + adjustement) / 100) );
 }
 
 int sTimer::GetData(int slot) {

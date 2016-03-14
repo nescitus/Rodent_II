@@ -142,6 +142,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
       beta  = lastScore + margin;
       cur_val = SearchRoot(p, 0, alpha, beta, depth, pv);
       if (abort_search) break;
+	  if (cur_val < alpha) Timer.OnFailLow();
       if (cur_val > alpha && cur_val < beta) 
       return cur_val;                // we have finished within the window
       if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
@@ -157,8 +158,10 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_move, mv_type, reduction;
   int mv_tried = 0, quiet_tried = 0;
+  int move_change = 0;
+  
   fl_has_choice = 0;
-
+  
   MOVES m[1];
   UNDO u[1];
 
@@ -207,7 +210,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Update move statistics (needed for reduction/pruning decisions)
 
   mv_tried++;
-  if (mv_tried > 1) fl_has_choice = 1;
+  if (mv_tried > 1) fl_has_choice = 1; // we have a choice between at least two root moves
   if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
@@ -265,18 +268,29 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
       // Change the best move and show the new pv
 
+      if (depth > 4) {
+        if (pv[0] != move) Timer.OnNewRootMove();
+        else               Timer.OnOldRootMove();
+      }
+
       BuildPv(pv, new_pv, move);
       DisplayPv(score, pv);
 
       return score;
     }
 
-  // Updating score and alpha
+    // Updating score and alpha
 
     if (score > best) {
       best = score;
       if (score > alpha) {
         alpha = score;
+
+      if (depth > 4) {
+        if (pv[0] != move) Timer.OnNewRootMove();
+        else               Timer.OnOldRootMove();
+      }
+
         BuildPv(pv, new_pv, move);
         DisplayPv(score, pv);
       }
