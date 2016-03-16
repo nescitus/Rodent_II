@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5431 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.22"
+#define PROG_NAME "Rodent II 0.8.23"
+
+//#define NEW_HISTORY
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -324,6 +326,7 @@ void ClearEvalHash(void);
 void ClearPawnHash(void);
 void ClearHist(void);
 void ClearTrans(void);
+void DecreaseHistory(POS *p, int move, int depth);
 void DisplayCurrmove(int move, int tried);
 void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);

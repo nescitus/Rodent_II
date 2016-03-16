@@ -286,6 +286,18 @@ void TrimHistory(void) {
       history[i][j] /= 2;
 }
 
+void DecreaseHistory(POS *p, int move, int depth) {
+
+  // Increment history counter
+
+  history[p->pc[Fsq(move)]][Tsq(move)] -= depth * depth;
+
+  // Prevent history counters from growing too high
+
+  if (history[p->pc[Fsq(move)]][Tsq(move)] < -HIST_LIMIT)
+    TrimHistory();
+}
+
 void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Don't update stuff used for move ordering if a move changes material balance
@@ -302,7 +314,11 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Increment history counter
 
+#ifdef NEW_HISTORY
+  history[p->pc[Fsq(move)]][Tsq(move)] += 2 * depth * depth;
+#else
   history[p->pc[Fsq(move)]][Tsq(move)] += depth * depth;
+#endif
 
   // Prevent history counters from growing too high
 
