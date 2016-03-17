@@ -379,15 +379,6 @@ void cEval::ScorePieces(POS *p, int sd) {
       }
     }
 
-	// Rook on the 6th rank attacking base of enemy pawns
-
-	if (SqBb(sq) & bbRelRank[sd][RANK_6]) {
-		if (PcBb(p, op, P) & bbRelRank[sd][RANK_6]
-		&& !((PcBb(p, op, P) & bbRelRank[sd][RANK_7] ))) {
-			Add(sd, F_LINES, 0, 8);
-		}
-	}
-
   } // end of rook eval
 
   // Queen
