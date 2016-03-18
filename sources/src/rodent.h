@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5431 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.24"
+#define PROG_NAME "Rodent II 0.8.25"
 
 //#define NEW_HISTORY
 
