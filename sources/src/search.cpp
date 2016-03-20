@@ -40,7 +40,6 @@ static const int use_futility = 1;
 static const int use_razoring = 1;
 static const int use_lmp = 1;
 static const int use_lmr = 1;
-static const int use_hist_restriction = 1;
 
 static const int hist_limit = 24576;
 
@@ -325,10 +324,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   int is_pv = (beta > alpha + 1);
   int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
 
-#ifdef NEW_HISTORY
   int mv_played[MAX_MOVES];
   int mv_hist_score;
-#endif
 
   MOVES m[1];
   UNDO u[1];
@@ -472,16 +469,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Main loop
   
   while ((move = NextMove(m, &mv_type))) {
-#ifdef NEW_HISTORY
+
 	mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
-#endif
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
   // Update move statistics (needed for reduction/pruning decisions)
-#ifdef NEW_HISTORY
+
   mv_played[mv_tried] = move;
-#endif
   mv_tried++;
   if (mv_type == MV_NORMAL) quiet_tried++;
   fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
@@ -499,13 +494,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   }
 
   // Late move pruning
+
   if (use_lmp
   && fl_prunable_node
   && fl_prunable_move
   && quiet_tried > lmp_limit[depth]
-#ifdef NEW_HISTORY
-  && (mv_hist_score < hist_limit && use_hist_restriction)
-#endif
+  && mv_hist_score < hist_limit
   && depth <= 3
   && MoveType(move) != CASTLE ) {
     p->UndoMove(move, u); continue;
@@ -518,9 +512,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (use_lmr 
   && depth >= 2
   && mv_tried > 3
-#ifdef NEW_HISTORY
-  && (mv_hist_score < hist_limit && use_hist_restriction)
-#endif
+  && mv_hist_score < hist_limit
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
   &&  fl_prunable_move
@@ -529,7 +521,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
     reduction = lmr_size[is_pv][depth][mv_tried];
     new_depth -= reduction;
-
   }
 
   re_search:
@@ -558,13 +549,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Beta cutoff
 
     if (score >= beta) {
-		if (!fl_check) {
-		  UpdateHistory(p, last_move, move, depth, ply);
-#ifdef NEW_HISTORY
-		  for (int mv = 0; mv < mv_tried; mv++)
-			  DecreaseHistory(p, mv_played[mv], depth);
-#endif
-		}
+      if (!fl_check) {
+        UpdateHistory(p, last_move, move, depth, ply);
+        for (int mv = 0; mv < mv_tried; mv++)
+          DecreaseHistory(p, mv_played[mv], depth);
+      }
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
       return score;
@@ -592,11 +581,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (*pv) {
     if (!fl_check) {
       UpdateHistory(p, last_move, *pv, depth, ply);
-#ifdef NEW_HISTORY
-	  for (int mv = 0; mv < mv_tried; mv++)
-		  DecreaseHistory(p, mv_played[mv], depth);
-#endif
-	  }
+      for (int mv = 0; mv < mv_tried; mv++)
+        DecreaseHistory(p, mv_played[mv], depth);
+    }
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);

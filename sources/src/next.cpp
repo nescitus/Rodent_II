@@ -314,11 +314,7 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply) {
 
   // Increment history counter
 
-#ifdef NEW_HISTORY
   history[p->pc[Fsq(move)]][Tsq(move)] += 2 * depth * depth;
-#else
-  history[p->pc[Fsq(move)]][Tsq(move)] += depth * depth;
-#endif
 
   // Prevent history counters from growing too high
 
