@@ -160,6 +160,8 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   int best, score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_move, mv_type, reduction;
   int mv_tried = 0, quiet_tried = 0;
+  int mv_played[MAX_MOVES];
+  int mv_hist_score;
   int move_change = 0;
   
   fl_has_choice = 0;
@@ -206,33 +208,36 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Main loop
   
   while ((move = NextMove(m, &mv_type))) {
+    mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-  // Update move statistics (needed for reduction/pruning decisions)
+    // Update move statistics (needed for reduction/pruning decisions)
 
-  mv_tried++;
-  if (mv_tried > 1) fl_has_choice = 1; // we have a choice between at least two root moves
-  if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
-  if (mv_type == MV_NORMAL) quiet_tried++;
-  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+    mv_played[mv_tried] = move;
+    mv_tried++;
+    if (mv_tried > 1) fl_has_choice = 1; // we have a choice between at least two root moves
+    if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
+    if (mv_type == MV_NORMAL) quiet_tried++;
+    fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
 
-  // Set new search depth
+    // Set new search depth
 
-  new_depth = depth - 1 + InCheck(p);
+    new_depth = depth - 1 + InCheck(p);
 
-  // Late move reduction
+    // Late move reduction
   
-  reduction = 0;
+    reduction = 0;
   
-  if (use_lmr
-  && depth >= 2
-  && mv_tried > 3
-  && alpha > -MAX_EVAL && beta < MAX_EVAL
-  && !fl_check 
-  &&  fl_prunable_move
-  && lmr_size[1][depth][mv_tried] > 0
-  && MoveType(move) != CASTLE ) {
+    if (use_lmr
+    && depth >= 2
+    && mv_tried > 3
+	&& mv_hist_score < hist_limit
+    && alpha > -MAX_EVAL && beta < MAX_EVAL
+    && !fl_check 
+    &&  fl_prunable_move
+    && lmr_size[1][depth][mv_tried] > 0
+    && MoveType(move) != CASTLE ) {
 
     reduction = lmr_size[1][depth][mv_tried];
     new_depth -= reduction;
@@ -264,8 +269,11 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Beta cutoff
 
     if (score >= beta) {
-      if (!fl_check)
+      if (!fl_check) {
         UpdateHistory(p, -1, move, depth, ply);
+        for (int mv = 0; mv < mv_tried; mv++)
+          DecreaseHistory(p, mv_played[mv], depth);
+	  }
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
       // Change the best move and show the new pv
@@ -308,9 +316,13 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Save score in the transposition table
 
   if (*pv) {
-    if (!fl_check)
-      UpdateHistory(p, -1, *pv, depth, ply);
+	  if (!fl_check) {
+		  UpdateHistory(p, -1, *pv, depth, ply);
+		  for (int mv = 0; mv < mv_tried; mv++)
+			  DecreaseHistory(p, mv_played[mv], depth);
+	  }
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
+    
   } else
     TransStore(p->hash_key, 0, best, UPPER, depth, ply);
 
