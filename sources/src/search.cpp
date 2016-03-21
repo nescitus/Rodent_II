@@ -491,7 +491,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   mv_played[mv_tried] = move;
   mv_tried++;
   if (mv_type == MV_NORMAL) quiet_tried++;
-  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL) && (mv_hist_score < hist_limit);
 
   // Set new search depth
 
@@ -511,7 +511,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && fl_prunable_node
   && fl_prunable_move
   && quiet_tried > lmp_limit[depth]
-  && mv_hist_score < hist_limit
   && depth <= 3
   && MoveType(move) != CASTLE ) {
     p->UndoMove(move, u); continue;
@@ -524,7 +523,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (use_lmr 
   && depth >= 2
   && mv_tried > 3
-  && mv_hist_score < hist_limit
   && alpha > -MAX_EVAL && beta < MAX_EVAL
   && !fl_check 
   &&  fl_prunable_move
