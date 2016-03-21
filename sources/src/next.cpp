@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include <assert.h>
 
-#define HIST_LIMIT (1 << 15)
-
 void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply) {
 
   m->p = p;

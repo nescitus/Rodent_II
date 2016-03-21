@@ -41,8 +41,6 @@ static const int use_razoring = 1;
 static const int use_lmp = 1;
 static const int use_lmr = 1;
 
-static const int hist_limit = 24576;
-
 void InitSearch(void) {
 
   // Set depth of late move reduction using modified Stockfish formula

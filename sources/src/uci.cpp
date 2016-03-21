@@ -74,6 +74,7 @@ void UciLoop(void) {
         printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
 		printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
+		printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
         printf("option name UseBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
@@ -233,6 +234,9 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "SlowMover") == 0) {
 	time_percentage = atoi(value);
+  } else if (strcmp(name, "Selectivity") == 0) {
+	hist_perc = atoi(value);
+	hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
   } else if (strcmp(name, "GuideBookFile") == 0) {
     GuideBook.ClosePolyglot();
     GuideBook.bookName = value;

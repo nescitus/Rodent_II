@@ -44,6 +44,9 @@ int main() {
   keep_bishop = 0;
   keep_knight = 0;
   keep_pawn = 0;
+  hist_limit = 24576;
+  hist_perc = 175;
+
   Timer.Init();
   initmagicmoves();
   Init();

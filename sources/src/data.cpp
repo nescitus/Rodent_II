@@ -75,5 +75,7 @@ int keep_knight;
 int keep_pawn;
 int np_bonus;
 int rp_malus;
+int hist_limit;
+int hist_perc;
 int panel_style;
 int verbose;

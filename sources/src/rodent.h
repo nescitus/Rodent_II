@@ -19,11 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 749.181
 // bench 12: 7.082.535 16,7 s 0.985
-// bench 15: 39.041. 80,6 1.143
+// bench 15: 39.740.041 79,9 1.154
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5431 lines of code
+
 #pragma once
-#define PROG_NAME "Rodent II 0.8.27"
+#define PROG_NAME "Rodent II 0.8.28"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -58,6 +59,7 @@ typedef unsigned long long U64;
 #define MATE            32000
 #define MAX_EVAL        29999
 #define MAX_INT    2147483646
+#define HIST_LIMIT (1 << 15)
 
 #define RANK_1_BB       (U64)0x00000000000000FF
 #define RANK_2_BB       (U64)0x000000000000FF00
@@ -453,6 +455,8 @@ extern int use_book;
 extern int book_filter;
 extern int np_bonus;
 extern int rp_malus;
+extern int hist_limit;
+extern int hist_perc;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);
