@@ -722,7 +722,7 @@ void CheckTimeout(void) {
   // in the weakening mode or has received "go nodes" command. 
   // In that cases, we check for timeout as often as we can.
   
-  if (!Timer.special_mode) {
+  if (!Timer.special_mode || Timer.nps_limit > 65535) {
     if (nodes & 4095 || root_depth == 1)
       return;
   }

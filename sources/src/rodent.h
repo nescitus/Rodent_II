@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5431 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.8.28"
+#define PROG_NAME "Rodent II 0.9.0"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
