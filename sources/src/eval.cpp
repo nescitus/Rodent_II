@@ -212,6 +212,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 	  - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
   if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
+  if (p->cnt[sd][R] > 1) tmp -= 5;                      // Rook pair
   
   if (p->cnt[sd][B] > 1) 
 	 Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair
@@ -458,7 +459,7 @@ void cEval::ScoreOutpost(int sd, int pc, int sq) {
     tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
-	}
+  }
 }
 
 void cEval::ScoreHanging(POS *p, int sd) {
