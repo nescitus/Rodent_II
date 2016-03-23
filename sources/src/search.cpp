@@ -399,7 +399,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   if (use_beta_pruning
   && fl_prunable_node
-  //&& MayNull(p) // TESTING
   && depth <= 3
   && !was_null) {
     int sc = Eval.Return(p, 1) - 120 * depth; // TODO: Tune me!
@@ -489,7 +488,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   mv_played[mv_tried] = move;
   mv_tried++;
   if (mv_type == MV_NORMAL) quiet_tried++;
-  fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL) && (mv_hist_score < hist_limit);
+
+  // Can we prune this move?
+
+  fl_prunable_move = !InCheck(p)
+                  && (mv_type == MV_NORMAL) 
+                  && (mv_hist_score < hist_limit);
 
   // Set new search depth
 
@@ -545,14 +549,17 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   // Reduced move scored above alpha - we need to re-search it
 
-  if (reduction && score > alpha) {
+  if (reduction
+  && score > alpha) {
     new_depth += reduction;
     reduction = 0;
     goto re_search;
   }
 
-    p->UndoMove(move, u);
-    if (abort_search) return 0;
+  // Undo move
+
+  p->UndoMove(move, u);
+  if (abort_search) return 0;
 
   // Beta cutoff
 
