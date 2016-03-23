@@ -100,7 +100,7 @@ void UciLoop(void) {
     if (depth == 0) depth = 5;
     Timer.SetStartTime();
     nodes = Perft(p, 0, depth);
-    printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
+    printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() ); // TODO: fix U64s
     } else if (strcmp(token, "print") == 0) {
       PrintBoard(p);
     } else if (strcmp(token, "eval") == 0) {
@@ -343,6 +343,9 @@ void ParseGo(POS *p, char *ptr) {
       ptr = ParseToken(ptr, token);
 	  Timer.SetData(FLAG_INFINITE, 1);
       Timer.SetData(MAX_NODES, atoi(token));
+    } else if (strcmp(token, "movetime") == 0) {
+      ptr = ParseToken(ptr, token);
+      Timer.SetData(MOVE_TIME, atoi(token) );
     } else if (strcmp(token, "depth") == 0) {
       ptr = ParseToken(ptr, token);
       Timer.SetData(FLAG_INFINITE, 1);
