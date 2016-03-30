@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "book.h"
 
 double lmr_size[2][MAX_PLY][MAX_MOVES];
-int lmp_limit[6] = { 0, 4, 8, 12, 24, 48 };
+int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
 int root_side;
 int fl_has_choice;
 

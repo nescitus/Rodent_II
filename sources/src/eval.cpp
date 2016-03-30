@@ -270,6 +270,10 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Bishop mobility
 
     bbMob = BAttacks(OccBb(p), sq);
+
+	if (!(bbMob & bbAwayZone[sd])) 
+	   Add(sd, F_MOB, -5, -5);                         // idea from Andscacs
+
     cnt = PopCnt(bbMob &~bbPawnTakes[op]);
     
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus

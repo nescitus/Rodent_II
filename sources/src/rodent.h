@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 749.181
-// bench 12: 7.082.535 16,7 s 0.985
-// bench 15: 39.740.041 79,9 1.154
+// bench: 749.181 NOT UPDATED
+// bench 12: 6.237.339 9,9 s 1.452
+// bench 15: 39.450.347 40,6 2.253
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5431 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.7"
+#define PROG_NAME "Rodent II 0.9.8"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -72,6 +72,12 @@ typedef unsigned long long U64;
 
 static const U64 bbRelRank[2][8] = { { RANK_1_BB, RANK_2_BB, RANK_3_BB, RANK_4_BB, RANK_5_BB, RANK_6_BB, RANK_7_BB, RANK_8_BB },
                                      { RANK_8_BB, RANK_7_BB, RANK_6_BB, RANK_5_BB, RANK_4_BB, RANK_3_BB, RANK_2_BB, RANK_1_BB } };
+
+static const U64 bbHomeZone[2] = { RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB,
+                                   RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB };
+
+static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB,
+                                   RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB };
 
 #define FILE_A_BB       (U64)0x0101010101010101
 #define FILE_B_BB       (U64)0x0202020202020202

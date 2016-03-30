@@ -19,9 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "rodent.h"
 
-static const U64 bbHomeZone[2] = { RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB,
-                                   RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB };
-
 static const U64 bbKingBlockH[2] = { SqBb(H8) | SqBb(H7) | SqBb(G8) | SqBb(G7),
                                      SqBb(H1) | SqBb(H2) | SqBb(G1) | SqBb(G2) };
 

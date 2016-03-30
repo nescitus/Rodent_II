@@ -1,4 +1,4 @@
-/*
+/**
 Rodent, a UCI chess playing engine derived from Sungorus 1.4
 Copyright (C) 2009-2011 Pablo Vazquez (Sungorus author)
 Copyright (C) 2011-2016 Pawel Koziol
@@ -22,9 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // and modified slightly.
 
 #pragma once
-
-static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB,
-                                   RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB };
 
 static const int pstKnightOutpost[64] =
 {
