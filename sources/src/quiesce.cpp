@@ -1,5 +1,7 @@
 #include "rodent.h"
 
+//#define USE_QS_HASH
+
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   int best, score, move, new_pv[MAX_PLY];
@@ -24,10 +26,12 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
+#ifdef USE_QS_HASH
   // Transposition table read
 
-  //if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
-    //return score;
+  if (TransRetrieve(p->hash_key, &move, &score, alpha, beta, 0, ply))
+    return score;
+#endif
 
   InitCaptures(p, m);
 
@@ -52,7 +56,9 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   // Beta cutoff
 
   if (score >= beta) {
-    //TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
+#ifdef USE_QS_HASH
+    TransStore(p->hash_key, *pv, best, LOWER, 0, ply);
+#endif
     return score;
   }
 
@@ -67,8 +73,10 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
     }
   }
 
-  //if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
-  //else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+#ifdef USE_QS_HASH
+  if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
+  else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+#endif
 
   return best;
 }
