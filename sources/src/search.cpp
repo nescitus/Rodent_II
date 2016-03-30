@@ -40,24 +40,30 @@ static const int use_futility = 1;
 static const int use_razoring = 1;
 static const int use_lmp = 1;
 static const int use_lmr = 1;
+static const int lmr_hist_adjustement = 1;
 
 void InitSearch(void) {
 
   // Set depth of late move reduction using modified Stockfish formula
 
+  double r;
+
   for (int dp = 0; dp < MAX_PLY; dp++)
     for (int mv = 0; mv < MAX_MOVES; mv++) {
-      lmr_size[0][dp][mv] = (0.33 + log((double)(dp)) * log((double)(Min(mv,63))) / 2.25); // zero window node
-      lmr_size[1][dp][mv] = (0.00 + log((double)(dp)) * log((double)(Min(mv,63))) / 3.50); // principal variation node
+
+	  r = log(dp) * log(Min(mv,63)) / 2;
+	  if (r < 0.80) r = 0;
+		
+	  lmr_size[0][dp][mv] = r;            // zero window node
+	  lmr_size[1][dp][mv] = Max(r -1, 0); // principal variation node
 
       for (int node = 0; node <= 1; node++) {
         if (lmr_size[node][dp][mv] < 1) lmr_size[node][dp][mv] = 0; // ultra-small reductions make no sense
-        else lmr_size[node][dp][mv] += 0.5;
 
         if (lmr_size[node][dp][mv] > dp - 1) // reduction cannot exceed actual depth
           lmr_size[node][dp][mv] = dp - 1;
       }
-    }
+    }	
 }
 
 void Think(POS *p, int *pv) {
@@ -198,6 +204,15 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
   fl_check = InCheck(p);
 
+  // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
+  /*
+  if (!move && depth >= 4 && !fl_check) {
+	  Search(p, 0, alpha, beta, depth - 2, 0, 0, new_pv);
+	  if (abort_search) return 0;
+	  TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
+  }
+  */
+
   // Init moves and variables before entering main loop
   
   best = -INF;
@@ -238,6 +253,14 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
     && MoveType(move) != CASTLE ) {
 
     reduction = lmr_size[1][depth][mv_tried];
+
+	// increase reduction on bad history score
+
+	if (mv_hist_score < 0 
+	&& new_depth - reduction > 2 
+	&& lmr_hist_adjustement) 
+	   reduction++;
+
     new_depth -= reduction;
   }
 
@@ -378,6 +401,15 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       return score;
   }
   
+  // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
+  /*
+  if (!move && is_pv && depth >= 4 && !fl_check) {
+	  Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
+	  if (abort_search) return 0;
+	  TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
+  }
+  */
+
   // Safeguard against exceeding ply limit
   
   if (ply >= MAX_PLY - 1)
@@ -530,8 +562,20 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   &&  fl_prunable_move
   && lmr_size[is_pv][depth][mv_tried] > 0
   && MoveType(move) != CASTLE ) {
+    
+    // read reduction size from the table
 
     reduction = lmr_size[is_pv][depth][mv_tried];
+
+    // increase reduction on bad history score
+
+    if (mv_hist_score < 0
+    && new_depth - reduction > 2
+    && lmr_hist_adjustement)
+       reduction++;
+
+	// reduce search depth
+
     new_depth -= reduction;
   }
 

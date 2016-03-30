@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB,
+                                   RANK_1_BB | RANK_2_BB | RANK_3_BB | RANK_4_BB };
+
 static const int pstKnightOutpost[64] =
 {
   0,   0,   0,   0,   0,   0,   0,   0,
@@ -52,7 +55,7 @@ static const int passed_bonus_mg[2][8] = {
   { 0, 120, 80, 50, 30, 12, 12, 0 }
 };
 
-const int passed_bonus_eg[2][8] = {
+static const int passed_bonus_eg[2][8] = {
   { 0, 16, 16, 39, 65, 104, 156, 0 },
   { 0, 156, 104, 65, 39, 16, 16, 0 }
 };

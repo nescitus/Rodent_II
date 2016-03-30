@@ -156,5 +156,18 @@ void cEval::ScorePatterns(POS * p) {
   if ((PcBb(p, BC, K) & king_mask)
   &&  (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
-  // TODO "luft" eval
+  // "luft" eval
+  
+  if (IsOnSq(p, WC, K, H1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2))
+	  Add(WC, F_OTHERS, -15, -15);
+
+  if (IsOnSq(p, WC, K, G1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2) && IsOnSq(p, WC, P, F2))
+	  Add(WC, F_OTHERS, -15, -15);
+
+  if (IsOnSq(p, BC, K, H8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7))
+	  Add(BC, F_OTHERS, -15, -15);
+
+  if (IsOnSq(p, BC, K, G8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7) && IsOnSq(p, BC, P, F7) )
+	  Add(BC, F_OTHERS, -15, -15);
+
 }
