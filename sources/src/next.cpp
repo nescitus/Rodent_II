@@ -199,6 +199,10 @@ void ScoreQuiet(MOVES *m) {
   for (movep = m->move; movep < m->last; movep++) {
     
     move_score = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
+
+	if (TpOnSq(m->p,Fsq(*movep)) != K)
+		move_score += mg_pst_data[m->p->side][TpOnSq(m->p,Fsq(*movep))][Tsq(*movep)]
+		            - mg_pst_data[m->p->side][TpOnSq(m->p, Fsq(*movep))][Fsq(*movep)];
     
     *valuep++ = move_score;
   }

@@ -402,13 +402,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   }
   
   // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
-  /*
-  if (!move && is_pv && depth >= 4 && !fl_check) {
+  /**
+  if (!move && is_pv && depth >= 6 && !fl_check) {
 	  Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
 	  if (abort_search) return 0;
 	  TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
   }
-  */
+  /**/
 
   // Safeguard against exceeding ply limit
   
@@ -466,6 +466,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
       if (new_depth > 6 && score >= beta && use_null_verification)
          score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, new_pv);
+
       if (abort_search ) return 0;
       if (score >= beta) return score;
     }
