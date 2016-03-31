@@ -264,13 +264,13 @@ int MvvLva(POS *p, int move) {
 
 void ClearHist(void) {
 
-  for (int i = 0; i < 12; i++)
-    for (int j = 0; j < 64; j++)
-      history[i][j] = 0;
+  for (int pc = 0; pc < 12; pc++)
+    for (int sq = 0; sq < 64; sq++)
+      history[pc][sq] = 0;
 
-  for (int i = 0; i < 64; i++)
-    for (int j = 0; j < 64; j++)
-      refutation[i][j] = 0;
+  for (int fsq = 0; fsq < 64; fsq++)
+    for (int tsq = 0; tsq < 64; tsq++)
+      refutation[fsq][tsq] = 0;
 
   for (int i = 0; i < MAX_PLY; i++) {
     killer[i][0] = 0;
@@ -279,9 +279,10 @@ void ClearHist(void) {
 }
 
 void TrimHistory(void) {
-  for (int i = 0; i < 12; i++)
-    for (int j = 0; j < 64; j++)
-      history[i][j] /= 2;
+
+  for (int pc = 0; pc < 12; pc++)
+    for (int sq = 0; sq < 64; sq++)
+      history[pc][sq] /= 2;
 }
 
 void DecreaseHistory(POS *p, int move, int depth) {
