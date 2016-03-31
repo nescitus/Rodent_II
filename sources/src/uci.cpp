@@ -26,7 +26,7 @@ char *ParseToken(char *string, char *token) {
 
 void UciLoop(void) {
 
-  char command[4096], token[120], *ptr;
+  char command[4096], token[180], *ptr;
   POS p[1];
 
   setbuf(stdin, NULL);
@@ -121,7 +121,7 @@ void UciLoop(void) {
 
 void ParseSetoption(char *ptr) {
 
-  char token[120], name[120], value[120] = "";
+  char token[180], name[180], value[180] = "";
 
   ptr = ParseToken(ptr, token);
   name[0] = '\0';
@@ -263,7 +263,7 @@ void SetWeight(int weight_name, int value) {
 
 void ParseMoves(POS *p, char *ptr) {
   
-  char token[120];
+  char token[180];
   UNDO u[1];
 
   for (;;) {
@@ -286,7 +286,7 @@ void ParseMoves(POS *p, char *ptr) {
 
 void ParsePosition(POS *p, char *ptr) {
 
-  char token[120], fen[120];
+  char token[180], fen[180];
 
   ptr = ParseToken(ptr, token);
   if (strcmp(token, "fen") == 0) {
@@ -312,7 +312,7 @@ void ParsePosition(POS *p, char *ptr) {
 
 void ParseGo(POS *p, char *ptr) {
 
-  char token[120], bestmove_str[6], ponder_str[6];
+  char token[180], bestmove_str[6], ponder_str[6];
   int pv[MAX_PLY];
 
   Timer.Clear();
@@ -379,7 +379,7 @@ void ReadPersonality(char *fileName)
   FILE *personalityFile;
   char line[256];
   int lineNo = 0;
-  char token[120], *ptr;
+  char token[180], *ptr;
 
   // exit if this personality file doesn't exist
   if ((personalityFile = fopen(fileName, "r")) == NULL)
