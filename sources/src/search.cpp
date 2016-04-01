@@ -51,7 +51,7 @@ void InitSearch(void) {
   for (int dp = 0; dp < MAX_PLY; dp++)
     for (int mv = 0; mv < MAX_MOVES; mv++) {
 
-	  r = log(dp) * log(Min(mv,63)) / 2;
+	  r = log((double)dp) * log((double)Min(mv,63)) / 2;
 	  if (r < 0.80) r = 0;
 		
 	  lmr_size[0][dp][mv] = r;            // zero window node
