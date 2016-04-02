@@ -53,9 +53,16 @@ static const int passed_bonus_mg[2][8] = {
 };
 
 static const int passed_bonus_eg[2][8] = {
+	{ 0, 24, 24, 60, 100, 160, 260, 0 },
+	{ 0, 260, 160, 100, 60, 24, 24, 0 }
+};
+
+/*
+static const int passed_bonus_eg[2][8] = {
   { 0, 16, 16, 39, 65, 104, 156, 0 },
   { 0, 156, 104, 65, 39, 16, 16, 0 }
 };
+*/
 
 static const int phalanx_bonus[2][8] = {
   { 0, 0, 0, 2, 3, 4, 5, 0 },
