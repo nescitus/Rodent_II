@@ -84,7 +84,7 @@ void cEval::FullPawnEval(POS * p, int use_hash) {
 
 void cEval::ScorePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan, bbStop, bbBack, fl_phalanx;
+  U64 bbPieces, bbSpan, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);
@@ -122,12 +122,12 @@ void cEval::ScorePawns(POS *p, int sd) {
     if (bbSpan & PcBb(p, sd, P))
       Add(sd, F_PAWNS, -12, -24);
 
-    // Supported pawn
+    // Supported pawn (phalanx or defended)
 
     if (fl_phalanx)       Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
     else if (fl_defended) Add(sd, F_PAWNS, defended_data[sd][sq], 1);
 
-    // Weak pawn (two flavours)
+    // Weak pawn (isolated or backward)
 
     if (fl_weak) {
       if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
