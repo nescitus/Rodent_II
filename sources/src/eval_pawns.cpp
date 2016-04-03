@@ -84,7 +84,7 @@ void cEval::FullPawnEval(POS * p, int use_hash) {
 
 void cEval::ScorePawns(POS *p, int sd) {
 
-  U64 bbPieces, bbSpan, fl_phalanx;
+  U64 bbPieces, bbSpan, bbStop, bbBack, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
   int op = Opp(sd);
   U64 bbOwnPawns = PcBb(p, sd, P);

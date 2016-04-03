@@ -7,6 +7,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   int best, score, move, new_pv[MAX_PLY];
   MOVES m[1];
   UNDO u[1];
+  int op = Opp(p->side);
 
   // Statistics and attempt at quick exit
 
@@ -39,17 +40,25 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
   while ((move = NextCapture(m))) {
 
-    // Delta pruning
+    // Pruning in quiescence search 
+	// (not applicable if we are capturing last enemy piece)
 
-    if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
+	if (p->cnt[op][N] + p->cnt[op][B] + p->cnt[op][R] + p->cnt[op][Q] > 1) {
 
-    // Pruning of bad captures
+      // 1. Delta pruning
 
-    if (BadCapture(p, move)) continue;
+      if (best + tp_value[TpOnSq(p, Tsq(move))] + 300 < alpha) continue;
+
+      // 2. SEE-based pruning of bad captures
+
+      if (BadCapture(p, move)) continue;
+	}
 
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
+
     score = -Quiesce(p, ply + 1, -beta, -alpha, new_pv);
+
     p->UndoMove(move, u);
     if (abort_search) return 0;
 
