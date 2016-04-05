@@ -221,7 +221,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   
   // Knight
 
-  bbPieces = PcBb(p, sd, N);
+  bbPieces = p->Knights(sd);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
@@ -259,7 +259,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   // Bishop
 
-  bbPieces = PcBb(p, sd, B);
+  bbPieces = p->Bishops(sd);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
@@ -286,7 +286,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Bishop attacks on enemy king zone
 
-    bbAtt = BAttacks(OccBb(p) ^ PcBb(p,sd, Q) , sq);
+    bbAtt = BAttacks(OccBb(p) ^ p->Queens(sd) , sq);
     if (bbAtt & bbZone) {
       wood++;
       b_att++;
@@ -300,11 +300,11 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Pawns on the same square color as our bishop
   
     if (bbWhiteSq & SqBb(sq)) {
-      own_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, sd, P)) - 4;
-      opp_pawn_cnt = PopCnt(bbWhiteSq & PcBb(p, op, P)) - 4;
+      own_pawn_cnt = PopCnt(bbWhiteSq & p->Pawns(sd)) - 4;
+      opp_pawn_cnt = PopCnt(bbWhiteSq & p->Pawns(op)) - 4;
     } else {
-      own_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, sd, P)) - 4;
-      opp_pawn_cnt = PopCnt(bbBlackSq & PcBb(p, op, P)) - 4;
+      own_pawn_cnt = PopCnt(bbBlackSq & p->Pawns(sd)) - 4;
+      opp_pawn_cnt = PopCnt(bbBlackSq & p->Pawns(op)) - 4;
     }
 
     Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
@@ -316,7 +316,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   // Rook
 
-  bbPieces = PcBb(p, sd, R);
+  bbPieces = p->Rooks(sd);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
@@ -352,7 +352,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Rook attacks on enemy king zone
 
-    bbAtt = RAttacks(OccBb(p) ^ PcBb(p, sd, Q) ^ PcBb(p, sd, R), sq);
+    bbAtt = RAttacks(OccBb(p) ^ p->Queens(sd) ^ p->Rooks(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
       r_att++;
@@ -365,21 +365,21 @@ void cEval::ScorePieces(POS *p, int sd) {
 
 	// Queen on rook file (which might be closed)
 
-	if (bbFile & PcBb(p, op, Q)) Add(sd, F_LINES, 5, 5);
+	if (bbFile & p->Queens(op)) Add(sd, F_LINES, 5, 5);
 
 	// Rook on (half) open file
 	// (failed with reducing bonus for half open files blocked by defended pawn)
 
-    if (!(bbFile & PcBb(p, sd, P))) {
-      if (!(bbFile & PcBb(p, op, P))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
-      else                            Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
+    if (!(bbFile & p->Pawns(sd))) {
+      if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
+      else                          Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
     }
 
     // Rook on the 7th rank attacking pawns or cutting off enemy king
 
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
-      if (PcBb(p, op, P) & bbRelRank[sd][RANK_7]
-      ||  PcBb(p, op, K) & bbRelRank[sd][RANK_8]) {
+      if (p->Pawns(op) & bbRelRank[sd][RANK_7]
+      ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
       Add(sd, F_LINES, 16, 32);
       }
     }
@@ -388,7 +388,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   // Queen
 
-  bbPieces = PcBb(p, sd, Q);
+  bbPieces = p->Queens(sd);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
@@ -424,8 +424,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen attacks on enemy king zone
    
-    bbAtt  = BAttacks(OccBb(p) ^ PcBb(p, sd, B) ^ PcBb(p, sd, Q), sq);
-    bbAtt |= RAttacks(OccBb(p) ^ PcBb(p, sd, R) ^ PcBb(p, sd, Q), sq);
+    bbAtt  = BAttacks(OccBb(p) ^ p->Bishops(sd) ^ p->Queens(sd), sq);
+    bbAtt |= RAttacks(OccBb(p) ^ p->Rooks(sd) ^ p->Queens(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
       q_att++;
@@ -473,12 +473,12 @@ void cEval::ScoreHanging(POS *p, int sd) {
   U64 bbThreatened = p->cl_bb[op] & bbPawnTakes[sd];
   bbHanging |= bbThreatened;     // piece attacked by our pawn isn't well defended
   bbHanging &= bbAllAttacks[sd]; // obviously, hanging piece has to be attacked
-  bbHanging &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
+  bbHanging &= ~p->Pawns(op);  // currently we don't evaluate threats against pawns
 
   U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
   bbDefended &= bbMinorAttacks[sd];
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
-  bbDefended &= ~PcBb(p, op, P);  // currently we don't evaluate threats against pawns
+  bbDefended &= ~p->Pawns(op);  // currently we don't evaluate threats against pawns
 
   int pc, sq, val;
 
@@ -506,17 +506,17 @@ void cEval::ScorePassers(POS * p, int sd)
   U64 bbPieces;
   int sq, mul, mg_tmp, eg_tmp;
   int op = Opp(sd);
-  U64 bbOwnPawns = PcBb(p, sd, P);
+  U64 bbOwnPawns = p->Pawns(sd);
   U64 bbStop;
 
-  bbPieces = PcBb(p, sd, P);
+  bbPieces = p->Pawns(sd);
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
     bbStop = ShiftFwd(SqBb(sq), sd);
 
     // Passed pawn
 
-    if (!(passed_mask[sd][sq] & PcBb(p, op, P))) {
+    if (!(passed_mask[sd][sq] & p->Pawns(op))) {
 
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
 	  eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
@@ -571,10 +571,10 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Calculate variables used during evaluation
 
-  bbPawnTakes[WC] = GetWPControl(PcBb(p, WC, P));
-  bbPawnTakes[BC] = GetBPControl(PcBb(p, BC, P));
-  bbTwoPawnsTake[WC] = GetDoubleWPControl(PcBb(p, WC, P));
-  bbTwoPawnsTake[BC] = GetDoubleBPControl(PcBb(p, BC, P));
+  bbPawnTakes[WC] = GetWPControl(p->Pawns(WC));
+  bbPawnTakes[BC] = GetBPControl(p->Pawns(BC));
+  bbTwoPawnsTake[WC] = GetDoubleWPControl(p->Pawns(WC)); // was wrong color
+  bbTwoPawnsTake[BC] = GetDoubleBPControl(p->Pawns(BC));
   bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
   bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
   bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;

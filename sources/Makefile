@@ -20,9 +20,6 @@ DATADIR = /usr/share/rodentII
 default: rodent
 
 rodent:
-	sed -i s\@guide.bin@$(DATADIR)/guide.bin@ src/main.cpp
-	sed -i s\@rodent.bin@$(DATADIR)/rodent.bin@ src/main.cpp
-	sed -i s\@basic.ini@$(DATADIR)/basic.ini@ src/main.cpp
 	$(CC) $(LDFLAGS) $(CFLAGS) -o rodentII -x c++ compile.linux
 	echo "SHOW_OPTIONS" > basic.ini
 
