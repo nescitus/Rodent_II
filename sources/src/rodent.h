@@ -338,6 +338,8 @@ void DisplaySpeed(void);
 int DrawScore(POS * p);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
+U64 FillNorthSq(int sq);
+U64 FillSouthSq(int sq);
 U64 FillNorthExcl(U64 bb);
 U64 FillSouthExcl(U64 bb);
 int *GenerateCaptures(POS *p, int *list);

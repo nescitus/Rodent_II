@@ -361,7 +361,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
 	// Get rook file
 
-    bbFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq)); // better this way than using front span
+    bbFile = FillNorthSq(sq) | FillSouthSq(sq); // better this way than using front span
 
 	// Queen on rook file (which might be closed)
 

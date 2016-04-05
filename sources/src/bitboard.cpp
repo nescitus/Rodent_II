@@ -77,7 +77,15 @@ U64 FillNorthExcl(U64 bb) {
 }
 
 U64 FillSouthExcl(U64 bb) {
-	return FillSouth(ShiftSouth(bb));
+  return FillSouth(ShiftSouth(bb));
+}
+
+U64 FillNorthSq(int sq) {
+  return FillNorth(SqBb(sq));
+}
+
+U64 FillSouthSq(int sq) {
+  return FillSouth(SqBb(sq));
 }
 
 U64 GetWPControl(U64 bb) {

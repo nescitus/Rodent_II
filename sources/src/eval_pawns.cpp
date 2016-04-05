@@ -156,7 +156,7 @@ void cEval::ScoreKing(POS *p, int sd) {
 
   // Evaluate shielding and storming pawns on each file.
 
-  bbKingFile = FillNorth(SqBb(sq)) | FillSouth(SqBb(sq));
+  bbKingFile = FillNorthSq(sq) | FillSouthSq(sq);
   result += ScoreKingFile(p, sd, bbKingFile);
 
   bbNextFile = ShiftEast(bbKingFile);
