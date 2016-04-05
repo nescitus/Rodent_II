@@ -122,12 +122,12 @@ void cEval::ScorePawns(POS *p, int sd) {
     if (bbSpan & PcBb(p, sd, P))
       Add(sd, F_PAWNS, -12, -24);
 
-    // Supported pawn (phalanx or defended)
+    // Supported pawn
 
     if (fl_phalanx)       Add(sd, F_PAWNS, phalanx_data[sd][sq] , 2);
     else if (fl_defended) Add(sd, F_PAWNS, defended_data[sd][sq], 1);
 
-    // Weak pawn (isolated or backward)
+    // Weak pawn (two flavours)
 
     if (fl_weak) {
       if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))

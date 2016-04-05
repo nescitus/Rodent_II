@@ -143,10 +143,10 @@ void InitEval(void) {
   // Init mask for passed pawn detection
 
   for (int sq = 0; sq < 64; sq++) {
-    passed_mask[WC][sq] = FillNorth(ShiftNorth(SqBb(sq)));
+    passed_mask[WC][sq] = FillNorthExcl(SqBb(sq));
     passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
     passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
-    passed_mask[BC][sq] = FillSouth(ShiftSouth(SqBb(sq)));
+    passed_mask[BC][sq] = FillSouthExcl(SqBb(sq));
     passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
     passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
   }

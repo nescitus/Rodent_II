@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 755.444
-// bench 12: 6.227.682 8,8 s 1.640
-// bench 15: 31.201.144 29,1 2.487
+// bench: 755.444 NOT UPDATED
+// bench 12: 7.248.483 12,8 s 1.313
+// bench 15: 33.298.190 30,8 2.504
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5390 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.7"
+#define PROG_NAME "Rodent II 0.9.8"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -338,10 +338,11 @@ void DisplaySpeed(void);
 int DrawScore(POS * p);
 U64 FillNorth(U64 bb);
 U64 FillSouth(U64 bb);
+U64 FillNorthExcl(U64 bb);
+U64 FillSouthExcl(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int *GenerateQuietChecks(POS *p, int *list);
-int GetMS(void);
 U64 GetNps(int elapsed);
 U64 GetWPControl(U64 bb);
 U64 GetBPControl(U64 bb);
@@ -363,7 +364,6 @@ U64 InitHashKey(POS * p);
 U64 InitPawnKey(POS * p);
 void Iterate(POS *p, int *pv);
 int Legal(POS *p, int move);
-int Mobility(POS * p, int sd);
 void MoveToStr(int move, char *move_str);
 void PrintMove(int move);
 int MvvLva(POS *p, int move);
