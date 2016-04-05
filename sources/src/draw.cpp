@@ -60,7 +60,7 @@ int GetDrawFactor(POS *p, int sd)
   && PcMat1Minor(p, op)
   && p->cnt[sd][P] == 1
   && p->cnt[op][P] == 0
-  && (SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd))
+  && (SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd))
   && NotOnBishColor(p, sd, p->king_sq[op]) ) 
      return 0;
 
@@ -74,7 +74,7 @@ int GetDrawFactor(POS *p, int sd)
      // 2b: different bishops with a single pawn on the own half of the board
      if (p->cnt[sd][P] == 1
      &&  p->cnt[op][P] == 0) {
-       if (bbHomeZone[sd] & PcBb(p, sd, P)) return 0;
+       if (bbHomeZone[sd] & p->Pawns(sd)) return 0;
 
      // TODO: 2c: distant bishop controls a square on pawn's path
      }
@@ -90,11 +90,11 @@ int GetDrawFactor(POS *p, int sd)
   && p->cnt[sd][P] == 1    // TODO: all pawns of a stronger side on a rim
   && p->cnt[op][P] == 0) { // TODO: accept pawns for a weaker side
 
-    if (PcBb(p, sd, P) & FILE_H_BB
-    &&  PcBb(p, op, K) & bbKingBlockH[sd]) return 0;
+    if (p->Pawns(sd) & FILE_H_BB
+    &&  p->Kings(op) & bbKingBlockH[sd]) return 0;
 
-    if (PcBb(p, sd, P) & FILE_A_BB
-    &&  PcBb(p, op, K) & bbKingBlockA[sd]) return 0;
+    if (p->Pawns(sd) & FILE_A_BB
+    &&  p->Kings(op) & bbKingBlockA[sd]) return 0;
   }
 
   // Case 4: KBPK(P) draws with edge pawn and wrong bishop
@@ -103,13 +103,13 @@ int GetDrawFactor(POS *p, int sd)
   && PcMatNone(p, op)
   &&  p->cnt[sd][P]  == 1 ) { // TODO: all pawns of a stronger side on a rim
 
-    if (PcBb(p, sd, P) & FILE_H_BB
+    if (p->Pawns(sd) & FILE_H_BB
     && NotOnBishColor(p, sd, REL_SQ(H8,sd))
-    && PcBb(p, op, K)  & bbKingBlockH[sd]) return 0;
+    && p->Kings(op)  & bbKingBlockH[sd]) return 0;
 
-    if (PcBb(p, sd, P) & FILE_A_BB
+    if (p->Pawns(sd) & FILE_A_BB
     && NotOnBishColor(p, sd, REL_SQ(A8,sd))
-    && PcBb(p, op, K)  & bbKingBlockA[sd]) return 0;
+    && p->Kings(op)  & bbKingBlockA[sd]) return 0;
   }
 
 
@@ -159,21 +159,21 @@ int GetDrawFactor(POS *p, int sd)
 
     // 13a: good defensive position with a king on pawn's path increases drawing chances
 
-    if ((SqBb(p->king_sq[op]) & GetFrontSpan(PcBb(p, sd, P), sd)))
+    if ((SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd)))
       return 32; // 1/2
 
     // 13b: draw code for rook endgame with edge pawn
 
-    if ((RelSqBb(A7, sd) & PcBb(p, sd, P))
-    && ( RelSqBb(A8, sd) & PcBb(p, sd, R))
-    && ( FILE_A_BB & PcBb(p, op, R))
-    && ((RelSqBb(H7, sd) & PcBb(p, op, K)) || (RelSqBb(G7, sd) & PcBb(p, op, K)))
+    if ((RelSqBb(A7, sd) & p->Pawns(sd))
+    && ( RelSqBb(A8, sd) & p->Rooks(sd))
+    && ( FILE_A_BB & p->Rooks(op))
+    && ((RelSqBb(H7, sd) & p->Kings(op)) || (RelSqBb(G7, sd) & p->Kings(op)))
     ) return 0; // dead draw
 
-    if ((RelSqBb(H7, sd) & PcBb(p, sd, P))
-    && ( RelSqBb(H8, sd) & PcBb(p, sd, R))
-    && ( FILE_H_BB & PcBb(p, op, R))
-    && ((RelSqBb(A7, sd) & PcBb(p, op, K)) || (RelSqBb(B7, sd) & PcBb(p, op, K)))
+    if ((RelSqBb(H7, sd) & p->Pawns(sd))
+    && ( RelSqBb(H8, sd) & p->Rooks(sd))
+    && ( FILE_H_BB & p->Rooks(op))
+    && ((RelSqBb(A7, sd) & p->Kings(op)) || (RelSqBb(B7, sd) & p->Kings(op)))
     ) return 0; // dead draw
 
   }
@@ -183,17 +183,17 @@ int GetDrawFactor(POS *p, int sd)
 
 int DifferentBishops(POS * p) {
 
-  if ((bbWhiteSq & PcBb(p, WC, B)) && (bbBlackSq & PcBb(p, BC, B))) return 1;
-  if ((bbBlackSq & PcBb(p, WC, B)) && (bbWhiteSq & PcBb(p, BC, B))) return 1;
+  if ((bbWhiteSq & p->Bishops(WC)) && (bbBlackSq & p->Bishops(BC))) return 1;
+  if ((bbBlackSq & p->Bishops(WC)) && (bbWhiteSq & p->Bishops(BC))) return 1;
   return 0;
 }
 
 int NotOnBishColor(POS * p, int bishSide, int sq) {
 
-  if (((bbWhiteSq & PcBb(p, bishSide, B)) == 0)
+  if (((bbWhiteSq & p->Bishops(bishSide)) == 0)
   && (SqBb(sq) & bbWhiteSq)) return 1;
 
-  if (((bbBlackSq & PcBb(p, bishSide, B)) == 0)
+  if (((bbBlackSq & p->Bishops(bishSide)) == 0)
   && (SqBb(sq) & bbBlackSq)) return 1;
 
   return 0;
@@ -207,13 +207,13 @@ int CheckmateHelper(POS *p)
    &&  p->cnt[BC][P] == 0) {
 
       if (PcMatBN(p, WC) && PcMatNone(p,BC) ) { // mate with bishop and knight
-         if ( PcBb(p, WC, B) & bbWhiteSq) result -= 2*BN_bb[p->king_sq[BC]];
-         if ( PcBb(p, WC, B) & bbBlackSq) result -= 2*BN_wb[p->king_sq[BC]];
+         if ( p->Bishops(WC) & bbWhiteSq) result -= 2*BN_bb[p->king_sq[BC]];
+         if ( p->Bishops(WC) & bbBlackSq) result -= 2*BN_wb[p->king_sq[BC]];
       }
         
       if (PcMatBN(p, BC) && PcMatNone(p,WC)) { // mate with bishop and knight
-         if ( PcBb(p, BC, B) & bbWhiteSq) result += 2*BN_bb[p->king_sq[WC]];
-         if ( PcBb(p, BC, B) & bbBlackSq) result += 2*BN_wb[p->king_sq[WC]];
+         if ( p->Bishops(BC) & bbWhiteSq) result += 2*BN_bb[p->king_sq[WC]];
+         if ( p->Bishops(BC) & bbBlackSq) result += 2*BN_wb[p->king_sq[WC]];
       }  
 }
 

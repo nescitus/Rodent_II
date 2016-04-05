@@ -31,11 +31,11 @@ static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | S
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 
 #define SQ(sq) RelSqBb(sq,sd)
-#define opPawns PcBb(p, op, P)
-#define sdPawns PcBb(p, sd, P)
+#define opPawns p->Pawns(op)
+#define sdPawns p->Pawns(sd)
 
-#define OWN_PAWN(sq) (PcBb(p, sd, P) & RelSqBb(sq,sd))
-#define OPP_PAWN(sq) (PcBb(p, op, P) & RelSqBb(sq,sd))
+#define OWN_PAWN(sq) (p->Pawns(sd) & RelSqBb(sq,sd))
+#define OPP_PAWN(sq) (p->Pawns(op) & RelSqBb(sq,sd))
 #define CONTAINS(bb, s1, s2) (bb & SQ(s1)) && (bb & SQ(s2))
 
 static const int bigChainScore = 18;
@@ -87,8 +87,8 @@ void cEval::ScorePawns(POS *p, int sd) {
   U64 bbPieces, bbSpan, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
   int op = Opp(sd);
-  U64 bbOwnPawns = PcBb(p, sd, P);
-  U64 bbOppPawns = PcBb(p, op, P);
+  U64 bbOwnPawns = p->Pawns(sd);
+  U64 bbOppPawns = p->Pawns(op);
 
   // Is color OK?
 
@@ -96,7 +96,7 @@ void cEval::ScorePawns(POS *p, int sd) {
 
   // Loop through the pawns, evaluating each one
 
-  bbPieces = PcBb(p, sd, P);
+  bbPieces = bbOwnPawns;
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
@@ -104,7 +104,7 @@ void cEval::ScorePawns(POS *p, int sd) {
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
-    fl_unopposed = ((bbSpan & PcBb(p, op, P)) == 0);
+    fl_unopposed = ((bbSpan & bbOppPawns) == 0);
     fl_weak      = ((support_mask[sd][sq] & bbOwnPawns) == 0);
     fl_phalanx   = (ShiftEast(SqBb(sq)) & bbOwnPawns) | (ShiftWest(SqBb(sq)) & bbOwnPawns);
 
@@ -112,14 +112,14 @@ void cEval::ScorePawns(POS *p, int sd) {
 
     if (fl_unopposed) {
       if (fl_phalanx) {
-      if (PopCnt((passed_mask[sd][sq] & PcBb(p, op, P))) == 1)
+      if (PopCnt((passed_mask[sd][sq] & bbOppPawns)) == 1)
         Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
       }
     }
 
     // Doubled pawn
 
-    if (bbSpan & PcBb(p, sd, P))
+    if (bbSpan & bbOwnPawns)
       Add(sd, F_PAWNS, -12, -24);
 
     // Supported pawn
@@ -130,7 +130,7 @@ void cEval::ScorePawns(POS *p, int sd) {
     // Weak pawn (two flavours)
 
     if (fl_weak) {
-      if (!(adjacent_mask[File(sq)] & PcBb(p, sd, P)))
+      if (!(adjacent_mask[File(sq)] & bbOwnPawns))
         Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20); // isolated pawn
       else
         Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8);    // backward pawn
@@ -171,8 +171,8 @@ void cEval::ScoreKing(POS *p, int sd) {
 
 int cEval::ScoreKingFile(POS * p, int sd, U64 bbFile) {
 
-  int shelter = ScoreFileShelter(bbFile & PcBb(p, sd, P), sd);
-  int storm = ScoreFileStorm(bbFile & PcBb(p, Opp(sd), P), sd);
+  int shelter = ScoreFileShelter(bbFile & p->Pawns(sd), sd);
+  int storm = ScoreFileStorm(bbFile & p->Pawns(Opp(sd)), sd);
   if (bbFile & bbCentralFile) return (shelter / 2) + storm;
   else return shelter + storm;
 }

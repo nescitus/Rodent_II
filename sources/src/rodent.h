@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 755.444 NOT UPDATED
-// bench 12: 7.248.483 12,8 s 1.313
-// bench 15: 33.298.190 30,8 2.504
+// bench: 811.544
+// bench 12: 5.953.242 8,8 s 1.562
+// bench 15: 29.687.910 25,5 2.693
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5390 lines of code
 
@@ -256,6 +256,12 @@ public:
   U64 pawn_key;
   U64 rep_list[256];
 
+  U64 Pawns(int sd);
+  U64 Knights(int sd);
+  U64 Bishops(int sd);
+  U64 Rooks(int sd);
+  U64 Queens(int sd);
+  U64 Kings(int sd);
   void DoMove(int move, UNDO * u);
   void DoNull(UNDO * u);
   void UndoMove(int move, UNDO * u);

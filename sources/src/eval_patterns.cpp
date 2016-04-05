@@ -34,7 +34,7 @@ void cEval::ScorePatterns(POS * p) {
 
   // White bishop patterns
 
-  if (PcBb(p, WC, B) & wb_mask) {
+  if (p->Bishops(WC) & wb_mask) {
 
     // Blockage of a central pawn on its initial square
 
@@ -70,7 +70,7 @@ void cEval::ScorePatterns(POS * p) {
 
   // Black bishop patterns
 
-  if (PcBb(p, BC, B) & bb_mask) {
+  if (p->Bishops(BC) & bb_mask) {
 
     // Blockage of a central pawn on its initial square
 
@@ -106,7 +106,7 @@ void cEval::ScorePatterns(POS * p) {
 
   // Trapped knight
 
-  if (PcBb(p, WC, N) & wn_mask) {
+  if (p->Knights(WC) & wn_mask) {
 	  if (IsOnSq(p, WC, N, A7)) {
 		  if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
 		  if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
@@ -118,7 +118,7 @@ void cEval::ScorePatterns(POS * p) {
 	  }
   }
 
-  if (PcBb(p, BC, N) & bn_mask) {
+  if (p->Knights(BC) & bn_mask) {
 	  if (IsOnSq(p, BC, N, A2)) {
 		  if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
 		  if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
@@ -135,26 +135,26 @@ void cEval::ScorePatterns(POS * p) {
   king_mask = SqBb(F1) | SqBb(G1);
   rook_mask = SqBb(G1) | SqBb(H1) | SqBb(H2);
 
-  if ((PcBb(p, WC, K) & king_mask)
-  &&  (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  if ((p->Kings(WC) & king_mask)
+  &&  (p->Rooks(WC) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(A1) | SqBb(B1);
   rook_mask = SqBb(A1) | SqBb(B1) | SqBb(A2);
 
-  if ((PcBb(p, WC, K) & king_mask)
-  &&  (PcBb(p, WC, R) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  if ((p->Kings(WC) & king_mask)
+  &&  (p->Rooks(WC) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(F8) | SqBb(G8);
   rook_mask = SqBb(G8) | SqBb(H8) | SqBb(H7);
 
-  if ((PcBb(p, BC, K) & king_mask)
-  &&  (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  if ((p->Kings(BC) & king_mask)
+  &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(C8) | SqBb(B8);
   rook_mask = SqBb(C8) | SqBb(B8) | SqBb(B7);
 
-  if ((PcBb(p, BC, K) & king_mask)
-  &&  (PcBb(p, BC, R) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  if ((p->Kings(BC) & king_mask)
+  &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
   // "luft" eval
   

@@ -41,8 +41,8 @@ U64 AttacksFrom(POS *p, int sq) {
 
 U64 AttacksTo(POS *p, int sq) {
 
-  return (PcBb(p, WC, P) & p_attacks[BC][sq]) |
-         (PcBb(p, BC, P) & p_attacks[WC][sq]) |
+  return (p->Pawns(WC) & p_attacks[BC][sq]) |
+         (p->Pawns(BC) & p_attacks[WC][sq]) |
          (p->tp_bb[N] & n_attacks[sq]) |
          ((p->tp_bb[B] | p->tp_bb[Q]) & BAttacks(OccBb(p), sq)) |
          ((p->tp_bb[R] | p->tp_bb[Q]) & RAttacks(OccBb(p), sq)) |
@@ -51,9 +51,9 @@ U64 AttacksTo(POS *p, int sq) {
 
 int Attacked(POS *p, int sq, int side) {
 
-  return (PcBb(p, side, P) & p_attacks[Opp(side)][sq]) ||
-         (PcBb(p, side, N) & n_attacks[sq]) ||
-         ((PcBb(p, side, B) | PcBb(p, side, Q)) & BAttacks(OccBb(p), sq)) ||
-         ((PcBb(p, side, R) | PcBb(p, side, Q)) & RAttacks(OccBb(p), sq)) ||
-         (PcBb(p, side, K) & k_attacks[sq]);
+  return (p->Pawns(side) & p_attacks[Opp(side)][sq]) ||
+         (p->Knights(side) & n_attacks[sq]) ||
+         ((p->Bishops(side) | p->Queens(side)) & BAttacks(OccBb(p), sq)) ||
+         ((p->Rooks(side) | p->Queens(side)) & RAttacks(OccBb(p), sq)) ||
+         (p->Kings(side) & k_attacks[sq]);
 }

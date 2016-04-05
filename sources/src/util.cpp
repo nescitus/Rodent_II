@@ -8,6 +8,30 @@
 #endif
 #include "rodent.h"
 
+U64 POS::Pawns(int sd) {
+  return (cl_bb[sd] & tp_bb[P]);
+}
+
+U64 POS::Knights(int sd) {
+	return (cl_bb[sd] & tp_bb[N]);
+}
+
+U64 POS::Bishops(int sd) {
+	return (cl_bb[sd] & tp_bb[B]);
+}
+
+U64 POS::Rooks(int sd) {
+	return (cl_bb[sd] & tp_bb[R]);
+}
+
+U64 POS::Queens(int sd) {
+	return (cl_bb[sd] & tp_bb[Q]);
+}
+
+U64 POS::Kings(int sd) {
+	return (cl_bb[sd] & tp_bb[K]);
+}
+
 int InputAvailable(void) {
 
 #if defined(_WIN32) || defined(_WIN64)

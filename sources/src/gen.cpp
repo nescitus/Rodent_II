@@ -32,7 +32,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
     // White pawn promotions with capture
 
-    bbMoves = ((PcBb(p, WC, P) & ~FILE_A_BB & RANK_7_BB) << 7) & p->cl_bb[BC];
+    bbMoves = ((p->Pawns(WC) & ~FILE_A_BB & RANK_7_BB) << 7) & p->cl_bb[BC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to - 7);
@@ -43,7 +43,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // White pawn promotions with capture
 
-    bbMoves = ((PcBb(p, WC, P) & ~FILE_H_BB & RANK_7_BB) << 9) & p->cl_bb[BC];
+    bbMoves = ((p->Pawns(WC) & ~FILE_H_BB & RANK_7_BB) << 9) & p->cl_bb[BC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to - 9);
@@ -54,7 +54,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // White pawn promotions without capture
 
-    bbMoves = ((PcBb(p, WC, P) & RANK_7_BB) << 8) & UnoccBb(p);
+    bbMoves = ((p->Pawns(WC) & RANK_7_BB) << 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to - 8);
@@ -65,7 +65,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // White pawn captures
 
-    bbMoves = ((PcBb(p, WC, P) & ~FILE_A_BB & ~RANK_7_BB) << 7) & p->cl_bb[BC];
+    bbMoves = ((p->Pawns(WC) & ~FILE_A_BB & ~RANK_7_BB) << 7) & p->cl_bb[BC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to - 7);
@@ -73,7 +73,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // White pawn captures
 
-    bbMoves = ((PcBb(p, WC, P) & ~FILE_H_BB & ~RANK_7_BB) << 9) & p->cl_bb[BC];
+    bbMoves = ((p->Pawns(WC) & ~FILE_H_BB & ~RANK_7_BB) << 9) & p->cl_bb[BC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to - 9);
@@ -82,16 +82,16 @@ int *GenerateCaptures(POS *p, int *list) {
   // White en passant capture
 
     if ((to = p->ep_sq) != NO_SQ) {
-      if (((PcBb(p, WC, P) & ~FILE_A_BB) << 7) & SqBb(to))
+      if (((p->Pawns(WC) & ~FILE_A_BB) << 7) & SqBb(to))
         *list++ = (EP_CAP << 12) | (to << 6) | (to - 7);
-      if (((PcBb(p, WC, P) & ~FILE_H_BB) << 9) & SqBb(to))
+      if (((p->Pawns(WC) & ~FILE_H_BB) << 9) & SqBb(to))
         *list++ = (EP_CAP << 12) | (to << 6) | (to - 9);
     }
   } else {
 
     // Black pawn promotions with capture
 
-    bbMoves = ((PcBb(p, BC, P) & ~FILE_A_BB & RANK_2_BB) >> 9) & p->cl_bb[WC];
+    bbMoves = ((p->Pawns(BC) & ~FILE_A_BB & RANK_2_BB) >> 9) & p->cl_bb[WC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to + 9);
@@ -102,7 +102,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Black pawn promotions with capture
 
-    bbMoves = ((PcBb(p, BC, P) & ~FILE_H_BB & RANK_2_BB) >> 7) & p->cl_bb[WC];
+    bbMoves = ((p->Pawns(BC) & ~FILE_H_BB & RANK_2_BB) >> 7) & p->cl_bb[WC];
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to + 7);
@@ -113,7 +113,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Black pawn promotions
 
-    bbMoves = ((PcBb(p, BC, P) & RANK_2_BB) >> 8) & UnoccBb(p);
+    bbMoves = ((p->Pawns(BC) & RANK_2_BB) >> 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (Q_PROM << 12) | (to << 6) | (to + 8);
@@ -124,7 +124,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Black pawn captures, excluding promotions
 
-    bbMoves = ((PcBb(p, BC, P) & ~FILE_A_BB & ~RANK_2_BB) >> 9) & bbEnemy;
+    bbMoves = ((p->Pawns(BC) & ~FILE_A_BB & ~RANK_2_BB) >> 9) & bbEnemy;
     while (bbMoves) { 
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to + 9);
@@ -132,7 +132,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Black pawn captures, excluding promotions
 
-    bbMoves = ((PcBb(p, BC, P) & ~FILE_H_BB & ~RANK_2_BB) >> 7) & bbEnemy;
+    bbMoves = ((p->Pawns(BC) & ~FILE_H_BB & ~RANK_2_BB) >> 7) & bbEnemy;
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to + 7);
@@ -141,16 +141,16 @@ int *GenerateCaptures(POS *p, int *list) {
   // Black en passant capture
 
     if ((to = p->ep_sq) != NO_SQ) {
-      if (((PcBb(p, BC, P) & ~FILE_A_BB) >> 9) & SqBb(to))
+      if (((p->Pawns(BC) & ~FILE_A_BB) >> 9) & SqBb(to))
         *list++ = (EP_CAP << 12) | (to << 6) | (to + 9);
-      if (((PcBb(p, BC, P) & ~FILE_H_BB) >> 7) & SqBb(to))
+      if (((p->Pawns(BC) & ~FILE_H_BB) >> 7) & SqBb(to))
         *list++ = (EP_CAP << 12) | (to << 6) | (to + 7);
     }
   }
 
   // Captures by knight
 
-  bbPieces = PcBb(p, side, N);
+  bbPieces = p->Knights(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = n_attacks[from] & bbEnemy;
@@ -162,7 +162,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Captures by bishop
 
-  bbPieces = PcBb(p, side, B);
+  bbPieces = p->Bishops(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = BAttacks(OccBb(p), from) & bbEnemy;
@@ -174,7 +174,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Captures by rook
 
-  bbPieces = PcBb(p, side, R);
+  bbPieces = p->Rooks(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = RAttacks(OccBb(p), from) & bbEnemy;
@@ -186,7 +186,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Captures by queen
 
-  bbPieces = PcBb(p, side, Q);
+  bbPieces = p->Queens(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = QAttacks(OccBb(p), from) & bbEnemy;
@@ -228,7 +228,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // White double pawn moves
 
-    bbMoves = ((((PcBb(p, WC, P) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
+    bbMoves = ((((p->Pawns(WC) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (EP_SET << 12) | (to << 6) | (to - 16);
@@ -236,7 +236,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // White normal pawn moves
 
-    bbMoves = ((PcBb(p, WC, P) & ~RANK_7_BB) << 8) & UnoccBb(p);
+    bbMoves = ((p->Pawns(WC) & ~RANK_7_BB) << 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to - 8);
@@ -257,7 +257,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Black double pawn moves
 
-    bbMoves = ((((PcBb(p, BC, P) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
+    bbMoves = ((((p->Pawns(BC) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
@@ -265,7 +265,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Black single pawn moves
 
-    bbMoves = ((PcBb(p, BC, P) & ~RANK_2_BB) >> 8) & UnoccBb(p);
+    bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
     while (bbMoves) {
       to = PopFirstBit(&bbMoves);
       *list++ = (to << 6) | (to + 8);
@@ -274,7 +274,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Knight moves
 
-  bbPieces = PcBb(p, side, N);
+  bbPieces = p->Knights(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = n_attacks[from] & UnoccBb(p);
@@ -286,7 +286,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Bishop moves
 
-  bbPieces = PcBb(p, side, B);
+  bbPieces = p->Bishops(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = BAttacks(OccBb(p), from) & UnoccBb(p);
@@ -298,7 +298,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Rook moves
 
-  bbPieces = PcBb(p, side, R);
+  bbPieces = p->Rooks(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = RAttacks(OccBb(p), from) & UnoccBb(p);
@@ -310,7 +310,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // Queen moves
 
-  bbPieces = PcBb(p, side, Q);
+  bbPieces = p->Queens(p->side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = QAttacks(OccBb(p), from) & UnoccBb(p);
@@ -344,7 +344,7 @@ int *GenerateQuietChecks(POS *p, int *list)
 
   side = p->side;
 
-  bbPieces = PcBb(p, side, N);
+  bbPieces = p->Knights(side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = (n_attacks[from] & UnoccBb(p)) & bbKnightChk;
@@ -354,7 +354,7 @@ int *GenerateQuietChecks(POS *p, int *list)
     }
   }
 
-  bbPieces = PcBb(p, side, B);
+  bbPieces = p->Bishops(side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = (BAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
@@ -364,7 +364,7 @@ int *GenerateQuietChecks(POS *p, int *list)
     }
   }
 
-  bbPieces = PcBb(p, side, R);
+  bbPieces = p->Rooks(side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = (RAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
@@ -374,7 +374,7 @@ int *GenerateQuietChecks(POS *p, int *list)
     }
   }
 
-  bbPieces = PcBb(p, side, Q);
+  bbPieces = p->Queens(side);
   while (bbPieces) {
     from = PopFirstBit(&bbPieces);
     bbMoves = (QAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
