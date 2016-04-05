@@ -573,7 +573,7 @@ int cEval::Return(POS *p, int use_hash) {
 
   bbPawnTakes[WC] = GetWPControl(PcBb(p, WC, P));
   bbPawnTakes[BC] = GetBPControl(PcBb(p, BC, P));
-  bbTwoPawnsTake[WC] = GetDoubleWPControl(PcBb(p, BC, P));
+  bbTwoPawnsTake[WC] = GetDoubleWPControl(PcBb(p, WC, P));
   bbTwoPawnsTake[BC] = GetDoubleBPControl(PcBb(p, BC, P));
   bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
   bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
