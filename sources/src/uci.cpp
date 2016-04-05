@@ -37,7 +37,9 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
 
-    if (strstr(command, "setoption name OwnBook value"))
+    // checks if Rodent should play with an opening book
+    // UseBook remains for backward compatibly
+    if ((strstr(command, "setoption name OwnBook value")) || (strstr(command, "setoption name UseBook value")))
       use_book = (strstr(command, "value true") != 0);
 
 	if (strcmp(token, "uci") == 0) {
