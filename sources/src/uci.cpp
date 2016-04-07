@@ -37,7 +37,9 @@ void UciLoop(void) {
     ReadLine(command, sizeof(command));
     ptr = ParseToken(command, token);
 
-    if (strstr(command, "setoption name UseBook value"))
+    // checks if Rodent should play with an opening book
+    // UseBook remains for backward compatibly
+    if ((strstr(command, "setoption name OwnBook value")) || (strstr(command, "setoption name UseBook value")))
       use_book = (strstr(command, "value true") != 0);
 
 	if (strcmp(token, "uci") == 0) {
@@ -75,14 +77,14 @@ void UciLoop(void) {
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
 		printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
 		printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
-        printf("option name UseBook type check default true\n");
+        printf("option name OwnBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
         printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
      }
 	 if (panel_style == 1) {
-        printf("option name PersonalityFile type string default default.ini\n");
-		printf("option name UseBook type check default true\n");
+        printf("option name PersonalityFile type string default rodent.txt\n");
+		printf("option name OwnBook type check default true\n");
 		printf("option name GuideBookFile type string default guide.bin\n");
 		printf("option name MainBookFile type string default rodent.bin\n");
 	 }
