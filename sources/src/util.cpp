@@ -32,6 +32,14 @@ U64 POS::Kings(int sd) {
 	return (cl_bb[sd] & tp_bb[K]);
 }
 
+U64 POS::StraightMovers(int sd) {
+	return (cl_bb[sd] & (tp_bb[R] | tp_bb[Q]));
+}
+
+U64 POS::DiagMovers(int sd) {
+	return (cl_bb[sd] & (tp_bb[B] | tp_bb[Q]));
+}
+
 int InputAvailable(void) {
 
 #if defined(_WIN32) || defined(_WIN64)

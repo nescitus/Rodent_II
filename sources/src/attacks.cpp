@@ -53,7 +53,7 @@ int Attacked(POS *p, int sq, int side) {
 
   return (p->Pawns(side) & p_attacks[Opp(side)][sq]) ||
          (p->Knights(side) & n_attacks[sq]) ||
-         ((p->Bishops(side) | p->Queens(side)) & BAttacks(OccBb(p), sq)) ||
-         ((p->Rooks(side) | p->Queens(side)) & RAttacks(OccBb(p), sq)) ||
+         (p->DiagMovers(side) & BAttacks(OccBb(p), sq)) ||
+         (p->StraightMovers(side) & RAttacks(OccBb(p), sq)) ||
          (p->Kings(side) & k_attacks[sq]);
 }

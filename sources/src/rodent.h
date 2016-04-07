@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 811.544
 // bench 12: 5.953.242 8,8 s 1.562
-// bench 15: 29.687.910 25,5 2.693
+// bench 15: 29.687.910 24,1 2.854
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5390 lines of code
 
@@ -262,6 +262,8 @@ public:
   U64 Rooks(int sd);
   U64 Queens(int sd);
   U64 Kings(int sd);
+  U64 StraightMovers(int sd);
+  U64 DiagMovers(int sd);
   void DoMove(int move, UNDO * u);
   void DoNull(UNDO * u);
   void UndoMove(int move, UNDO * u);
