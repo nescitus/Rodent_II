@@ -81,7 +81,7 @@ void UciLoop(void) {
         printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
      }
 	 if (panel_style == 1) {
-        printf("option name PersonalityFile type string default rodent.txt\n");
+        printf("option name PersonalityFile type string default default.ini\n");
 		printf("option name UseBook type check default true\n");
 		printf("option name GuideBookFile type string default guide.bin\n");
 		printf("option name MainBookFile type string default rodent.bin\n");
