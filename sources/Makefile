@@ -4,10 +4,10 @@
 CC = g++
 
 # define the compile-time flags
-CFLAGS = -g -w -Wfatal-errors -pipe -DNDEBUG -O3 -static -fno-rtti -finline-functions -fprefetch-loop-arrays
+CFLAGS = -g -w -Wfatal-errors -pipe -DNDEBUG -O3 -fno-rtti -finline-functions -fprefetch-loop-arrays
 
 # define the link options
-LDFLAGS= -s -static -lm
+LDFLAGS = -s -lm
 
 #define the directory for the executable file
 BINDIR = /usr/bin
@@ -15,13 +15,27 @@ BINDIR = /usr/bin
 #define the directory for the data files
 DATADIR = /usr/share/rodentII
 
-.PHONY: clean install
+EXENAME= rodentII
+CONFIGFILE = basic.ini
 
-default: rodent
+.PHONY: clean install update remove help
 
-rodent:
-	$(CC) $(LDFLAGS) $(CFLAGS) -o rodentII -x c++ compile.linux
-	echo "SHOW_OPTIONS" > basic.ini
+default: build
+
+build:
+	@echo "Type make help for additional options"
+	$(CC) $(LDFLAGS) $(CFLAGS) -o $(EXENAME) -x c++ compile.linux
+	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+
+build-static:
+	@echo "Type make help for additional options"
+	$(CC) $(LDFLAGS) -static $(CFLAGS) -o $(EXENAME) -x c++ compile.linux
+	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+
+build-debug:
+	@echo "Type make help for additional options"
+	$(CC) $(LDFLAGS) $(CFLAGS) -DWRITEDEBUGFILE -o $(EXENAME) -x c++ compile.linux
+	echo "SHOW_OPTIONS" > $(CONFIGFILE)
 
 %.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
@@ -30,14 +44,34 @@ rodent:
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -f rodentII
+	rm -f $(EXENAME)
 
 install:
 	mkdir -p $(BINDIR)
 	mkdir -p $(DATADIR)
-	cp rodentII $(BINDIR)
-	cp basic.ini $(DATADIR)
+	cp $(EXENAME) $(BINDIR)
+	cp $(CONFIGFILE) $(DATADIR)
 	cp ../books/* $(DATADIR)
 	cp -r ../personalities/*/*.ini $(DATADIR)
-	chmod 755 $(BINDIR)/rodentII
+	chmod 755 $(BINDIR)/$(EXENAME)
 	chmod 644 $(DATADIR)/*
+
+# this just performs a copy of rodentII engine
+update:
+	cp $(EXENAME) $(BINDIR)
+	
+remove:
+	rm -f $(BINDIR)/$(EXENAME)
+	rm -rf $(DATADIR)
+	
+help:
+	@echo ""
+	@echo "To compile RodentII type:"
+	@echo ""
+	@echo "make build		> Compile Rodent II"
+	@echo "make build-static	> Compile Rodent II as a static binary"
+	@echo "make build-debug		> Compile Rodent II with Logfile support"
+	@echo "make clean 		> Clean up"
+	@echo "make install		> Install RodentII (root privileges required)"
+	@echo "make update		> Update RodenII engine (root privileges required)"
+	@echo "make remove		> Remove RodenII from your system (root privileges required)"
