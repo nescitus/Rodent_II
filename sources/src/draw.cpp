@@ -124,45 +124,45 @@ int GetDrawFactor(POS *p, int sd)
       if (PcMat2Minors(p, sd) && PcMatR(p, op)) return 8;
     }
      
-    // K(m) vs K(m) or Km vs Kp(p)
+    // Case 6: K(m) vs K(m) or Km vs Kp(p)
     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2 ) 
     return 0;
 
-     // Case 6: KR vs Km(p)
-     if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 16;
+    // Case 7: KR vs Km(p)
+    if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 16;
 
-     // Case 7: KRm vs KR(p)
-     if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
-     &&  PcMatR(p, op) ) return 16;
+    // Case 8: KRm vs KR(p)
+    if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
+    &&  PcMatR(p, op) ) return 16;
 
-     // Case 8: KQm vs KQ(p)
-     if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
-     &&  PcMatQ(p, op) ) return 32;
+    // Case 9: KQm vs KQ(p)
+    if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
+    &&  PcMatQ(p, op) ) return 32;
 
-     // Case 9: Kmm vs KB(p)
-     if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
+    // Case 10: Kmm vs KB(p)
+    if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
 
-     // Case 10: KBN vs Km(p)
-     if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
+    // Case 11: KBN vs Km(p)
+    if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
 
-	 // Case 11: KRR vs KRm(p)
-	 if (PcMatRR(p, sd) && PcMatRm(p, op)) return 16;
+	// Case 12: KRR vs KRm(p)
+	if (PcMatRR(p, sd) && PcMatRm(p, op)) return 16;
 
-	 // Case 12: KRRm vs KRR(p)
-	 if (p->cnt[sd][R] == 2 && p->cnt[sd][Q] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
-		 && PcMatRR(p, op)) return 16;
+	// Case 13: KRRm vs KRR(p)
+	if (p->cnt[sd][R] == 2 && p->cnt[sd][Q] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
+    && PcMatRR(p, op)) return 16;
   }
 
-  // Case 13: KRP vs KR
+  // Case 14: KRP vs KR
 
   if (PcMatR(p, sd) && PcMatR(p, op) && p->cnt[sd][P] == 1 && p->cnt[op][P] == 0) {
 
-    // 13a: good defensive position with a king on pawn's path increases drawing chances
+    // 14a: good defensive position with a king on pawn's path increases drawing chances
 
     if ((SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd)))
       return 32; // 1/2
 
-    // 13b: draw code for rook endgame with edge pawn
+    // 14b: draw code for rook endgame with edge pawn
 
     if ((RelSqBb(A7, sd) & p->Pawns(sd))
     && ( RelSqBb(A8, sd) & p->Rooks(sd))
