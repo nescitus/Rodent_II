@@ -116,7 +116,7 @@ void UciLoop(void) {
       ptr = ParseToken(ptr, token);
       Bench(atoi(token));
     } else if (strcmp(token, "quit") == 0) {
-      exit(0);
+      return;
     }
   }
 }
