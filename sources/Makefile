@@ -18,7 +18,7 @@ DATADIR = /usr/share/rodentII
 EXENAME= rodentII
 CONFIGFILE = basic.ini
 
-.PHONY: clean install update help
+.PHONY: clean install update remove help
 
 default: build
 
@@ -30,6 +30,11 @@ build:
 build-static:
 	@echo "Type make help for additional options"
 	$(CC) $(LDFLAGS) -static $(CFLAGS) -o $(EXENAME) -x c++ compile.linux
+	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+
+build-debug:
+	@echo "Type make help for additional options"
+	$(CC) $(LDFLAGS) $(CFLAGS) -DWRITEDEBUGFILE -o $(EXENAME) -x c++ compile.linux
 	echo "SHOW_OPTIONS" > $(CONFIGFILE)
 
 %.o : %.c
@@ -55,13 +60,18 @@ install:
 update:
 	cp $(EXENAME) $(BINDIR)
 	
+remove:
+	rm -f $(BINDIR)/$(EXENAME)
+	rm -rf $(DATADIR)
+	
 help:
 	@echo ""
 	@echo "To compile RodentII type:"
 	@echo ""
 	@echo "make build		> Compile Rodent II"
 	@echo "make build-static	> Compile Rodent II as a static binary"
+	@echo "make build-debug		> Compile Rodent II with Logfile support"
 	@echo "make clean 		> Clean up"
 	@echo "make install		> Install RodentII (root privileges required)"
 	@echo "make update		> Update RodenII engine (root privileges required)"
-	
+	@echo "make remove		> Remove RodenII from your system (root privileges required)"
