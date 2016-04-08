@@ -19,12 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 811.544
 // bench 12: 5.953.242 8,8 s 1.562
-// bench 15: 29.687.910 24,1 2.854
+// bench 15: 29.687.910 23,9 2.880
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5390 lines of code
+// 5450 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.9"
+#define PROG_NAME "Rodent II 0.9.10"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -479,6 +479,7 @@ int NotOnBishColor(POS * p, int bishSide, int sq);
 int PcMatNone(POS *p, int sd);
 int PcMat1Minor(POS *p, int sd);
 int PcMat2Minors(POS *p, int sd);
+int PcMatNN(POS *p, int sd);
 int PcMatBN(POS *p, int sd);
 int PcMatB(POS *p, int sd);
 int PcMatQ(POS *p, int sd);

@@ -123,46 +123,52 @@ int GetDrawFactor(POS *p, int sd)
       if (PcMatQ (p, sd) && PcMatQ (p, op)) return 8;
       if (PcMat2Minors(p, sd) && PcMatR(p, op)) return 8;
     }
+
+	// Case 6: two knights
+	if (PcMatNN(p, sd)) {
+		if (p->cnt[op][P] == 0) return 0;
+		else return 4;
+	}
      
-    // Case 6: K(m) vs K(m) or Km vs Kp(p)
+    // Case 7: K(m) vs K(m) or Km vs Kp(p)
     if (p->cnt[sd][Q] + p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] < 2 ) 
     return 0;
 
-    // Case 7: KR vs Km(p)
+    // Case 8: KR vs Km(p)
     if (PcMatR(p, sd) && PcMat1Minor(p, op) ) return 16;
 
-    // Case 8: KRm vs KR(p)
+    // Case 9: KRm vs KR(p)
     if (p->cnt[sd][R] == 1 && p->cnt[sd][Q] == 0 &&  p->cnt[sd][B] + p->cnt[sd][N] == 1
     &&  PcMatR(p, op) ) return 16;
 
-    // Case 9: KQm vs KQ(p)
+    // Case 10: KQm vs KQ(p)
     if (p->cnt[sd][Q] == 1 && p->cnt[sd][R] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
     &&  PcMatQ(p, op) ) return 32;
 
-    // Case 10: Kmm vs KB(p)
+    // Case 11: Kmm vs KB(p)
     if (PcMat2Minors(p,sd) &&  PcMatB(p, op) ) return 16;
 
-    // Case 11: KBN vs Km(p)
+    // Case 12: KBN vs Km(p)
     if (PcMatBN(p, sd) &&  PcMat1Minor(p, op) ) return 16;
 
-	// Case 12: KRR vs KRm(p)
+	// Case 13: KRR vs KRm(p)
 	if (PcMatRR(p, sd) && PcMatRm(p, op)) return 16;
 
-	// Case 13: KRRm vs KRR(p)
+	// Case 14: KRRm vs KRR(p)
 	if (p->cnt[sd][R] == 2 && p->cnt[sd][Q] == 0 && p->cnt[sd][B] + p->cnt[sd][N] == 1
     && PcMatRR(p, op)) return 16;
   }
 
-  // Case 14: KRP vs KR
+  // Case 15: KRP vs KR
 
   if (PcMatR(p, sd) && PcMatR(p, op) && p->cnt[sd][P] == 1 && p->cnt[op][P] == 0) {
 
-    // 14a: good defensive position with a king on pawn's path increases drawing chances
+    // 15a: good defensive position with a king on pawn's path increases drawing chances
 
     if ((SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd)))
       return 32; // 1/2
 
-    // 14b: draw code for rook endgame with edge pawn
+    // 15b: draw code for rook endgame with edge pawn
 
     if ((RelSqBb(A7, sd) & p->Pawns(sd))
     && ( RelSqBb(A8, sd) & p->Rooks(sd))
@@ -231,6 +237,10 @@ int PcMat1Minor(POS *p, int sd) {
 
 int PcMat2Minors(POS *p, int sd) {
   return (p->cnt[sd][B] + p->cnt[sd][N] == 2 && p->cnt[sd][Q] + p->cnt[sd][R] == 0);
+}
+
+int PcMatNN(POS *p, int sd) {
+	return (p->cnt[sd][N] == 2 && p->cnt[sd][B] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }
 
 int PcMatBN(POS *p, int sd) {

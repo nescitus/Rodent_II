@@ -100,7 +100,7 @@ void cEval::ScorePawns(POS *p, int sd) {
   while (bbPieces) {
     sq = PopFirstBit(&bbPieces);
 
-    // Get some information about the pawn we are evaluation
+    // Get some information about the pawn we are evaluating
 
     bbSpan = GetFrontSpan(SqBb(sq), sd);
     fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);

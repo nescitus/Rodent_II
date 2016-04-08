@@ -352,7 +352,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Rook attacks on enemy king zone
 
-    bbAtt = RAttacks(OccBb(p) ^ p->Queens(sd) ^ p->Rooks(sd), sq);
+    bbAtt = RAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
       r_att++;
