@@ -85,8 +85,6 @@ void UciLoop(void) {
 	 if (panel_style == 1) {
         printf("option name PersonalityFile type string default rodent.txt\n");
 		printf("option name OwnBook type check default true\n");
-		printf("option name GuideBookFile type string default guide.bin\n");
-		printf("option name MainBookFile type string default rodent.bin\n");
 	 }
 
       printf("uciok\n");

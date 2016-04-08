@@ -55,8 +55,8 @@ int main() {
   InitSearch();
 #ifdef _WIN32 || _WIN64
   // if we are on Windows search for books and settings in same directory as rodentII.exe
-  MainBook.bookName = "rodent.bin";
-  GuideBook.bookName = "guide.bin";
+  MainBook.bookName = "books/rodent.bin";
+  GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
 #elif __linux || __unix
   // if we are on Linux search for books and settings in /usr/share/rodentII
@@ -67,8 +67,8 @@ int main() {
   // a platform we have not tested yet. We assume that opening books and 
   // settings are stored within the same directory. Similiar to Windows.
   printf("Platform unknown. We assume that opening books and settings are stored within RodentII path");
-  MainBook.bookName = "rodent.bin";
-  GuideBook.bookName = "guide.bin";
+  MainBook.bookName = "books/rodent.bin";
+  GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
 #endif
   MainBook.OpenPolyglot();
