@@ -357,6 +357,11 @@ U64 sBook::GetPolyglotKey(POS *p)
 
 void sBook::OpenPolyglot(void)
 {
+  // check if string contains a line ending information from personality file
+  // if found replace with C string termination
+  size_t ln = strlen(bookName) - 1;
+  if (*bookName && bookName[ln] == '\n') 
+    bookName[ln] = '\0';
   bookFile = fopen(bookName, "rb");
 
   if (bookFile != NULL) {
