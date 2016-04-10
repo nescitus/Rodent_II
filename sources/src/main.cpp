@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "timer.h"
 #include "book.h"
 
+cBitBoard BB;
 sTimer Timer; // class for setting and observing time limits
 sBook  MainBook;  // opening book
 sBook  GuideBook;

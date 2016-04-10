@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 5450 lines of code
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.10"
+#define PROG_NAME "Rodent II 0.9.11"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
-enum ePiece{WP, BP, WN, BN, WB, BB, WR, BR, WQ, BQ, WK, BK, NO_PC};
+enum ePiece{WP, BP, WN, BN, WB, BBi, WR, BR, WQ, BQ, WK, BK, NO_PC};
 enum eFile {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
 enum eRank {RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8};
 enum eCastleFlag { W_KS = 1, W_QS = 2, B_KS = 4, B_QS = 8 };
@@ -238,6 +238,20 @@ typedef struct {
 
 typedef class {
 public:
+  U64 FillNorth(U64 bb);
+  U64 FillSouth(U64 bb);
+  U64 FillNorthSq(int sq);
+  U64 FillSouthSq(int sq);
+  U64 FillNorthExcl(U64 bb);
+  U64 FillSouthExcl(U64 bb);
+  int PopCnt(U64);
+  int PopFirstBit(U64 * bb);
+} cBitBoard;
+
+extern cBitBoard BB;
+
+typedef class {
+public:
   U64 cl_bb[2];
   U64 tp_bb[6];
   int pc[64];
@@ -344,12 +358,6 @@ void DisplayCurrmove(int move, int tried);
 void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);
 int DrawScore(POS * p);
-U64 FillNorth(U64 bb);
-U64 FillSouth(U64 bb);
-U64 FillNorthSq(int sq);
-U64 FillSouthSq(int sq);
-U64 FillNorthExcl(U64 bb);
-U64 FillSouthExcl(U64 bb);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int *GenerateQuietChecks(POS *p, int *list);
@@ -387,8 +395,6 @@ void ParseSetoption(char *);
 int Perft(POS *p, int ply, int depth);
 void PrintBoard(POS *p);
 char *ParseToken(char *, char *);
-int PopCnt(U64);
-int PopFirstBit(U64 * bb);
 void PvToStr(int *, char *);
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv);
 int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv);

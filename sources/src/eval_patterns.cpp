@@ -156,7 +156,7 @@ void cEval::ScorePatterns(POS * p) {
   if ((p->Kings(BC) & king_mask)
   &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
-  // "luft" eval
+  // penalty for a castled king that cannot escape upwards
   
   if (IsOnSq(p, WC, K, H1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2))
 	  Add(WC, F_OTHERS, -15, -15);

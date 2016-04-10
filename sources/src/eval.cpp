@@ -143,10 +143,10 @@ void InitEval(void) {
   // Init mask for passed pawn detection
 
   for (int sq = 0; sq < 64; sq++) {
-    passed_mask[WC][sq] = FillNorthExcl(SqBb(sq));
+    passed_mask[WC][sq] = BB.FillNorthExcl(SqBb(sq));
     passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
     passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
-    passed_mask[BC][sq] = FillSouthExcl(SqBb(sq));
+    passed_mask[BC][sq] = BB.FillSouthExcl(SqBb(sq));
     passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
     passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
   }
@@ -163,10 +163,10 @@ void InitEval(void) {
 
   for (int sq = 0; sq < 64; sq++) {
     support_mask[WC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
-    support_mask[WC][sq] |= FillSouth(support_mask[WC][sq]);
+    support_mask[WC][sq] |= BB.FillSouth(support_mask[WC][sq]);
 
     support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
-    support_mask[BC][sq] |= FillNorth(support_mask[BC][sq]);
+    support_mask[BC][sq] |= BB.FillNorth(support_mask[BC][sq]);
   }
 
   // Init distance table (for evaluating king tropism)
@@ -223,7 +223,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   bbPieces = p->Knights(sd);
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
 
     // Knight tropism to enemy king
 
@@ -232,7 +232,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Knight mobility
 
     bbMob = n_attacks[sq] & ~p->cl_bb[sd];
-    cnt = PopCnt(bbMob &~bbPawnTakes[op]);
+    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
     Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
@@ -248,7 +248,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
       n_att++;
-      att += king_att[N] * PopCnt(bbAtt & bbZone);
+      att += king_att[N] * BB.PopCnt(bbAtt & bbZone);
     }
 
     // Knight outpost
@@ -261,7 +261,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   bbPieces = p->Bishops(sd);
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
 
   // Bishop tropism to enemy king
 
@@ -274,7 +274,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 	if (!(bbMob & bbAwayZone[sd])) 
 	   Add(sd, F_MOB, -5, -5);                         // idea from Andscacs
 
-    cnt = PopCnt(bbMob &~bbPawnTakes[op]);
+    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
@@ -290,7 +290,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
       b_att++;
-      att += king_att[B] * PopCnt(bbAtt & bbZone);
+      att += king_att[B] * BB.PopCnt(bbAtt & bbZone);
     }
 
 	// Bishop outpost
@@ -300,11 +300,11 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Pawns on the same square color as our bishop
   
     if (bbWhiteSq & SqBb(sq)) {
-      own_pawn_cnt = PopCnt(bbWhiteSq & p->Pawns(sd)) - 4;
-      opp_pawn_cnt = PopCnt(bbWhiteSq & p->Pawns(op)) - 4;
+      own_pawn_cnt = BB.PopCnt(bbWhiteSq & p->Pawns(sd)) - 4;
+      opp_pawn_cnt = BB.PopCnt(bbWhiteSq & p->Pawns(op)) - 4;
     } else {
-      own_pawn_cnt = PopCnt(bbBlackSq & p->Pawns(sd)) - 4;
-      opp_pawn_cnt = PopCnt(bbBlackSq & p->Pawns(op)) - 4;
+      own_pawn_cnt = BB.PopCnt(bbBlackSq & p->Pawns(sd)) - 4;
+      opp_pawn_cnt = BB.PopCnt(bbBlackSq & p->Pawns(op)) - 4;
     }
 
     Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
@@ -318,7 +318,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   bbPieces = p->Rooks(sd);
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
 
     // Rook tropism to enemy king
 
@@ -327,7 +327,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Rook mobility
 
     bbMob = RAttacks(OccBb(p), sq);
-    cnt = PopCnt(bbMob);
+    cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
     && p->cnt[sd][Q]) {
@@ -336,7 +336,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
 
       while (bbContact) {
-        int contactSq = PopFirstBit(&bbContact);
+        int contactSq = BB.PopFirstBit(&bbContact);
 
         // possible bug: rook exchanges are accepted as contact checks
 
@@ -356,12 +356,12 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
       r_att++;
-      att += king_att[R] * PopCnt(bbAtt & bbZone);
+      att += king_att[R] * BB.PopCnt(bbAtt & bbZone);
     }
 
 	// Get rook file
 
-    bbFile = FillNorthSq(sq) | FillSouthSq(sq); // better this way than using front span
+    bbFile = BB.FillNorthSq(sq) | BB.FillSouthSq(sq); // better this way than using front span
 
 	// Queen on rook file (which might be closed)
 
@@ -390,7 +390,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   bbPieces = p->Queens(sd);
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
 
     // Queen tropism to enemy king
 
@@ -399,7 +399,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Queen mobility
 
     bbMob = QAttacks(OccBb(p), sq);
-    cnt = PopCnt(bbMob);
+    cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus
@@ -409,7 +409,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     bbContact = bbMob & k_attacks[ksq];
     while (bbContact) {
-      int contactSq = PopFirstBit(&bbContact);
+      int contactSq = BB.PopFirstBit(&bbContact);
 
         // possible bug: queen exchanges are accepted as contact checks
 
@@ -429,7 +429,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (bbAtt & bbZone) {
       wood++;
       q_att++;
-      att += king_att[Q] * PopCnt(bbAtt & bbZone);
+      att += king_att[Q] * BB.PopCnt(bbAtt & bbZone);
     }
 
   } // end of queen eval
@@ -485,7 +485,7 @@ void cEval::ScoreHanging(POS *p, int sd) {
   // hanging pieces (attacked and undefended)
 
   while (bbHanging) {
-    sq = PopFirstBit(&bbHanging);
+    sq = BB.PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 64;
     Add(sd, F_PRESSURE, 10 + val, 18 + val);
@@ -494,7 +494,7 @@ void cEval::ScoreHanging(POS *p, int sd) {
   // defended pieces under attack
 
   while (bbDefended) {
-    sq = PopFirstBit(&bbDefended);
+    sq = BB.PopFirstBit(&bbDefended);
     pc = TpOnSq(p, sq);
     val = tp_value[pc] / 96;
     Add(sd, F_PRESSURE, 5 + val, 9 + val);
@@ -511,7 +511,7 @@ void cEval::ScorePassers(POS * p, int sd)
 
   bbPieces = p->Pawns(sd);
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
     bbStop = ShiftFwd(SqBb(sq), sd);
 
     // Passed pawn
@@ -578,8 +578,8 @@ int cEval::Return(POS *p, int use_hash) {
   bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
   bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
   bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;
-  bbPawnCanTake[WC] = FillNorth(bbPawnTakes[WC]);
-  bbPawnCanTake[BC] = FillSouth(bbPawnTakes[BC]);
+  bbPawnCanTake[WC] = BB.FillNorth(bbPawnTakes[WC]);
+  bbPawnCanTake[BC] = BB.FillSouth(bbPawnTakes[BC]);
 
   // Tempo bonus
 

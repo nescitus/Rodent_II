@@ -98,7 +98,7 @@ void cEval::ScorePawns(POS *p, int sd) {
 
   bbPieces = bbOwnPawns;
   while (bbPieces) {
-    sq = PopFirstBit(&bbPieces);
+    sq = BB.PopFirstBit(&bbPieces);
 
     // Get some information about the pawn we are evaluating
 
@@ -112,7 +112,7 @@ void cEval::ScorePawns(POS *p, int sd) {
 
     if (fl_unopposed) {
       if (fl_phalanx) {
-      if (PopCnt((passed_mask[sd][sq] & bbOppPawns)) == 1)
+      if (BB.PopCnt((passed_mask[sd][sq] & bbOppPawns)) == 1)
         Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
       }
     }
@@ -156,7 +156,7 @@ void cEval::ScoreKing(POS *p, int sd) {
 
   // Evaluate shielding and storming pawns on each file.
 
-  bbKingFile = FillNorthSq(sq) | FillSouthSq(sq);
+  bbKingFile = BB.FillNorthSq(sq) | BB.FillSouthSq(sq);
   result += ScoreKingFile(p, sd, bbKingFile);
 
   bbNextFile = ShiftEast(bbKingFile);
