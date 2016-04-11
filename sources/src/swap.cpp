@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
-#include "magicmoves.h"
 
 int Swap(POS *p, int from, int to) {
 
@@ -30,8 +29,8 @@ int Swap(POS *p, int from, int to) {
   score[0] = tp_value[TpOnSq(p, to)];
   type = TpOnSq(p, from);
   bbOcc ^= SqBb(from);
-  bbAttackers |= (BAttacks(bbOcc, to) & (p->tp_bb[B] | p->tp_bb[Q])) |
-                 (RAttacks(bbOcc, to) & (p->tp_bb[R] | p->tp_bb[Q]));
+  bbAttackers |= (BB.BishAttacks(bbOcc, to) & (p->tp_bb[B] | p->tp_bb[Q])) |
+                 (BB.RookAttacks(bbOcc, to) & (p->tp_bb[R] | p->tp_bb[Q]));
   bbAttackers &= bbOcc;
 
   side = ((SqBb(from) & p->cl_bb[BC]) == 0); // so that we can call Swap() out of turn
@@ -47,8 +46,8 @@ int Swap(POS *p, int from, int to) {
       if ((bbType = PcBb(p, side, type) & bbAttackers))
         break;
     bbOcc ^= bbType & -bbType;
-    bbAttackers |= (BAttacks(bbOcc, to) & (p->tp_bb[B] | p->tp_bb[Q])) |
-                 (RAttacks(bbOcc, to) & (p->tp_bb[R] | p->tp_bb[Q]));
+    bbAttackers |= (BB.BishAttacks(bbOcc, to) & (p->tp_bb[B] | p->tp_bb[Q])) |
+                   (BB.RookAttacks(bbOcc, to) & (p->tp_bb[R] | p->tp_bb[Q]));
     bbAttackers &= bbOcc;
     side ^= 1;
     ply++;

@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
-#include "magicmoves.h"
 
 int *GenerateCaptures(POS *p, int *list) {
 
@@ -165,7 +164,7 @@ int *GenerateCaptures(POS *p, int *list) {
   bbPieces = p->Bishops(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = BAttacks(OccBb(p), from) & bbEnemy;
+    bbMoves = BB.BishAttacks(OccBb(p), from) & bbEnemy;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -177,7 +176,7 @@ int *GenerateCaptures(POS *p, int *list) {
   bbPieces = p->Rooks(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = RAttacks(OccBb(p), from) & bbEnemy;
+    bbMoves = BB.RookAttacks(OccBb(p), from) & bbEnemy;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -189,7 +188,7 @@ int *GenerateCaptures(POS *p, int *list) {
   bbPieces = p->Queens(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = QAttacks(OccBb(p), from) & bbEnemy;
+    bbMoves = BB.QueenAttacks(OccBb(p), from) & bbEnemy;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -289,7 +288,7 @@ int *GenerateQuiet(POS *p, int *list) {
   bbPieces = p->Bishops(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = BAttacks(OccBb(p), from) & UnoccBb(p);
+    bbMoves = BB.BishAttacks(OccBb(p), from) & UnoccBb(p);
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -301,7 +300,7 @@ int *GenerateQuiet(POS *p, int *list) {
   bbPieces = p->Rooks(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = RAttacks(OccBb(p), from) & UnoccBb(p);
+    bbMoves = BB.RookAttacks(OccBb(p), from) & UnoccBb(p);
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -313,7 +312,7 @@ int *GenerateQuiet(POS *p, int *list) {
   bbPieces = p->Queens(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = QAttacks(OccBb(p), from) & UnoccBb(p);
+    bbMoves = BB.QueenAttacks(OccBb(p), from) & UnoccBb(p);
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -336,8 +335,8 @@ int *GenerateQuietChecks(POS *p, int *list)
   U64 bbPieces, bbMoves;
   int ksq = KingSq(p, Opp(p->side));
   U64 bbKnightChk = n_attacks[ksq];
-  U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
-  U64 bbDiagChk = BAttacks(OccBb(p), ksq);
+  U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
+  U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
 
   int side, from, to;
@@ -357,7 +356,7 @@ int *GenerateQuietChecks(POS *p, int *list)
   bbPieces = p->Bishops(side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = (BAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
+    bbMoves = (BB.BishAttacks(OccBb(p), from) & UnoccBb(p)) & bbDiagChk;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -367,7 +366,7 @@ int *GenerateQuietChecks(POS *p, int *list)
   bbPieces = p->Rooks(side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = (RAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
+    bbMoves = (BB.RookAttacks(OccBb(p), from) & UnoccBb(p)) & bbStr8Chk;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -377,7 +376,7 @@ int *GenerateQuietChecks(POS *p, int *list)
   bbPieces = p->Queens(side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = (QAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
+    bbMoves = (BB.QueenAttacks(OccBb(p), from) & UnoccBb(p)) & bbQueenChk;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;

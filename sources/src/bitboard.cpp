@@ -18,8 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
+#include "magicmoves.h"
 
 #define USE_MM_POPCNT
+
+void cBitBoard::Init() {
+  initmagicmoves();
+}
 
 #if defined(__GNUC__)
 
@@ -114,4 +119,16 @@ U64 ShiftFwd(U64 bb, int side) {
 
   if (side == WC) return ShiftNorth(bb);
   return ShiftSouth(bb);
+}
+
+U64 cBitBoard::RookAttacks(U64 occ, int sq) {
+	return Rmagic(sq, occ);
+}
+
+U64 cBitBoard::BishAttacks(U64 occ, int sq) {
+	return Bmagic(sq, occ);
+}
+
+U64 cBitBoard::QueenAttacks(U64 occ, int sq) {
+	return Rmagic(sq, occ) | Bmagic(sq, occ);
 }

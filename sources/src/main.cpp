@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
-#include "magicmoves.h"
 #include "timer.h"
 #include "book.h"
 
@@ -49,7 +48,7 @@ int main() {
   hist_perc = 175;
 
   Timer.Init();
-  initmagicmoves();
+  BB.Init();
   Init();
   InitWeights();
   InitEval();

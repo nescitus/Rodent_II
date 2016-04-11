@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 801.325
 // bench 12: 5.663.418 7,2 s 1.813
-// bench 15: 32.548.627 30,3 2.487
+// bench 15: 32.548.627 26,0 2.903
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5450 lines of code
 
@@ -149,10 +149,6 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 #define KingSq(p, x)    ((p)->king_sq[x])
 #define IsOnSq(p, sd, pc, sq) ( PcBb(p, sd, pc) & SqBb(sq) )
 
-#define RAttacks(o, x)  Rmagic(x,o)
-#define BAttacks(o, x)  Bmagic(x,o)
-#define QAttacks(o, x)  (RAttacks(o, x) | BAttacks(o, x))
-
 #ifdef _WIN32
 #define FORCEINLINE __forceinline
 #else
@@ -238,6 +234,7 @@ typedef struct {
 
 typedef class {
 public:
+  void Init(void);
   U64 FillNorth(U64 bb);
   U64 FillSouth(U64 bb);
   U64 FillNorthSq(int sq);
@@ -246,6 +243,9 @@ public:
   U64 FillSouthExcl(U64 bb);
   int PopCnt(U64);
   int PopFirstBit(U64 * bb);
+  U64 RookAttacks(U64 occ, int sq);
+  U64 BishAttacks(U64 occ, int sq);
+  U64 QueenAttacks(U64 occ, int sq);
 } cBitBoard;
 
 extern cBitBoard BB;

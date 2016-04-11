@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
-#include "magicmoves.h"
 
 U64 AttacksFrom(POS *p, int sq) {
 
@@ -28,11 +27,11 @@ U64 AttacksFrom(POS *p, int sq) {
   case N:
     return n_attacks[sq];
   case B:
-    return BAttacks(OccBb(p), sq);
+    return BB.BishAttacks(OccBb(p), sq);
   case R:
-    return RAttacks(OccBb(p), sq);
+    return BB.RookAttacks(OccBb(p), sq);
   case Q:
-    return QAttacks(OccBb(p), sq);
+    return BB.QueenAttacks(OccBb(p), sq);
   case K:
     return k_attacks[sq];
   }
@@ -44,8 +43,8 @@ U64 AttacksTo(POS *p, int sq) {
   return (p->Pawns(WC) & p_attacks[BC][sq]) |
          (p->Pawns(BC) & p_attacks[WC][sq]) |
          (p->tp_bb[N] & n_attacks[sq]) |
-         ((p->tp_bb[B] | p->tp_bb[Q]) & BAttacks(OccBb(p), sq)) |
-         ((p->tp_bb[R] | p->tp_bb[Q]) & RAttacks(OccBb(p), sq)) |
+         ((p->tp_bb[B] | p->tp_bb[Q]) & BB.BishAttacks(OccBb(p), sq)) |
+         ((p->tp_bb[R] | p->tp_bb[Q]) & BB.RookAttacks(OccBb(p), sq)) |
          (p->tp_bb[K] & k_attacks[sq]);
 }
 
@@ -53,7 +52,7 @@ int Attacked(POS *p, int sq, int side) {
 
   return (p->Pawns(side) & p_attacks[Opp(side)][sq]) ||
          (p->Knights(side) & n_attacks[sq]) ||
-         (p->DiagMovers(side) & BAttacks(OccBb(p), sq)) ||
-         (p->StraightMovers(side) & RAttacks(OccBb(p), sq)) ||
+         (p->DiagMovers(side) & BB.BishAttacks(OccBb(p), sq)) ||
+         (p->StraightMovers(side) & BB.RookAttacks(OccBb(p), sq)) ||
          (p->Kings(side) & k_attacks[sq]);
 }

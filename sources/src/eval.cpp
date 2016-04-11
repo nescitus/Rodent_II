@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <math.h>
 #include "rodent.h"
-#include "magicmoves.h"
 #include "eval.h"
 
 #define SCALE(x,y) ((x*y)/100)
@@ -202,8 +201,8 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Init bitboards to detect check threats
   
   U64 bbKnightChk = n_attacks[ksq];
-  U64 bbStr8Chk = RAttacks(OccBb(p), ksq);
-  U64 bbDiagChk = BAttacks(OccBb(p), ksq);
+  U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
+  U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
 
   // Piece configurations
@@ -269,7 +268,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Bishop mobility
 
-    bbMob = BAttacks(OccBb(p), sq);
+    bbMob = BB.BishAttacks(OccBb(p), sq);
 
 	if (!(bbMob & bbAwayZone[sd])) 
 	   Add(sd, F_MOB, -5, -5);                         // idea from Andscacs
@@ -286,7 +285,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Bishop attacks on enemy king zone
 
-    bbAtt = BAttacks(OccBb(p) ^ p->Queens(sd) , sq);
+    bbAtt = BB.BishAttacks(OccBb(p) ^ p->Queens(sd) , sq);
     if (bbAtt & bbZone) {
       wood++;
       b_att++;
@@ -326,7 +325,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   
     // Rook mobility
 
-    bbMob = RAttacks(OccBb(p), sq);
+    bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
@@ -352,7 +351,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Rook attacks on enemy king zone
 
-    bbAtt = RAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
+    bbAtt = BB.RookAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
       r_att++;
@@ -398,7 +397,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen mobility
 
-    bbMob = QAttacks(OccBb(p), sq);
+    bbMob = BB.QueenAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
@@ -424,8 +423,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen attacks on enemy king zone
    
-    bbAtt  = BAttacks(OccBb(p) ^ p->DiagMovers(sd), sq);
-    bbAtt |= RAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
+    bbAtt  = BB.BishAttacks(OccBb(p) ^ p->DiagMovers(sd), sq);
+    bbAtt |= BB.RookAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
       q_att++;
