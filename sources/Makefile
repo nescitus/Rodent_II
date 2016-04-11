@@ -1,20 +1,24 @@
 #makefile to compile Rodent II on Linux
 
-# define the C compiler to use
-CC = g++
-
-# define the compile-time flags
-CFLAGS = -g -w -Wfatal-errors -pipe -DNDEBUG -O3 -fno-rtti -finline-functions -fprefetch-loop-arrays
-
-# define the link options
-LDFLAGS = -s -lm
-
 #define the directory for the executable file
 BINDIR = /usr/bin
 
 #define the directory for the data files
 DATADIR = /usr/share/rodentII
 
+
+# define the C compiler to use
+CC = g++
+
+# define the compile-time flags
+CFLAGS = -g -w -Wfatal-errors -pipe -DNDEBUG -O3 -fno-rtti -finline-functions -fprefetch-loop-arrays -DBOOKPATH=$(DATADIR)
+C1FLAGS = -g -w -Wfatal-errors -pipe -DWRITEDEBUGFILE -DBOOKPATH=$(DATADIR)
+
+# define the link options
+LDFLAGS = -s -lm
+LD1FLAGS = -lm
+
+# define outpout name and settings file
 EXENAME= rodentII
 CONFIGFILE = basic.ini
 
@@ -34,7 +38,7 @@ build-static:
 
 build-debug:
 	@echo "Type make help for additional options"
-	$(CC) $(LDFLAGS) $(CFLAGS) -DWRITEDEBUGFILE -o $(EXENAME) -x c++ compile.linux
+	$(CC) $(LD1FLAGS) $(C1FLAGS) -o $(EXENAME) -x c++ compile.linux
 	echo "SHOW_OPTIONS" > $(CONFIGFILE)
 
 %.o : %.c
