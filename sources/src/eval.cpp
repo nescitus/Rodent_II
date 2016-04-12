@@ -183,6 +183,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
   int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
+  int r_on_7th = 0;
 
   // Is color OK?
 
@@ -270,8 +271,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     bbMob = BB.BishAttacks(OccBb(p), sq);
 
-	if (!(bbMob & bbAwayZone[sd])) 
-	   Add(sd, F_MOB, -5, -5);                         // idea from Andscacs
+	if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
+	   Add(sd, F_MOB, -5, -5);                         // (idea from Andscacs)
 
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
@@ -380,6 +381,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
       Add(sd, F_LINES, 16, 32);
+	  r_on_7th++;
       }
     }
 
@@ -432,6 +434,8 @@ void cEval::ScorePieces(POS *p, int sd) {
     }
 
   } // end of queen eval
+
+  if (r_on_7th == 2) Add(sd, F_LINES, 8, 16);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
