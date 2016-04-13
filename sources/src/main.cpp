@@ -28,8 +28,13 @@ sBook  GuideBook;
 cEval Eval;
 POS p;
 
+// Macros required for setting paths with compiler option -D
+#define XSTR(x1) #x1
+#define STR(x1) XSTR(x1)
+
+
 int main() {
-  
+
   eval_blur = 0;
   draw_score = 0;
   time_percentage = 100;
@@ -59,10 +64,34 @@ int main() {
   GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
 #elif __linux || __unix
-  // if we are on Linux search for books and settings in /usr/share/rodentII
+  // if we are on Linux
+  // first check, if compiler got told where books and settings are stored
+#ifdef BOOKPATH
+  char path[255]; // space for complete path and filename
+  char nameMainbook[20] = "/rodent.bin";
+  char nameGuidebook[20]= "/guide.bin";
+  char namePersonality[20]= "/basic.ini";
+  // process Mainbook
+  strcpy(path, ""); // first clear
+  strcpy(path, STR(BOOKPATH)); // copy path from c preprocessor here
+  strcat(path, nameMainbook); // append bookname
+  MainBook.bookName = path; // store it
+  // process Guidebook
+  strcpy(path, "");
+  strcpy(path, STR(BOOKPATH));
+  strcat(path, nameGuidebook);
+  GuideBook.bookName = nameGuidebook;
+  // process Personality file
+  strcpy(path, "");
+  strcpy(path, STR(BOOKPATH));
+  strcat(path, namePersonality);
+  ReadPersonality(path);
+#else // if no path was given than we assume that files are stored at /usr/share/rodentII
   MainBook.bookName = "/usr/share/rodentII/rodent.bin";
   GuideBook.bookName = "/usr/share/rodentII/guide.bin";
   ReadPersonality("/usr/share/rodentII/basic.ini");
+#endif
+
 #else
   // a platform we have not tested yet. We assume that opening books and 
   // settings are stored within the same directory. Similiar to Windows.
