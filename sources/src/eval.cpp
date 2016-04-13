@@ -372,7 +372,12 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     if (!(bbFile & p->Pawns(sd))) {
       if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
-      else                          Add(sd, F_LINES,  6,  6);  // [ 5...  6 ...?]
+	  else {
+		  if ((bbFile & p->Pawns(op)) & bbPawnTakes[op]) // half-open file blocked by defended enemy pawn
+		      Add(sd, F_LINES, 4, 4);
+		  else
+			  Add(sd, F_LINES, 6, 6);
+	  }
     }
 
     // Rook on the 7th rank attacking pawns or cutting off enemy king
@@ -433,15 +438,14 @@ void cEval::ScorePieces(POS *p, int sd) {
       att += king_att[Q] * BB.PopCnt(bbAtt & bbZone);
     }
 
-	// Queen on 7th rank
+    // Queen on 7th rank
 
-	if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
-		if (p->Pawns(op) & bbRelRank[sd][RANK_7]
-			|| p->Kings(op) & bbRelRank[sd][RANK_8]) {
-			Add(sd, F_LINES, 4, 8);
-			//r_on_7th++;
-		}
-	}
+    if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
+      if (p->Pawns(op) & bbRelRank[sd][RANK_7]
+      || p->Kings(op) & bbRelRank[sd][RANK_8]) {
+        Add(sd, F_LINES, 4, 8);
+      }
+    }
 
   } // end of queen eval
   

@@ -84,7 +84,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
 #ifdef USE_QS_HASH
   if (*pv) TransStore(p->hash_key, *pv, best, EXACT, 0, ply);
-  else      TransStore(p->hash_key,   0, best, UPPER, 0, ply);
+  else     TransStore(p->hash_key,   0, best, UPPER, 0, ply);
 #endif
 
   return best;
