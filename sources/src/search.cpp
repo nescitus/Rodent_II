@@ -204,15 +204,6 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
   fl_check = InCheck(p);
 
-  // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
-  /*
-  if (!move && depth >= 4 && !fl_check) {
-	  Search(p, 0, alpha, beta, depth - 2, 0, 0, new_pv);
-	  if (abort_search) return 0;
-	  TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
-  }
-  */
-
   // Init moves and variables before entering main loop
   
   best = -INF;
@@ -412,6 +403,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   fl_check = InCheck(p);
 
   // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
+
   if (!move && is_pv && depth >= 6 && !fl_check) {
 	  Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
 	  if (abort_search) return 0;

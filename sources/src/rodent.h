@@ -17,14 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 801.325
-// bench 12: 5.663.418 7,2 s 1.813
-// bench 15: 32.548.627 26,0 2.903
+// bench: 816.643
+// bench 12: 5.900.074 7,7 s 1.756
+// bench 15: 31.464.224 26,2 2.786
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5450 lines of code
+// 53,0% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.11"
+#define PROG_NAME "Rodent II 0.9.13"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -241,8 +242,10 @@ public:
   U64 FillSouthSq(int sq);
   U64 FillNorthExcl(U64 bb);
   U64 FillSouthExcl(U64 bb);
+
   int PopCnt(U64);
   int PopFirstBit(U64 * bb);
+
   U64 RookAttacks(U64 occ, int sq);
   U64 BishAttacks(U64 occ, int sq);
   U64 QueenAttacks(U64 occ, int sq);
@@ -278,6 +281,7 @@ public:
   U64 Kings(int sd);
   U64 StraightMovers(int sd);
   U64 DiagMovers(int sd);
+
   void DoMove(int move, UNDO * u);
   void DoNull(UNDO * u);
   void UndoMove(int move, UNDO * u);

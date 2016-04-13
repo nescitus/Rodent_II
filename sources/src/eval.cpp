@@ -433,9 +433,21 @@ void cEval::ScorePieces(POS *p, int sd) {
       att += king_att[Q] * BB.PopCnt(bbAtt & bbZone);
     }
 
-  } // end of queen eval
+	// Queen on 7th rank
 
-  if (r_on_7th == 2) Add(sd, F_LINES, 8, 16);
+	if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
+		if (p->Pawns(op) & bbRelRank[sd][RANK_7]
+			|| p->Kings(op) & bbRelRank[sd][RANK_8]) {
+			Add(sd, F_LINES, 4, 8);
+			//r_on_7th++;
+		}
+	}
+
+  } // end of queen eval
+  
+  // Score terms using information gathered during piece eval
+
+  if (r_on_7th == 2) Add(sd, F_LINES, 8, 16); // two rooks on 7th rank
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
