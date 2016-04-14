@@ -374,9 +374,9 @@ void cEval::ScorePieces(POS *p, int sd) {
       if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
 	  else {
 		  if ((bbFile & p->Pawns(op)) & bbPawnTakes[op]) // half-open file blocked by defended enemy pawn
-		      Add(sd, F_LINES, 4, 4);
+		      Add(sd, F_LINES, 5, 5);
 		  else
-			  Add(sd, F_LINES, 6, 6);
+			  Add(sd, F_LINES, 7, 7);
 	  }
     }
 
