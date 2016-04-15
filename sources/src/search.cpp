@@ -51,11 +51,11 @@ void InitSearch(void) {
   for (int dp = 0; dp < MAX_PLY; dp++)
     for (int mv = 0; mv < MAX_MOVES; mv++) {
 
-	  r = log((double)dp) * log((double)Min(mv,63)) / 2;
-	  if (r < 0.80) r = 0;
-		
-	  lmr_size[0][dp][mv] = r;            // zero window node
-	  lmr_size[1][dp][mv] = Max(r -1, 0); // principal variation node
+      r = log((double)dp) * log((double)Min(mv,63)) / 2;
+      if (r < 0.80) r = 0;
+
+      lmr_size[0][dp][mv] = r;            // zero window node
+      lmr_size[1][dp][mv] = Max(r -1, 0); // principal variation node
 
       for (int node = 0; node <= 1; node++) {
         if (lmr_size[node][dp][mv] < 1) lmr_size[node][dp][mv] = 0; // ultra-small reductions make no sense
@@ -63,7 +63,7 @@ void InitSearch(void) {
         if (lmr_size[node][dp][mv] > dp - 1) // reduction cannot exceed actual depth
           lmr_size[node][dp][mv] = dp - 1;
       }
-    }	
+    }
 }
 
 void Think(POS *p, int *pv) {
@@ -118,17 +118,17 @@ void Iterate(POS *p, int *pv) {
 #if defined _WIN32 || defined _WIN64 
     printf("info depth %d time %d nodes %I64d nps %I64d\n", root_depth, elapsed, nodes, nps);
 #else
-	printf("info depth %d time %d nodes %lld nps %lld\n", root_depth, elapsed, nodes, nps);
+    printf("info depth %d time %d nodes %lld nps %lld\n", root_depth, elapsed, nodes, nps);
 #endif
 
     if (use_aspiration) cur_val = Widen(p, root_depth, pv, cur_val);
     else                cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
 
-	// don't search too deep with only one move available
+    // don't search too deep with only one move available
 
-	if (root_depth == 8 
-	&& !fl_has_choice 
-	&& !Timer.IsInfiniteMode() ) break;
+    if (root_depth == 8 
+    && !fl_has_choice 
+    && !Timer.IsInfiniteMode() ) break;
 
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
@@ -148,7 +148,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
       beta  = lastScore + margin;
       cur_val = SearchRoot(p, 0, alpha, beta, depth, pv);
       if (abort_search) break;
-	  if (cur_val < alpha) Timer.OnFailLow();
+      if (cur_val < alpha) Timer.OnFailLow();
       if (cur_val > alpha && cur_val < beta) 
       return cur_val;                // we have finished within the window
       if (cur_val > MAX_EVAL) break; // verify mate searching with infinite bounds
@@ -236,7 +236,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
     if (use_lmr
     && depth >= 2
     && mv_tried > 3
-	&& mv_hist_score < hist_limit
+    && mv_hist_score < hist_limit
     && alpha > -MAX_EVAL && beta < MAX_EVAL
     && !fl_check 
     &&  fl_prunable_move
@@ -245,12 +245,12 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
     reduction = lmr_size[1][depth][mv_tried];
 
-	// increase reduction on bad history score
+    // increase reduction on bad history score
 
-	if (mv_hist_score < 0 
-	&& new_depth - reduction > 2 
-	&& lmr_hist_adjustement) 
-	   reduction++;
+    if (mv_hist_score < 0 
+    && new_depth - reduction > 2 
+    && lmr_hist_adjustement) 
+       reduction++;
 
     new_depth -= reduction;
   }
@@ -285,7 +285,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
         UpdateHistory(p, -1, move, depth, ply);
         for (int mv = 0; mv < mv_tried; mv++)
           DecreaseHistory(p, mv_played[mv], depth);
-	  }
+      }
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
       // Change the best move and show the new pv
@@ -328,11 +328,11 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Save score in the transposition table
 
   if (*pv) {
-	  if (!fl_check) {
-		  UpdateHistory(p, -1, *pv, depth, ply);
-		  for (int mv = 0; mv < mv_tried; mv++)
-			  DecreaseHistory(p, mv_played[mv], depth);
-	  }
+    if (!fl_check) {
+      UpdateHistory(p, -1, *pv, depth, ply);
+        for (int mv = 0; mv < mv_tried; mv++)
+          DecreaseHistory(p, mv_played[mv], depth);
+    }
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
     
   } else
@@ -405,9 +405,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
 
   if (!move && is_pv && depth >= 6 && !fl_check) {
-	  Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
-	  if (abort_search) return 0;
-	  TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
+    Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
+    if (abort_search) return 0;
+    TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
   }
 
   // Can we prune this node?
@@ -502,7 +502,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   while ((move = NextMove(m, &mv_type))) {
 
-	mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
+    mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
@@ -565,7 +565,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     && lmr_hist_adjustement)
        reduction++;
 
-	// reduce search depth
+    // reduce search depth
 
     new_depth -= reduction;
   }
@@ -745,7 +745,7 @@ void DisplayPv(int score, int *pv) {
       root_depth, elapsed, nodes, nps, type, score, pv_str);
 #else
   printf("info depth %d time %d nodes %lld nps %lld score %s %d pv %s\n",
-	  root_depth, elapsed, nodes, nps, type, score, pv_str);
+      root_depth, elapsed, nodes, nps, type, score, pv_str);
 #endif
 }
 
@@ -771,8 +771,8 @@ void CheckTimeout(void) {
 
   if (Timer.GetData(MAX_NODES) > 0
   && nodes >= Timer.GetData(MAX_NODES) ) {
-	 abort_search = 1;
-	 return;
+     abort_search = 1;
+     return;
   }
 
   // Slowdown loop
