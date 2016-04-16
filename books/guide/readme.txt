@@ -13,3 +13,5 @@ nimzowitsch.bin - Nimzowitsch's games form PgnMentor collection as the first lay
 
 petrosian.bin - Petrosian's games form PgnMentor collection as the first layer 
 + 1931 to 1980 games from Norm Pollock's collection as the second layer
+
+solid.bin - Karpov + Uhlmann
