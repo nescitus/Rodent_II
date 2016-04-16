@@ -100,8 +100,8 @@ static const int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -
 // parameters for evaluating material imbalance [5+9+2]
 
 #define A  80 // advantage in both major and minor pieces
-#define Rk 50 // advantage in major pieces only
-#define Nt 45 // advantage in minor pieces only // WAS 40, TESTING
+#define Rk 60 // advantage in major pieces only // WAS 50, TESTING
+#define Nt 45 // advantage in minor pieces only
 #define Ex 25 // exchange disadvantage [20 and 25 equal after 1700 games]
 #define Mm 60 // two minors for a rook 
 

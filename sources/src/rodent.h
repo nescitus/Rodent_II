@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 846.921
-// bench 12: 6.226.998 8,4 s 1.716
-// bench 15: 36.060.726 31,3 2.666
+// bench: 823.193
+// bench 12: 5.482.730 8,4 s 1.716
+// bench 15: 31.764.940 31,3 2.666
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5481 lines of code
-// 53,0% vs 0.8.7
+// 54,1% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.17"
+#define PROG_NAME "Rodent II 0.9.18"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};

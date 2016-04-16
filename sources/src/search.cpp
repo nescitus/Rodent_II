@@ -68,6 +68,8 @@ void InitSearch(void) {
 
 void Think(POS *p, int *pv) {
 
+  pv[1] = 0; // fixing rare glitch
+
   // Play move from opening book, if applicable
 
   if (use_book) {
