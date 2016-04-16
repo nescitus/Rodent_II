@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 53,0% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.16"
+#define PROG_NAME "Rodent II 0.9.17"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};

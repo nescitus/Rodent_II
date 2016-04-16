@@ -39,10 +39,10 @@ void cEval::ScorePatterns(POS * p) {
     // Blockage of a central pawn on its initial square
 
     if (IsOnSq(p, WC, P, D2) && IsOnSq(p, WC, B, C1)
-      && OccBb(p) & SqBb(D3)) Add(WC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(D3)) Add(WC, F_OTHERS, -50, 0);
 
     if (IsOnSq(p, WC, P, E2) && IsOnSq(p, WC, B, F1)
-      && OccBb(p) & SqBb(E3)) Add(WC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(E3)) Add(WC, F_OTHERS, -50, 0);
 
     // Trapped bishop
 
@@ -56,16 +56,16 @@ void cEval::ScorePatterns(POS * p) {
     // Fianchettoed bishop
 
     if (IsOnSq(p, WC, B, B2)) {
-	  if (IsOnSq(p, WC, P, C3)) Add(WC, F_OTHERS, -10, -20);
+      if (IsOnSq(p, WC, P, C3)) Add(WC, F_OTHERS, -10, -20);
       if (IsOnSq(p, WC, P, B3) && (IsOnSq(p, WC, P, A2) || IsOnSq(p, WC, P, C2))) Add(WC, F_OTHERS,  10,  10);
       if (IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5))) Add(WC, F_OTHERS, -20, -20);
     }
-	if (IsOnSq(p, WC, B, G2)) {
-	  if (IsOnSq(p, WC, P, F3)) Add(WC, F_OTHERS, -10, -20);
+
+    if (IsOnSq(p, WC, B, G2)) {
+      if (IsOnSq(p, WC, P, F3)) Add(WC, F_OTHERS, -10, -20);
       if (IsOnSq(p, WC, P, G3) && (IsOnSq(p, WC, P, H2) || IsOnSq(p, WC, P, F2))) Add(WC, F_OTHERS,  10,  10);
       if (IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5))) Add(WC, F_OTHERS, -20, -20);
-	}
-
+    }
   }
 
   // Black bishop patterns
@@ -75,10 +75,10 @@ void cEval::ScorePatterns(POS * p) {
     // Blockage of a central pawn on its initial square
 
     if (IsOnSq(p, BC, P, D7) && IsOnSq(p, BC, B, C8)
-      && OccBb(p) & SqBb(D6)) Add(BC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(D6)) Add(BC, F_OTHERS, -50, 0);
 
     if (IsOnSq(p, BC, P, E7) && IsOnSq(p, BC, B, F8)
-      && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
 
     // Trapped bishop
 
@@ -107,27 +107,27 @@ void cEval::ScorePatterns(POS * p) {
   // Trapped knight
 
   if (p->Knights(WC) & wn_mask) {
-	  if (IsOnSq(p, WC, N, A7)) {
-		  if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
-		  if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
-	  }
+    if (IsOnSq(p, WC, N, A7)) {
+      if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
+    }
 
-	  if (IsOnSq(p, WC, N, H7)) {
-		  if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
-		  if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
-	  }
+    if (IsOnSq(p, WC, N, H7)) {
+      if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
+    }
   }
 
   if (p->Knights(BC) & bn_mask) {
-	  if (IsOnSq(p, BC, N, A2)) {
-		  if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
-		  if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
-	  }
+    if (IsOnSq(p, BC, N, A2)) {
+      if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
+    }
 
-	  if (IsOnSq(p, BC, N, H2)) {
-		  if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
-		  if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
-	  }
+    if (IsOnSq(p, BC, N, H2)) {
+      if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
+    }
   }
   
   // Rook blocked by uncastled king
@@ -159,15 +159,15 @@ void cEval::ScorePatterns(POS * p) {
   // penalty for a castled king that cannot escape upwards
   
   if (IsOnSq(p, WC, K, H1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2))
-	  Add(WC, F_OTHERS, -15, -15);
+     Add(WC, F_OTHERS, -15, -15);
 
   if (IsOnSq(p, WC, K, G1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2) && IsOnSq(p, WC, P, F2))
-	  Add(WC, F_OTHERS, -15, -15);
+     Add(WC, F_OTHERS, -15, -15);
 
   if (IsOnSq(p, BC, K, H8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7))
-	  Add(BC, F_OTHERS, -15, -15);
+     Add(BC, F_OTHERS, -15, -15);
 
   if (IsOnSq(p, BC, K, G8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7) && IsOnSq(p, BC, P, F7) )
-	  Add(BC, F_OTHERS, -15, -15);
+     Add(BC, F_OTHERS, -15, -15);
 
 }
