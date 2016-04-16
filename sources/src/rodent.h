@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 838.558
-// bench 12: 6.319.766 7,4 s 1.968
-// bench 15: 32.244.664 31,0 2.446
+// bench: 846.921
+// bench 12: 6.226.998 8,4 s 1.716
+// bench 15: 36.060.726 31,3 2.666
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5481 lines of code
 // 53,0% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.15"
+#define PROG_NAME "Rodent II 0.9.16"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -304,6 +304,7 @@ private:
   void ScoreHanging(POS *p, int sd);
   void ScorePatterns(POS *p);
   void ScoreKing(POS *p, int sd);
+  void ScoreUnstoppable(POS *p);
   int ScoreKingFile(POS * p, int sd, U64 bbFile);
   int ScoreFileShelter(U64 bbOwnPawns, int sd);
   int ScoreFileStorm(U64 bbOppPawns, int sd);
@@ -319,6 +320,8 @@ public:
 } cEval;
 
 extern cEval Eval;
+
+int ChebyshevDistance(int sq1, int sq2);
 
 typedef struct {
   POS *p;

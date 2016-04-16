@@ -103,24 +103,24 @@ void InitEval(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-	  mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[sq], pst_perc);
+      mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[sq], pst_perc);
       eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[sq], pst_perc);
-	  mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
-	  eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
-	  mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
-	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
-	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
-	  eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
-	  mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
-	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
-	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+      mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
+      eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
+      mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
+      eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
+      mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
+      eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
+      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
+      eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
+      mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
+      eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 
-	  phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
+      phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
       defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
 
-	  sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
-	  sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];
+      sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
+      sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];
     }
   }
 
@@ -134,9 +134,9 @@ void InitEval(void) {
   // Init king zone
 
   for (int i = 0; i < 64; i++) {
-	  bbKingZone[WC][i] = bbKingZone[BC][i] = k_attacks[i];
-	  bbKingZone[WC][i] |= ShiftSouth(bbKingZone[WC][i]);
-	  bbKingZone[BC][i] |= ShiftNorth(bbKingZone[BC][i]);
+    bbKingZone[WC][i] = bbKingZone[BC][i] = k_attacks[i];
+    bbKingZone[WC][i] |= ShiftSouth(bbKingZone[WC][i]);
+    bbKingZone[BC][i] |= ShiftNorth(bbKingZone[BC][i]);
   }
 
   // Init mask for passed pawn detection
@@ -209,13 +209,13 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Piece configurations
 
   tmp = np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
-	  - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
+      - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
   if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
   if (p->cnt[sd][R] > 1) tmp -= 5;                      // Rook pair
   
   if (p->cnt[sd][B] > 1) 
-	 Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair
+     Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair
 
   Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
   
@@ -253,7 +253,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight outpost
 
-	ScoreOutpost(sd, N, sq);
+    ScoreOutpost(sd, N, sq);
 
   } // end of knight eval
 
@@ -271,8 +271,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     bbMob = BB.BishAttacks(OccBb(p), sq);
 
-	if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
-	   Add(sd, F_MOB, -5, -5);                         // (idea from Andscacs)
+    if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
+       Add(sd, F_MOB, -5, -5);                         // (idea from Andscacs)
 
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
@@ -293,9 +293,9 @@ void cEval::ScorePieces(POS *p, int sd) {
       att += king_att[B] * BB.PopCnt(bbAtt & bbZone);
     }
 
-	// Bishop outpost
+    // Bishop outpost
 
-	ScoreOutpost(sd, B, sq);
+    ScoreOutpost(sd, B, sq);
 
     // Pawns on the same square color as our bishop
   
@@ -359,25 +359,25 @@ void cEval::ScorePieces(POS *p, int sd) {
       att += king_att[R] * BB.PopCnt(bbAtt & bbZone);
     }
 
-	// Get rook file
+    // Get rook file
 
     bbFile = BB.FillNorthSq(sq) | BB.FillSouthSq(sq); // better this way than using front span
 
-	// Queen on rook file (which might be closed)
+    // Queen on rook's file (which might be closed)
 
-	if (bbFile & p->Queens(op)) Add(sd, F_LINES, 5, 5);
+    if (bbFile & p->Queens(op)) Add(sd, F_LINES, 5, 5);
 
-	// Rook on (half) open file
-	// (failed with reducing bonus for half open files blocked by defended pawn)
+    // Rook on (half) open file
+    // (failed with reducing bonus for half open files blocked by defended pawn)
 
     if (!(bbFile & p->Pawns(sd))) {
       if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
-	  else {
-		  if ((bbFile & p->Pawns(op)) & bbPawnTakes[op]) // half-open file blocked by defended enemy pawn
-		      Add(sd, F_LINES, 5, 5);
-		  else
-			  Add(sd, F_LINES, 7, 7);
-	  }
+      else {
+        if ((bbFile & p->Pawns(op)) & bbPawnTakes[op]) // half-open file blocked by defended enemy pawn
+          Add(sd, F_LINES, 5, 5);
+        else
+          Add(sd, F_LINES, 7, 7);
+      }
     }
 
     // Rook on the 7th rank attacking pawns or cutting off enemy king
@@ -385,8 +385,8 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
-      Add(sd, F_LINES, 16, 32);
-	  r_on_7th++;
+        Add(sd, F_LINES, 16, 32);
+        r_on_7th++;
       }
     }
 
@@ -538,7 +538,7 @@ void cEval::ScorePassers(POS * p, int sd)
     if (!(passed_mask[sd][sq] & p->Pawns(op))) {
 
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
-	  eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
+      eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
       mul = 100;
 
       // blocked passers score less
@@ -553,6 +553,77 @@ void cEval::ScorePassers(POS * p, int sd)
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
   }
+}
+
+int ChebyshevDistance(int sq1, int sq2) {
+
+  int file1, file2, rank1, rank2;
+  int rankDistance, fileDistance;
+  file1 = sq1 & 7;
+  file2 = sq2 & 7;
+  rank1 = sq1 >> 3;
+  rank2 = sq2 >> 3;
+  rankDistance = abs(rank2 - rank1);
+  fileDistance = abs(file2 - file1);
+  return Max(rankDistance, fileDistance);
+}
+
+void cEval::ScoreUnstoppable(POS * p) {
+
+  U64 bbPieces, bbSpan, bbProm;
+  int w_dist = 8;
+  int b_dist = 8;
+  int sq, ksq, psq, tempo;
+  int prom_dist;
+
+  // Function loses Elo if it is used in endgames with pieces.
+  // Is it a speed issue or a problem with logic?
+
+  if (!PcMatNone(p, WC) || !PcMatNone(p, BC)) return;
+
+  // White unstoppable passers
+
+  ksq = KingSq(p, BC);
+  if (p->side == BC) tempo = 1; else tempo = 0;
+  bbPieces = p->Pawns(WC);
+  while (bbPieces) {
+    sq = BB.PopFirstBit(&bbPieces);
+    if (!(passed_mask[WC][sq] & p->Pawns(BC))) {
+      bbSpan = GetFrontSpan(SqBb(sq), WC);
+      psq = ((WC - 1) & 56) + (sq & 7);
+      prom_dist = Min(5, ChebyshevDistance(sq, psq));
+
+      if ( prom_dist < (ChebyshevDistance(ksq, psq) - tempo)) {
+        if (bbSpan & p->Kings(WC)) prom_dist++;
+        w_dist = Min(w_dist, prom_dist);
+      }
+    }
+  }
+
+  // Black unstoppable passers
+
+  ksq = KingSq(p, WC);
+  if (p->side == WC) tempo = 1; else tempo = 0;
+  while (bbPieces) {
+    sq = BB.PopFirstBit(&bbPieces);
+    if (!(passed_mask[BC][sq] & p->Pawns(WC))) {
+      bbSpan = GetFrontSpan(SqBb(sq), BC);
+      if (bbSpan & p->Kings(WC)) tempo -= 1;
+      psq = ((BC - 1) & 56) + (sq & 7);
+      prom_dist = Min(5, ChebyshevDistance(sq, psq));
+
+      if (prom_dist < (ChebyshevDistance(ksq, psq) - tempo)) {
+        if (bbSpan & p->Kings(BC)) prom_dist++;
+        b_dist = Min(b_dist, prom_dist);
+      }
+    }
+  }
+
+  // current function is too stupid to evaluate pawn races properly,
+  // so we add a bonus only if only one side has an unstoppable passer.
+
+  if (w_dist < b_dist && b_dist == 8) Add(WC, F_PASSERS, 0, 500);
+  if (b_dist < w_dist && w_dist == 8) Add(BC, F_PASSERS, 0, 500);
 }
 
 int cEval::Return(POS *p, int use_hash) {
@@ -614,6 +685,7 @@ int cEval::Return(POS *p, int use_hash) {
   ScorePatterns(p);
   ScorePassers(p, WC);
   ScorePassers(p, BC);
+  ScoreUnstoppable(p);
 
   // Add stylistic asymmetric stuff
 
