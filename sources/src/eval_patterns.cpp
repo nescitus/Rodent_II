@@ -57,13 +57,13 @@ void cEval::ScorePatterns(POS * p) {
 
     if (IsOnSq(p, WC, B, B2)) {
       if (IsOnSq(p, WC, P, C3)) Add(WC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, WC, P, B3) && (IsOnSq(p, WC, P, A2) || IsOnSq(p, WC, P, C2))) Add(WC, F_OTHERS,  10,  10);
+      if (IsOnSq(p, WC, P, B3) && (IsOnSq(p, WC, P, A2) || IsOnSq(p, WC, P, C2))) Add(WC, F_OTHERS,  4,  4);
       if (IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5))) Add(WC, F_OTHERS, -20, -20);
     }
 
     if (IsOnSq(p, WC, B, G2)) {
       if (IsOnSq(p, WC, P, F3)) Add(WC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, WC, P, G3) && (IsOnSq(p, WC, P, H2) || IsOnSq(p, WC, P, F2))) Add(WC, F_OTHERS,  10,  10);
+      if (IsOnSq(p, WC, P, G3) && (IsOnSq(p, WC, P, H2) || IsOnSq(p, WC, P, F2))) Add(WC, F_OTHERS,  4,  4);
       if (IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5))) Add(WC, F_OTHERS, -20, -20);
     }
   }
@@ -93,12 +93,12 @@ void cEval::ScorePatterns(POS * p) {
 
     if (IsOnSq(p, BC, B, B7)) { 
       if (IsOnSq(p, BC, P, C6)) Add(BC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, BC, P, B6) && (IsOnSq(p, BC, P, A7) || IsOnSq(p, BC, P, C7))) Add(BC, F_OTHERS,  10,  10);
+      if (IsOnSq(p, BC, P, B6) && (IsOnSq(p, BC, P, A7) || IsOnSq(p, BC, P, C7))) Add(BC, F_OTHERS,  4,  4);
       if (IsOnSq(p, WC, P, D5) && (IsOnSq(p, WC, P, E4) || IsOnSq(p, WC, P, C4))) Add(BC, F_OTHERS, -20, -20); 
     }
     if (IsOnSq(p, BC, B, G7)) {
       if (IsOnSq(p, BC, P, F6)) Add(BC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, BC, P, G6) && (IsOnSq(p, BC, P, H7) || IsOnSq(p, BC, P, G6))) Add(BC, F_OTHERS,  10,  10);
+      if (IsOnSq(p, BC, P, G6) && (IsOnSq(p, BC, P, H7) || IsOnSq(p, BC, P, G6))) Add(BC, F_OTHERS,  4,  4);
       if (IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4))) Add(BC, F_OTHERS, -20, -20);
     }
 

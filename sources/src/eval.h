@@ -298,3 +298,20 @@ static const int pstKingEg[64] = {
 -72, -48, -36, -24, -24, -36, -48, -72
 //A8                                H8
 };
+
+const int bishConfinedMg = -5;      // -10 is worse
+const int bishConfinedEg = -5;      // -10 is worse
+
+const int rookOnQueenMg = 5;
+const int rookOnQueenEg = 5;
+const int rookOnOpenMg = 12;        // 10 is worse
+const int rookOnOpenEg = 12;        // 10 is worse
+const int rookOnBadHalfOpenMg = 5;  // 4 is worse
+const int rookOnBadHalfOpenEg = 5;  // 4 is worse
+const int rookOnGoodHalfOpenMg = 7; // 6 is worse
+const int rookOnGoodHalfOpenEg = 7; // 6 is worse
+const int rookOnSeventhMg = 16;
+const int rookOnSeventhEg = 32;
+
+const int queenOnSeventhMg = 4;
+const int queenOnSeventhEg = 8;

@@ -253,7 +253,15 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight outpost
 
-    ScoreOutpost(sd, N, sq);
+	ScoreOutpost(sd, N, sq);
+
+    // Pawn in front of a knight
+
+    if (SqBb(sq) & bbHomeZone[sd]) {
+      U64 bbStop = ShiftFwd(SqBb(sq), sd);
+      if (bbStop & PcBb(p, sd, P))
+        Add(sd, F_OUTPOST, 6, 6);
+    }
 
   } // end of knight eval
 
@@ -272,7 +280,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbMob = BB.BishAttacks(OccBb(p), sq);
 
     if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
-       Add(sd, F_MOB, -5, -5);                         // (idea from Andscacs)
+       Add(sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
 
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
@@ -296,6 +304,14 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Bishop outpost
 
     ScoreOutpost(sd, B, sq);
+
+	// Pawn in front of a bishop
+
+    if (SqBb(sq) & bbHomeZone[sd]) {
+      U64 bbStop = ShiftFwd(SqBb(sq), sd);
+      if (bbStop & PcBb(p, sd, P))
+        Add(sd, F_OUTPOST, 6, 6);
+    }
 
     // Pawns on the same square color as our bishop
   
@@ -338,7 +354,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       while (bbContact) {
         int contactSq = BB.PopFirstBit(&bbContact);
 
-        // possible bug: rook exchanges are accepted as contact checks
+        // rook exchanges are accepted as contact checks
 
         if (Swap(p, sq, contactSq) >= 0) {
           att += r_contact_check;
@@ -348,7 +364,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     }
 
     bbAllAttacks[sd] |= bbMob;
-    bbMinorAttacks[sd] |= bbMob;  // TEMPORARY, TESTING
+    bbMinorAttacks[sd] |= bbMob;  // TEMPORARY
 
     // Rook attacks on enemy king zone
 
@@ -365,18 +381,18 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen on rook's file (which might be closed)
 
-    if (bbFile & p->Queens(op)) Add(sd, F_LINES, 5, 5);
+    if (bbFile & p->Queens(op)) Add(sd, F_LINES, rookOnQueenMg, rookOnQueenEg);
 
     // Rook on (half) open file
-    // (failed with reducing bonus for half open files blocked by defended pawn)
 
     if (!(bbFile & p->Pawns(sd))) {
-      if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, 12, 12);  // [10... 12 ...?]
+      if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
       else {
-        if ((bbFile & p->Pawns(op)) & bbPawnTakes[op]) // half-open file blocked by defended enemy pawn
-          Add(sd, F_LINES, 5, 5);
+		// score differs depending on whether half-open file is blocked by defended enemy pawn
+        if ((bbFile & p->Pawns(op)) & bbPawnTakes[op])
+          Add(sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
         else
-          Add(sd, F_LINES, 7, 7);
+          Add(sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
       }
     }
 
@@ -385,7 +401,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(sd, F_LINES, 16, 32);
+        Add(sd, F_LINES, rookOnSeventhMg, rookOnSeventhEg);
         r_on_7th++;
       }
     }
@@ -417,8 +433,8 @@ void cEval::ScorePieces(POS *p, int sd) {
     while (bbContact) {
       int contactSq = BB.PopFirstBit(&bbContact);
 
-        // possible bug: queen exchanges are accepted as contact checks
-
+        // queen exchanges are accepted as contact checks
+	
         if (Swap(p, sq, contactSq) >= 0) {
           att += q_contact_check;
           break;
@@ -443,7 +459,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       || p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(sd, F_LINES, 4, 8);
+        Add(sd, F_LINES, queenOnSeventhMg, queenOnSeventhEg);
       }
     }
 
