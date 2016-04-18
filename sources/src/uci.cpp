@@ -100,7 +100,11 @@ void UciLoop(void) {
     if (depth == 0) depth = 5;
     Timer.SetStartTime();
     nodes = Perft(p, 0, depth);
-    printf (" perft %d : %d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() ); // TODO: fix U64s
+#if defined _WIN32 || defined _WIN64 
+    printf (" perft %d : %I64d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
+#else
+	printf(" perft %d : %lld nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime());
+#endif
     } else if (strcmp(token, "print") == 0) {
       PrintBoard(p);
     } else if (strcmp(token, "eval") == 0) {
