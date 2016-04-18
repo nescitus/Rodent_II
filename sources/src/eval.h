@@ -299,6 +299,8 @@ static const int pstKingEg[64] = {
 //A8                                H8
 };
 
+const int minorBehindPawn = 6;
+
 const int bishConfinedMg = -5;      // -10 is worse
 const int bishConfinedEg = -5;      // -10 is worse
 
@@ -312,6 +314,8 @@ const int rookOnGoodHalfOpenMg = 7; // 6 is worse
 const int rookOnGoodHalfOpenEg = 7; // 6 is worse
 const int rookOnSeventhMg = 16;
 const int rookOnSeventhEg = 32;
+const int twoRooksOn7thMg = 8;
+const int twoRooksOn7thEg = 16;
 
 const int queenOnSeventhMg = 4;
 const int queenOnSeventhEg = 8;

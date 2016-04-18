@@ -260,7 +260,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbHomeZone[sd]) {
       U64 bbStop = ShiftFwd(SqBb(sq), sd);
       if (bbStop & PcBb(p, sd, P))
-        Add(sd, F_OUTPOST, 6, 6);
+        Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
     }
 
   } // end of knight eval
@@ -310,7 +310,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbHomeZone[sd]) {
       U64 bbStop = ShiftFwd(SqBb(sq), sd);
       if (bbStop & PcBb(p, sd, P))
-        Add(sd, F_OUTPOST, 6, 6);
+        Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
     }
 
     // Pawns on the same square color as our bishop
@@ -467,18 +467,12 @@ void cEval::ScorePieces(POS *p, int sd) {
   
   // Score terms using information gathered during piece eval
 
-  if (r_on_7th == 2) Add(sd, F_LINES, 8, 16); // two rooks on 7th rank
+  if (r_on_7th == 2)          // two rooks on 7th rank
+    Add(sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg); 
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
   if (wood > 1 && p->cnt[sd][Q]) {
-
-    if (q_att & r_att) att += 6;
-    if (q_att & n_att) att += 3;
-    if (q_att & b_att) att += 3;
-    if (r_att & n_att) att += 1;
-    if (r_att & b_att) att += 1;
-
     if (att > 399) att = 399;
     tmp = danger[att];
     Add(sd, F_ATT, tmp, tmp);
