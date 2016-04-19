@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
+const int fut_margin[6] = { 0, 125, 290, 520, 880, 880};
 int root_side;
 int fl_has_choice;
 
@@ -373,6 +374,22 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   if (abort_search) return 0;
   if (ply) *pv = 0;
   if (IsDraw(p)) return DrawScore(p);
+
+  // Mate distance pruning
+
+  int checkmatingScore = MATE - ply;
+  if (checkmatingScore < beta) {
+    beta = checkmatingScore;
+    if (alpha >= checkmatingScore)
+    return alpha;
+  }
+
+  int checkmatedScore = -MATE + ply;
+  if (checkmatedScore > alpha) {
+    alpha = checkmatedScore;
+    if (beta <= checkmatedScore)
+    return beta;
+  }
 
   // Retrieving data from transposition table. We hope for a cutoff
   // or at least for a move to improve move ordering.
