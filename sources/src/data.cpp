@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 
 U64 p_attacks[2][64];
-U64 n_attacks[64];
 U64 k_attacks[64];
 U64 bbKingZone[2][64];
 U64 passed_mask[2][64];

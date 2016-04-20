@@ -25,7 +25,7 @@ U64 AttacksFrom(POS *p, int sq) {
   case P:
     return p_attacks[Cl(p->pc[sq])][sq];
   case N:
-    return n_attacks[sq];
+    return BB.KnightAttacks(sq);
   case B:
     return BB.BishAttacks(OccBb(p), sq);
   case R:
@@ -42,7 +42,7 @@ U64 AttacksTo(POS *p, int sq) {
 
   return (p->Pawns(WC) & p_attacks[BC][sq]) |
          (p->Pawns(BC) & p_attacks[WC][sq]) |
-         (p->tp_bb[N] & n_attacks[sq]) |
+         (p->tp_bb[N] & BB.KnightAttacks(sq)) |
          ((p->tp_bb[B] | p->tp_bb[Q]) & BB.BishAttacks(OccBb(p), sq)) |
          ((p->tp_bb[R] | p->tp_bb[Q]) & BB.RookAttacks(OccBb(p), sq)) |
          (p->tp_bb[K] & k_attacks[sq]);
@@ -51,7 +51,7 @@ U64 AttacksTo(POS *p, int sq) {
 int Attacked(POS *p, int sq, int side) {
 
   return (p->Pawns(side) & p_attacks[Opp(side)][sq]) ||
-         (p->Knights(side) & n_attacks[sq]) ||
+         (p->Knights(side) & BB.KnightAttacks(sq)) ||
          (p->DiagMovers(side) & BB.BishAttacks(OccBb(p), sq)) ||
          (p->StraightMovers(side) & BB.RookAttacks(OccBb(p), sq)) ||
          (p->Kings(side) & k_attacks[sq]);

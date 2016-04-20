@@ -152,7 +152,7 @@ int *GenerateCaptures(POS *p, int *list) {
   bbPieces = p->Knights(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = n_attacks[from] & bbEnemy;
+    bbMoves = BB.KnightAttacks(from) & bbEnemy;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -276,7 +276,7 @@ int *GenerateQuiet(POS *p, int *list) {
   bbPieces = p->Knights(p->side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = n_attacks[from] & UnoccBb(p);
+    bbMoves = BB.KnightAttacks(from) & UnoccBb(p);
   while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
@@ -334,7 +334,7 @@ int *GenerateQuietChecks(POS *p, int *list)
 {
   U64 bbPieces, bbMoves;
   int ksq = KingSq(p, Opp(p->side));
-  U64 bbKnightChk = n_attacks[ksq];
+  U64 bbKnightChk = BB.KnightAttacks(ksq);
   U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
@@ -346,7 +346,7 @@ int *GenerateQuietChecks(POS *p, int *list)
   bbPieces = p->Knights(side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = (n_attacks[from] & UnoccBb(p)) & bbKnightChk;
+    bbMoves = (BB.KnightAttacks(from) & UnoccBb(p)) & bbKnightChk;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;

@@ -201,7 +201,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   // Init bitboards to detect check threats
   
-  U64 bbKnightChk = n_attacks[ksq];
+  U64 bbKnightChk = BB.KnightAttacks(ksq);
   U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
@@ -231,7 +231,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     
     // Knight mobility
 
-    bbMob = n_attacks[sq] & ~p->cl_bb[sd];
+    bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
     
     Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
@@ -244,7 +244,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight attacks on enemy king zone
 
-    bbAtt = n_attacks[sq];
+	bbAtt = BB.KnightAttacks(sq);
     if (bbAtt & bbZone) {
       wood++;
       n_att++;
