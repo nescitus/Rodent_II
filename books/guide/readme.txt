@@ -5,6 +5,9 @@ and are meant to guide the game stylistically.
 active.bin - seeks dynamic positions, based on Kasparov's games without
 QGD but with Benoni thrown in to stir things up.
 
+empty.bin - empty book. Can be declared as a main book for weak personalities
+if we want limited opening knowledge.
+
 flank.bin - plays flank openings, likes fianchettoing bishops;
 based on games by Tomasz Markowski with some lines added by hand.
 
@@ -21,3 +24,5 @@ petrosian.bin - Petrosian's games form PgnMentor collection as the first layer
 + 1931 to 1980 games from Norm Pollock's collection as the second layer
 
 solid.bin - Karpov + Uhlmann
+
+tricky.bin - Morozevich's games + a lot of handcrafting. Wide and tricky.
