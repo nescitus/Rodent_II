@@ -707,20 +707,36 @@ int KPKdraw(POS *p, int sd)
 {
   int op = Opp(sd);
   U64 bbPawn = p->Pawns(sd);
+  U64 bbStrongKing = p->Kings(sd);
+  U64 bbWeakKing = p->Kings(op);
 
   // opposition through a pawn
+
   if (p->side == sd
-  && (SqBb(p->king_sq[op]) & ShiftFwd(bbPawn, sd))
-  && (SqBb(p->king_sq[sd]) & ShiftFwd(bbPawn, op))
+  && (bbWeakKing & ShiftFwd(bbPawn, sd))
+  && (bbStrongKing & ShiftFwd(bbPawn, op))
   ) return 1;
   
   // weaker side can create opposition through a pawn in one move
+
   if (p->side == op
   && (BB.KingAttacks(p->king_sq[op]) & ShiftFwd(bbPawn, sd))
-  && (SqBb(p->king_sq[sd]) & ShiftFwd(bbPawn, op))
+  && (bbStrongKing & ShiftFwd(bbPawn, op))
   ) if (!Illegal(p)) return 1;
 
-  // TODO: opposition next to a pawn
+  // opposition next to a pawn
+  
+  if (p->side == sd
+  && (bbStrongKing & ShiftWest(bbPawn))
+  && (bbWeakKing & ShiftFwd(ShiftFwd(bbStrongKing,sd) ,sd)) 
+  ) return 1;
+
+  if (p->side == sd
+  && (bbStrongKing & ShiftWest(bbPawn))
+  && (bbWeakKing & ShiftFwd(ShiftFwd(bbStrongKing,sd) ,sd)) 
+  ) return 1;
+
+  // TODO: pawn checks king
 
   return 0;
 }
