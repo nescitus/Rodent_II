@@ -716,7 +716,7 @@ int KPKdraw(POS *p, int sd)
   
   // weaker side can create opposition through a pawn in one move
   if (p->side == op
-  && (k_attacks[p->king_sq[op]] & ShiftFwd(bbPawn, sd))
+  && (BB.KingAttacks(p->king_sq[op]) & ShiftFwd(bbPawn, sd))
   && (SqBb(p->king_sq[sd]) & ShiftFwd(bbPawn, op))
   ) if (!Illegal(p)) return 1;
 

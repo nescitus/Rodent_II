@@ -23,18 +23,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_MM_POPCNT
 
 static const int n_moves[8] = { -33, -31, -18, -14, 14, 18, 31, 33 };
+static const int k_moves[8] = { -17, -16, -15, -1, 1, 15, 16, 17 };
 
 void cBitBoard::Init() {
+
+  int x;
+
   initmagicmoves();
 
+  // init knight attacks
+
   for (int i = 0; i < 64; i++) {
-	  n_attacks[i] = 0;
-	  for (int j = 0; j < 8; j++) {
-		  int x = Map0x88(i) + n_moves[j];
-		  if (!Sq0x88Off(x))
-			  n_attacks[i] |= SqBb(Unmap0x88(x));
-	  }
+    n_attacks[i] = 0;
+    for (int j = 0; j < 8; j++) {
+      x = Map0x88(i) + n_moves[j];
+      if (!Sq0x88Off(x))
+        n_attacks[i] |= SqBb(Unmap0x88(x));
+    }
   }
+
+  // init king attacks
+
+  for (int i = 0; i < 64; i++) {
+    k_attacks[i] = 0;
+    for (int j = 0; j < 8; j++) {
+      x = Map0x88(i) + k_moves[j];
+      if (!Sq0x88Off(x))
+        k_attacks[i] |= SqBb(Unmap0x88(x));
+    }
+  }
+
 }
 
 #if defined(__GNUC__)
@@ -146,4 +164,8 @@ U64 cBitBoard::BishAttacks(U64 occ, int sq) {
 
 U64 cBitBoard::QueenAttacks(U64 occ, int sq) {
   return Rmagic(sq, occ) | Bmagic(sq, occ);
+}
+
+U64 cBitBoard::KingAttacks(int sq) {
+	return k_attacks[sq];
 }

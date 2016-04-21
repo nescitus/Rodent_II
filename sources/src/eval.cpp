@@ -134,7 +134,7 @@ void InitEval(void) {
   // Init king zone
 
   for (int i = 0; i < 64; i++) {
-    bbKingZone[WC][i] = bbKingZone[BC][i] = k_attacks[i];
+    bbKingZone[WC][i] = bbKingZone[BC][i] = BB.KingAttacks(i);
     bbKingZone[WC][i] |= ShiftSouth(bbKingZone[WC][i]);
     bbKingZone[BC][i] |= ShiftNorth(bbKingZone[BC][i]);
   }
@@ -349,7 +349,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
 
-      bbContact = (bbMob & k_attacks[ksq]) & bbStr8Chk;
+      bbContact = (bbMob & BB.KingAttacks(ksq)) & bbStr8Chk;
 
       while (bbContact) {
         int contactSq = BB.PopFirstBit(&bbContact);
@@ -429,7 +429,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen contact checks
 
-    bbContact = bbMob & k_attacks[ksq];
+    bbContact = bbMob & BB.KingAttacks(ksq);
     while (bbContact) {
       int contactSq = BB.PopFirstBit(&bbContact);
 
@@ -673,10 +673,10 @@ int cEval::Return(POS *p, int use_hash) {
 
   bbPawnTakes[WC] = GetWPControl(p->Pawns(WC));
   bbPawnTakes[BC] = GetBPControl(p->Pawns(BC));
-  bbTwoPawnsTake[WC] = GetDoubleWPControl(p->Pawns(WC)); // was wrong color
+  bbTwoPawnsTake[WC] = GetDoubleWPControl(p->Pawns(WC));
   bbTwoPawnsTake[BC] = GetDoubleBPControl(p->Pawns(BC));
-  bbAllAttacks[WC] = bbPawnTakes[WC] | k_attacks[p->king_sq[WC]];
-  bbAllAttacks[BC] = bbPawnTakes[BC] | k_attacks[p->king_sq[BC]];
+  bbAllAttacks[WC] = bbPawnTakes[WC] | BB.KingAttacks(p->king_sq[WC]);
+  bbAllAttacks[BC] = bbPawnTakes[BC] | BB.KingAttacks(p->king_sq[BC]);
   bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;
   bbPawnCanTake[WC] = BB.FillNorth(bbPawnTakes[WC]);
   bbPawnCanTake[BC] = BB.FillSouth(bbPawnTakes[BC]);

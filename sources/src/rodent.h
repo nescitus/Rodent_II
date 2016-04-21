@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 751.320
 // bench 12: 6.432.134 8,0 s 1.670
-// bench 15: 33.356.450 31,3 2.680
+// bench 15: 33.356.450 29.4 2.629
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5481 lines of code
 // 0.9.17: 54,1% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.22"
+#define PROG_NAME "Rodent II 0.9.21"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -236,6 +236,7 @@ typedef struct {
 typedef class {
 private:
 	U64 n_attacks[64];
+	U64 k_attacks[64];
 
 public:
   void Init(void);
@@ -249,6 +250,7 @@ public:
   int PopCnt(U64);
   int PopFirstBit(U64 * bb);
 
+  U64 KingAttacks(int sq);
   U64 KnightAttacks(int sq);
   U64 RookAttacks(U64 occ, int sq);
   U64 BishAttacks(U64 occ, int sq);
@@ -437,7 +439,6 @@ void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
 
 extern U64 p_attacks[2][64];
-extern U64 k_attacks[64];
 extern U64 bbKingZone[2][64];
 extern int dist[64][64];
 extern U64 passed_mask[2][64];

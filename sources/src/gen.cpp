@@ -197,7 +197,7 @@ int *GenerateCaptures(POS *p, int *list) {
 
   // Captures by king
 
-  bbMoves = k_attacks[KingSq(p, side)] & bbEnemy;
+  bbMoves = BB.KingAttacks(KingSq(p, side)) & bbEnemy;
   while (bbMoves) {
     to = BB.PopFirstBit(&bbMoves);
     *list++ = (to << 6) | KingSq(p, side);
@@ -321,7 +321,7 @@ int *GenerateQuiet(POS *p, int *list) {
 
   // King moves
 
-  bbMoves = k_attacks[KingSq(p, side)] & UnoccBb(p);
+  bbMoves = BB.KingAttacks(KingSq(p, side)) & UnoccBb(p);
   while (bbMoves) {
     to = BB.PopFirstBit(&bbMoves);
     *list++ = (to << 6) | KingSq(p, side);
