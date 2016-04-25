@@ -181,7 +181,6 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
   int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
-  int n_att = 0, b_att = 0, r_att = 0, q_att = 0;
   int own_pawn_cnt, opp_pawn_cnt;
   int r_on_7th = 0;
 
@@ -247,7 +246,6 @@ void cEval::ScorePieces(POS *p, int sd) {
 	bbAtt = BB.KnightAttacks(sq);
     if (bbAtt & bbZone) {
       wood++;
-      n_att++;
       att += king_att[N] * BB.PopCnt(bbAtt & bbZone);
     }
 
@@ -297,7 +295,6 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbAtt = BB.BishAttacks(OccBb(p) ^ p->Queens(sd) , sq);
     if (bbAtt & bbZone) {
       wood++;
-      b_att++;
       att += king_att[B] * BB.PopCnt(bbAtt & bbZone);
     }
 
@@ -371,7 +368,6 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbAtt = BB.RookAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
-      r_att++;
       att += king_att[R] * BB.PopCnt(bbAtt & bbZone);
     }
 
@@ -450,7 +446,6 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbAtt |= BB.RookAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
       wood++;
-      q_att++;
       att += king_att[Q] * BB.PopCnt(bbAtt & bbZone);
     }
 
@@ -581,8 +576,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   U64 bbPieces, bbSpan, bbProm;
   int w_dist = 8;
   int b_dist = 8;
-  int sq, ksq, psq, tempo;
-  int prom_dist;
+  int sq, ksq, psq, tempo, prom_dist;
 
   // Function loses Elo if it is used in endgames with pieces.
   // Is it a speed issue or a problem with logic?
@@ -704,6 +698,8 @@ int cEval::Return(POS *p, int use_hash) {
   mg[prog_side][F_OTHERS] += keep_pawn   * p->cnt[prog_side][P];
 
   // Sum all the symmetric eval factors
+  // (we start from 2 so that we won't touch king attacks 
+  // and mobility, both of which are asymmetric)
 
   for (int fc = 2; fc < N_OF_FACTORS; fc++) {
     mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
@@ -789,6 +785,7 @@ void cEval::Print(POS * p) {
   int eg_phase = max_phase - mg_phase;
 
   // BUG: eval asymmetry not shown
+  // TODO: fix me!
 
   printf("Total score: %d\n", Return(p, 0));
   printf("-----------------------------------------------------------------\n");
