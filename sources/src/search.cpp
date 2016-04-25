@@ -679,7 +679,7 @@ int IsDraw(POS *p) {
     // Draw by insufficient material (bare kings or Km vs K)
 
     if (!Illegal(p)) {
-      if (p->cnt[WC][P] + p->cnt[BC][P]) {
+      if (p->cnt[WC][P] + p->cnt[BC][P] == 0) {
         if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
         // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
       }
