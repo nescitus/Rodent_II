@@ -173,6 +173,7 @@ void InitEval(void) {
   for (int i = 0; i < 64; ++i) {
     for (int j = 0; j < 64; ++j) {
       dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
+	  // TODO: init Chebyshev distance here
     }
   }
 }
@@ -212,6 +213,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
   if (p->cnt[sd][R] > 1) tmp -= 5;                      // Rook pair
+  if (p->cnt[sd][Q]) 
+    tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]); // "elephantiasis correction", idea by H.G.Mueller
   
   if (p->cnt[sd][B] > 1) 
      Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair

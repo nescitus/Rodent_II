@@ -300,7 +300,7 @@ static const int pstKingEg[64] = {
 };
 
 const int minorBehindPawn = 6;
-
+const int minorVsQueen = 5;
 const int bishConfinedMg = -5;      // -10 is worse
 const int bishConfinedEg = -5;      // -10 is worse
 
