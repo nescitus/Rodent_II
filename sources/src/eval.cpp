@@ -497,27 +497,26 @@ void cEval::ScoreOutpost(int sd, int pc, int sq) {
 
 void cEval::ScoreHanging(POS *p, int sd) {
 
+  int pc, sq, sc;
   int op = Opp(sd);
   U64 bbHanging = p->cl_bb[op]    & ~bbPawnTakes[op];
   U64 bbThreatened = p->cl_bb[op] & bbPawnTakes[sd];
-  bbHanging |= bbThreatened;     // piece attacked by our pawn isn't well defended
-  bbHanging &= bbAllAttacks[sd]; // obviously, hanging piece has to be attacked
-  bbHanging &= ~p->Pawns(op);  // currently we don't evaluate threats against pawns
+  bbHanging |= bbThreatened;      // piece attacked by our pawn isn't well defended
+  bbHanging &= bbAllAttacks[sd];  // hanging piece has to be attacked
+  bbHanging &= ~p->Pawns(op);     // currently we don't evaluate threats against pawns
 
   U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
   bbDefended &= bbMinorAttacks[sd];
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
-  bbDefended &= ~p->Pawns(op);  // currently we don't evaluate threats against pawns
-
-  int pc, sq, val;
+  bbDefended &= ~p->Pawns(op);    // currently we don't evaluate threats against pawns
 
   // hanging pieces (attacked and undefended)
 
   while (bbHanging) {
     sq = BB.PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
-    val = tp_value[pc] / 64;
-    Add(sd, F_PRESSURE, 10 + val, 18 + val);
+    sc = tp_value[pc] / 64;
+    Add(sd, F_PRESSURE, 10 + sc, 18 + sc);
   }
 
   // defended pieces under attack
@@ -525,28 +524,27 @@ void cEval::ScoreHanging(POS *p, int sd) {
   while (bbDefended) {
     sq = BB.PopFirstBit(&bbDefended);
     pc = TpOnSq(p, sq);
-    val = tp_value[pc] / 96;
-    Add(sd, F_PRESSURE, 5 + val, 9 + val);
+    sc = tp_value[pc] / 96;
+    Add(sd, F_PRESSURE, 5 + sc, 9 + sc);
   }
 }
 
 void cEval::ScorePassers(POS * p, int sd) 
 {
-  U64 bbPieces;
+  U64 bbPieces = p->Pawns(sd);
   int sq, mul, mg_tmp, eg_tmp;
   int op = Opp(sd);
   U64 bbOwnPawns = p->Pawns(sd);
   U64 bbStop;
 
-  bbPieces = p->Pawns(sd);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
-    bbStop = ShiftFwd(SqBb(sq), sd);
 
     // Passed pawn
 
     if (!(passed_mask[sd][sq] & p->Pawns(op))) {
 
+      bbStop = ShiftFwd(SqBb(sq), sd);
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
       eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
       mul = 100;
