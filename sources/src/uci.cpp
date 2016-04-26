@@ -157,31 +157,31 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Material") == 0) {
     mat_perc = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "PiecePlacement") == 0) {
     pst_perc = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "PawnValue") == 0) {
     pc_value[P] = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "KnightValue") == 0) {
     pc_value[N] = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "BishopValue") == 0) {
     pc_value[B] = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "RookValue") == 0) {
     pc_value[R] = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "QueenValue") == 0) {
     pc_value[Q] = atoi(value);
     ResetEngine();
-    InitEval();
+    Eval.Init();
   } else if (strcmp(name, "KeepQueen") == 0) {
     keep_queen = atoi(value);
     ResetEngine();

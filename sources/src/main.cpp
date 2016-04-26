@@ -56,7 +56,7 @@ int main() {
   BB.Init();
   Init();
   InitWeights();
-  InitEval();
+  Eval.Init();
   InitSearch();
 #ifdef _WIN32 || _WIN64
   // if we are on Windows search for books and settings in same directory as rodentII.exe

@@ -25,9 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SCALE(x,y) ((x*y)/100)
 
-int danger[512];   // table for evaluating king safety
-int dist[64][64];  // table for evaluating king tropism
-
 // parameters for defining game phase [6]
 
 static const int max_phase = 24;
@@ -94,9 +91,10 @@ int GetDefendedPst(int sq) {
   return pawnAdv[Rank(sq)];
 }
 
-void InitEval(void) {
+void cEval::Init(void) {
 
-  Eval.prog_side = NO_CL;
+  int rank_delta, file_delta;
+  prog_side = NO_CL;
 
   // Init piece/square values together with material value of the pieces.
 
@@ -129,6 +127,7 @@ void InitEval(void) {
   for (int t = 0, i = 1; i < 512; ++i) {
     t = Min(maxAttScore, Min(int(attCurveMult * i * i), t + maxAttStep));
     danger[i] = (t * 100) / 256; // rescale to centipawns
+    // TODO: init separately for Black and White in SetAsymmetricEval() to gain some speed
   }
 
   // Init king zone
@@ -168,12 +167,14 @@ void InitEval(void) {
     support_mask[BC][sq] |= BB.FillNorth(support_mask[BC][sq]);
   }
 
-  // Init distance table (for evaluating king tropism)
+  // Init distance tables (for evaluating king tropism and unstoppable passers)
 
   for (int i = 0; i < 64; ++i) {
     for (int j = 0; j < 64; ++j) {
-      dist[i][j] = 14 - (Abs(Rank(i) - Rank(j)) + Abs(File(i) - File(j)));
-	  // TODO: init Chebyshev distance here
+      rank_delta = Abs(Rank(i) - Rank(j));
+	  file_delta = Abs(File(i) - File(j));
+      dist[i][j] = 14 - (rank_delta + file_delta);
+	  chebyshev_dist[i][j] = Max(rank_delta, file_delta);
     }
   }
 }
@@ -561,19 +562,6 @@ void cEval::ScorePassers(POS * p, int sd)
   }
 }
 
-int ChebyshevDistance(int sq1, int sq2) {
-
-  int file1, file2, rank1, rank2;
-  int rankDistance, fileDistance;
-  file1 = sq1 & 7;
-  file2 = sq2 & 7;
-  rank1 = sq1 >> 3;
-  rank2 = sq2 >> 3;
-  rankDistance = abs(rank2 - rank1);
-  fileDistance = abs(file2 - file1);
-  return Max(rankDistance, fileDistance);
-}
-
 void cEval::ScoreUnstoppable(POS * p) {
 
   U64 bbPieces, bbSpan, bbProm;
@@ -596,9 +584,9 @@ void cEval::ScoreUnstoppable(POS * p) {
     if (!(passed_mask[WC][sq] & p->Pawns(BC))) {
       bbSpan = GetFrontSpan(SqBb(sq), WC);
       psq = ((WC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, ChebyshevDistance(sq, psq));
+      prom_dist = Min(5, chebyshev_dist[sq] [psq]);
 
-      if ( prom_dist < (ChebyshevDistance(ksq, psq) - tempo)) {
+      if ( prom_dist < (chebyshev_dist[ksq] [psq] - tempo)) {
         if (bbSpan & p->Kings(WC)) prom_dist++;
         w_dist = Min(w_dist, prom_dist);
       }
@@ -615,9 +603,9 @@ void cEval::ScoreUnstoppable(POS * p) {
       bbSpan = GetFrontSpan(SqBb(sq), BC);
       if (bbSpan & p->Kings(WC)) tempo -= 1;
       psq = ((BC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, ChebyshevDistance(sq, psq));
+      prom_dist = Min(5, chebyshev_dist[sq][psq]);
 
-      if (prom_dist < (ChebyshevDistance(ksq, psq) - tempo)) {
+      if (prom_dist < (chebyshev_dist[ksq][psq] - tempo)) {
         if (bbSpan & p->Kings(BC)) prom_dist++;
         b_dist = Min(b_dist, prom_dist);
       }

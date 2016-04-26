@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 774.604
 // bench 12: 6.784.115 8,0 s 1.670
-// bench 15: 37.000.681 29.2 2.646
+// bench 15: 37.000.681 32.4 2.643
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5481 lines of code
+// 5604 lines of code
 // 0.9.17: 54,1% vs 0.8.7
 
 #pragma once
@@ -303,6 +303,9 @@ private:
   U64 bbPawnCanTake[2];
   int mg[2][N_OF_FACTORS];
   int eg[2][N_OF_FACTORS];
+  int danger[512];   // table for evaluating king safety
+  int dist[64][64];  // table for evaluating king tropism
+  int chebyshev_dist[64][64]; // table for unstoppable passer detection
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
   void ScorePassers(POS * p, int sd);
@@ -321,13 +324,12 @@ private:
 
 public:
   int prog_side;
+  void Init(void);
   int Return(POS * p, int use_hash);
   void Print(POS *p);
 } cEval;
 
 extern cEval Eval;
-
-int ChebyshevDistance(int sq1, int sq2);
 
 typedef struct {
   POS *p;
@@ -385,7 +387,6 @@ int GetPhalanxPst(int sq);
 int GetDefendedPst(int sq);
 void UpdateHistory(POS *p, int last_move, int move, int depth, int ply);
 void Init(void);
-void InitEval(void);
 void InitSearch(void);
 void InitCaptures(POS *p, MOVES *m);
 void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply);
