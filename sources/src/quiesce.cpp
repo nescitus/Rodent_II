@@ -123,9 +123,6 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-    /*  if (qdepth < checkDepth)
-    score = -QuiesceChecks(p, ply + 1, qdepth+1, -beta, -alpha, new_pv);
-    else*/
     score = -Quiesce(p, ply + 1, -beta, -alpha, new_pv);
 
     p->UndoMove(move, u);
