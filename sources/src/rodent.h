@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bench 12: 6.784.115 8,0 s 1.670
 // bench 15: 37.000.681 30.0 2.856
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5604 lines of code
+// 5639 lines of code
 // 0.9.25: 54,4% vs 0.8.7
 
 #pragma once
@@ -129,9 +129,6 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 #define Abs(x)          ((x) > 0 ? (x) : -(x))
 #define Max(x, y)       ((x) > (y) ? (x) : (y))
 #define Min(x, y)       ((x) < (y) ? (x) : (y))
-#define Map0x88(x)      (((x) & 7) | (((x) & ~7) << 1))
-#define Unmap0x88(x)    (((x) & 7) | (((x) & ~7) >> 1))
-#define Sq0x88Off(x)    ((unsigned)(x) & 0x88)
 
 #define Fsq(x)          ((x) & 63)
 #define Tsq(x)          (((x) >> 6) & 63)
@@ -237,8 +234,18 @@ typedef struct {
 
 typedef class {
 private:
+	U64 p_attacks[2][64];
 	U64 n_attacks[64];
 	U64 k_attacks[64];
+
+	U64 FillOcclSouth(U64 bbStart, U64 bbBlock);
+	U64 FillOcclNorth(U64 bbStart, U64 bbBlock);
+	U64 FillOcclEast(U64 bbStart, U64 bbBlock);
+	U64 FillOcclWest(U64 bbStart, U64 bbBlock);
+	U64 FillOcclNE(U64 bbStart, U64 bbBlock);
+	U64 FillOcclNW(U64 bbStart, U64 bbBlock);
+	U64 FillOcclSE(U64 bbStart, U64 bbBlock);
+	U64 FillOcclSW(U64 bbStart, U64 bbBlock);
 
 public:
   void Init(void);
@@ -252,6 +259,7 @@ public:
   int PopCnt(U64);
   int PopFirstBit(U64 * bb);
 
+  U64 PawnAttacks(int sd, int sq);
   U64 KingAttacks(int sq);
   U64 KnightAttacks(int sq);
   U64 RookAttacks(U64 occ, int sq);
@@ -267,7 +275,6 @@ public:
   U64 tp_bb[6];
   int pc[64];
   int king_sq[2];
-  int mat[2];
 #ifndef LEAF_PST
   int mg_pst[2];
   int eg_pst[2];
@@ -360,7 +367,7 @@ typedef struct {
 } ENTRY;
 
 void AllocTrans(int mbsize);
-int Attacked(POS *p, int sq, int side);
+int Attacked(POS *p, int sq, int sd);
 U64 AttacksFrom(POS *p, int sq);
 U64 AttacksTo(POS *p, int sq);
 int BadCapture(POS *p, int move);
@@ -422,7 +429,7 @@ void ReadLine(char *str, int n);
 void ResetEngine(void);
 int IsDraw(POS * p);
 int KPKdraw(POS *p, int sd);
-U64 ShiftFwd(U64 bb, int side);
+U64 ShiftFwd(U64 bb, int sd);
 void ScoreCaptures(MOVES *);
 void ScoreQuiet(MOVES *m);
 void SetWeight(int weight_name, int value);
@@ -443,7 +450,6 @@ int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth
 void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
 
-extern U64 p_attacks[2][64];
 extern U64 bbKingZone[2][64];
 extern int dist[64][64];
 extern U64 passed_mask[2][64];

@@ -20,37 +20,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "magicmoves.h"
 
+#define USE_MAGIC
 #define USE_MM_POPCNT
-
-static const int n_moves[8] = { -33, -31, -18, -14, 14, 18, 31, 33 };
-static const int k_moves[8] = { -17, -16, -15, -1, 1, 15, 16, 17 };
 
 void cBitBoard::Init() {
 
-  int x;
-
+#ifdef USE_MAGIC
   initmagicmoves();
+#endif
 
+  // init pawn attacks
+
+  for (int sq = 0; sq < 64; sq++) {
+    p_attacks[WC][sq] = ShiftNE(SqBb(sq)) | ShiftNW(SqBb(sq));
+    p_attacks[BC][sq] = ShiftSE(SqBb(sq)) | ShiftSW(SqBb(sq));
+  }
+ 
   // init knight attacks
 
-  for (int i = 0; i < 64; i++) {
-    n_attacks[i] = 0;
-    for (int j = 0; j < 8; j++) {
-      x = Map0x88(i) + n_moves[j];
-      if (!Sq0x88Off(x))
-        n_attacks[i] |= SqBb(Unmap0x88(x));
-    }
+  for (int sq = 0; sq < 64; sq++) {
+	U64 bb_west = ShiftWest(SqBb(sq));
+	U64 bb_east = ShiftEast(SqBb(sq));
+	n_attacks[sq] = (bb_east | bb_west) << 16;
+	n_attacks[sq] |= (bb_east | bb_west) >> 16;
+	bb_west = ShiftWest(bb_west);
+	bb_east = ShiftEast(bb_east);
+	n_attacks[sq] |= (bb_east | bb_west) << 8;
+	n_attacks[sq] |= (bb_east | bb_west) >> 8;
   }
 
   // init king attacks
 
-  for (int i = 0; i < 64; i++) {
-    k_attacks[i] = 0;
-    for (int j = 0; j < 8; j++) {
-      x = Map0x88(i) + k_moves[j];
-      if (!Sq0x88Off(x))
-        k_attacks[i] |= SqBb(Unmap0x88(x));
-    }
+  for (int sq = 0; sq < 64; sq++) {
+    k_attacks[sq] = SqBb(sq);
+    k_attacks[sq] |= (ShiftWest(k_attacks[sq])  | ShiftEast(k_attacks[sq]));
+    k_attacks[sq] |= (ShiftNorth(k_attacks[sq]) | ShiftSouth(k_attacks[sq]));
   }
 
 }
@@ -144,26 +148,140 @@ U64 GetFrontSpan(U64 bb, int sd) {
   else          return BB.FillSouthExcl(bb);
 }
 
-U64 ShiftFwd(U64 bb, int side) {
+U64 ShiftFwd(U64 bb, int sd) {
 
-  if (side == WC) return ShiftNorth(bb);
+  if (sd == WC) return ShiftNorth(bb);
   return ShiftSouth(bb);
+}
+
+U64 cBitBoard::PawnAttacks(int sd, int sq) {
+  return p_attacks[sd][sq];
+}
+
+U64 cBitBoard::FillOcclSouth(U64 bbStart, U64 bbBlock) {
+
+  bbStart |= bbBlock & (bbStart >> 8);
+  bbBlock &= (bbBlock >> 8);
+  bbStart |= bbBlock & (bbStart >> 16);
+  bbBlock &= (bbBlock >> 16);
+  bbStart |= bbBlock & (bbStart >> 32);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclNorth(U64 bbStart, U64 bbBlock) {
+
+  bbStart |= bbBlock & (bbStart << 8);
+  bbBlock &= (bbBlock << 8);
+  bbStart |= bbBlock & (bbStart << 16);
+  bbBlock &= (bbBlock << 16);
+  bbStart |= bbBlock & (bbStart << 32);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclEast(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotA;
+  bbStart |= bbBlock & (bbStart << 1);
+  bbBlock &= (bbBlock << 1);
+  bbStart |= bbBlock & (bbStart << 2);
+  bbBlock &= (bbBlock << 2);
+  bbStart |= bbBlock & (bbStart << 4);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclNE(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotA;
+  bbStart |= bbBlock & (bbStart << 9);
+  bbBlock &= (bbBlock << 9);
+  bbStart |= bbBlock & (bbStart << 18);
+  bbBlock &= (bbBlock << 18);
+  bbStart |= bbBlock & (bbStart << 36);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclSE(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotA;
+  bbStart |= bbBlock & (bbStart >> 7);
+  bbBlock &= (bbBlock >> 7);
+  bbStart |= bbBlock & (bbStart >> 14);
+  bbBlock &= (bbBlock >> 14);
+  bbStart |= bbBlock & (bbStart >> 28);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclWest(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotH;
+  bbStart |= bbBlock & (bbStart >> 1);
+  bbBlock &= (bbBlock >> 1);
+  bbStart |= bbBlock & (bbStart >> 2);
+  bbBlock &= (bbBlock >> 2);
+  bbStart |= bbBlock & (bbStart >> 4);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclSW(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotH;
+  bbStart |= bbBlock & (bbStart >> 9);
+  bbBlock &= (bbBlock >> 9);
+  bbStart |= bbBlock & (bbStart >> 18);
+  bbBlock &= (bbBlock >> 18);
+  bbStart |= bbBlock & (bbStart >> 36);
+  return bbStart;
+}
+
+U64 cBitBoard::FillOcclNW(U64 bbStart, U64 bbBlock) {
+
+  bbBlock &= bbNotH;
+  bbStart |= bbBlock & (bbStart << 7);
+  bbBlock &= (bbBlock << 7);
+  bbStart |= bbBlock & (bbStart << 14);
+  bbBlock &= (bbBlock << 14);
+  bbStart |= bbBlock & (bbStart << 28);
+  return bbStart;
 }
 
 U64 cBitBoard::KnightAttacks(int sq) {
   return n_attacks[sq];
 }
 
-U64 cBitBoard::RookAttacks(U64 occ, int sq) {
-  return Rmagic(sq, occ);
+U64 cBitBoard::RookAttacks(U64 bbOcc, int sq) {
+
+#ifdef USE_MAGIC
+  return Rmagic(sq, bbOcc);
+#else
+  U64 bbStart = SqBb(sq);
+  U64 result = ShiftNorth(FillOcclNorth(bbStart, ~bbOcc))
+             | ShiftSouth(FillOcclSouth(bbStart, ~bbOcc))
+             | ShiftEast(FillOcclEast(bbStart, ~bbOcc))
+             | ShiftWest(FillOcclWest(bbStart, ~bbOcc));
+  return result;
+#endif
 }
 
-U64 cBitBoard::BishAttacks(U64 occ, int sq) {
-  return Bmagic(sq, occ);
+U64 cBitBoard::BishAttacks(U64 bbOcc, int sq) {
+#ifdef USE_MAGIC
+  return Bmagic(sq, bbOcc);
+#else
+  U64 bbStart = SqBb(sq);
+  U64 result = ShiftNE(FillOcclNE(bbStart, ~bbOcc))
+             | ShiftNW(FillOcclNW(bbStart, ~bbOcc))
+             | ShiftSE(FillOcclSE(bbStart, ~bbOcc))
+             | ShiftSW(FillOcclSW(bbStart, ~bbOcc));
+  return result;
+#endif
 }
 
-U64 cBitBoard::QueenAttacks(U64 occ, int sq) {
-  return Rmagic(sq, occ) | Bmagic(sq, occ);
+U64 cBitBoard::QueenAttacks(U64 bbOcc, int sq) {
+
+#ifdef USE_MAGIC
+  return Rmagic(sq, bbOcc) | Bmagic(sq, bbOcc);
+#else
+  return RookAttacks(bbOcc, sq) | BishAttacks(bbOcc, sq);
+#endif
 }
 
 U64 cBitBoard::KingAttacks(int sq) {

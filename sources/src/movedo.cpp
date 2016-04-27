@@ -138,7 +138,7 @@ void POS::DoMove(int move, UNDO *u) {
 
   case EP_SET:
     tsq ^= 8;
-  if (p_attacks[sd][tsq] & (cl_bb[op] & tp_bb[P]) ) {
+    if (BB.PawnAttacks(sd, tsq) & (cl_bb[op] & tp_bb[P]) ) {
       ep_sq = tsq;
       hash_key ^= zob_ep[File(tsq)];
     }

@@ -218,7 +218,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   if (p->cnt[sd][B] > 1)                                // Bishop pair
 	  Add(sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
 
-  // "elephantiasis correction", idea by H.G.Mueller
+  // "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
 
   if (p->cnt[sd][Q]) 
     tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);

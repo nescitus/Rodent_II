@@ -111,7 +111,7 @@ void SetPosition(POS *p, char *epd) {
     p->ep_sq = NO_SQ;
   else {
     p->ep_sq = Sq(*epd - 'a', *(epd + 1) - '1');
-    if (!(p_attacks[Opp(p->side)][p->ep_sq] & p->Pawns(p->side)))
+    if (!(BB.PawnAttacks(Opp(p->side), p->ep_sq) & p->Pawns(p->side)))
       p->ep_sq = NO_SQ;
   }
 
