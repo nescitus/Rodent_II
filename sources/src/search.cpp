@@ -662,6 +662,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
 int IsDraw(POS *p) {
 
+	static const U64 bbRim = { FILE_A_BB | FILE_H_BB | RANK_1_BB | RANK_8_BB };
+
   // Draw by 50 move rule
 
   if (p->rev_moves > 100) return 1;
@@ -681,7 +683,6 @@ int IsDraw(POS *p) {
     if (!Illegal(p)) {
       if (p->cnt[WC][P] + p->cnt[BC][P] == 0) {
         if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
-        // TODO: K(m) vs K(m), no king on the edge, perhaps it catches more cases
       }
     }
 

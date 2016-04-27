@@ -66,8 +66,10 @@ void POS::DoMove(int move, UNDO *u) {
   hash_key ^= zob_piece[Pc(sd, ftp)][fsq] ^ zob_piece[Pc(sd, ftp)][tsq];
   cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
   tp_bb[ftp] ^= SqBb(fsq) | SqBb(tsq);
+#ifndef LEAF_PST
   mg_pst[sd] += mg_pst_data[sd][ftp][tsq] - mg_pst_data[sd][ftp][fsq];
   eg_pst[sd] += eg_pst_data[sd][ftp][tsq] - eg_pst_data[sd][ftp][fsq];
+#endif
 
   // Update king location
 
@@ -82,11 +84,13 @@ void POS::DoMove(int move, UNDO *u) {
   if (ttp == P)
     pawn_key ^= zob_piece[Pc(op, ttp)][tsq];
 
-    cl_bb[op] ^= SqBb(tsq);
-    tp_bb[ttp] ^= SqBb(tsq);
-    phase -= phase_value[ttp];
-    mg_pst[op] -= mg_pst_data[op][ttp][tsq];
+  cl_bb[op] ^= SqBb(tsq);
+  tp_bb[ttp] ^= SqBb(tsq);
+  phase -= phase_value[ttp];
+#ifndef LEAF_PST
+  mg_pst[op] -= mg_pst_data[op][ttp][tsq];
   eg_pst[op] -= eg_pst_data[op][ttp][tsq];
+#endif
   cnt[op][ttp]--;
   }
 
@@ -111,21 +115,25 @@ void POS::DoMove(int move, UNDO *u) {
     hash_key ^= zob_piece[Pc(sd, R)][fsq] ^ zob_piece[Pc(sd, R)][tsq];
     cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
     tp_bb[R]  ^= SqBb(fsq) | SqBb(tsq);
+#ifndef LEAF_PST
     mg_pst[sd] += mg_pst_data[sd][R][tsq] - mg_pst_data[sd][R][fsq];
-  eg_pst[sd] += eg_pst_data[sd][R][tsq] - eg_pst_data[sd][R][fsq];
+    eg_pst[sd] += eg_pst_data[sd][R][tsq] - eg_pst_data[sd][R][fsq];
+#endif
     break;
 
   case EP_CAP:
     tsq ^= 8;
     pc[tsq] = NO_PC;
     hash_key ^= zob_piece[Pc(op, P)][tsq];
-  pawn_key ^= zob_piece[Pc(op, P)][tsq];
+    pawn_key ^= zob_piece[Pc(op, P)][tsq];
     cl_bb[op] ^= SqBb(tsq);
     tp_bb[P] ^= SqBb(tsq);
     phase -= phase_value[P];
+#ifndef LEAF_PST
     mg_pst[op] -= mg_pst_data[op][P][tsq];
-  eg_pst[op] -= eg_pst_data[op][P][tsq];
-  cnt[op][P]--;
+    eg_pst[op] -= eg_pst_data[op][P][tsq];
+#endif
+    cnt[op][P]--;
     break;
 
   case EP_SET:
@@ -140,14 +148,16 @@ void POS::DoMove(int move, UNDO *u) {
     ftp = PromType(move);
     pc[tsq] = Pc(sd, ftp);
     hash_key ^= zob_piece[Pc(sd, P)][tsq] ^ zob_piece[Pc(sd, ftp)][tsq];
-  pawn_key ^= zob_piece[Pc(sd, P)][tsq];
+    pawn_key ^= zob_piece[Pc(sd, P)][tsq];
     tp_bb[P] ^= SqBb(tsq);
     tp_bb[ftp] ^= SqBb(tsq);
     phase += phase_value[ftp] - phase_value[P];
+#ifndef LEAF_PST
     mg_pst[sd] += mg_pst_data[sd][ftp][tsq] - mg_pst_data[sd][P][tsq];
-  eg_pst[sd] += eg_pst_data[sd][ftp][tsq] - eg_pst_data[sd][P][tsq];
-  cnt[sd][P]--;
-  cnt[sd][ftp]++;
+    eg_pst[sd] += eg_pst_data[sd][ftp][tsq] - eg_pst_data[sd][P][tsq];
+#endif
+    cnt[sd][P]--;
+    cnt[sd][ftp]++;
     break;
   }
 

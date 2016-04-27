@@ -112,7 +112,6 @@ int GetDrawFactor(POS *p, int sd)
     && p->Kings(op)  & bbKingBlockA[sd]) return 0;
   }
 
-
   if (p->cnt[sd][P] == 0) {
 
     // Case 5: low and almost equal material with no pawns

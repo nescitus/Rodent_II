@@ -19,13 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 774.604
 // bench 12: 6.784.115 8,0 s 1.670
-// bench 15: 37.000.681 32.4 2.643
+// bench 15: 37.000.681 30.0 2.856
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5604 lines of code
-// 0.9.17: 54,1% vs 0.8.7
+// 0.9.25: 54,4% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.24"
+#define PROG_NAME "Rodent II 0.9.25"
+
+//#define LEAF_PST
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -266,8 +268,10 @@ public:
   int pc[64];
   int king_sq[2];
   int mat[2];
+#ifndef LEAF_PST
   int mg_pst[2];
   int eg_pst[2];
+#endif
   int cnt[2][6];
   int phase;
   int side;

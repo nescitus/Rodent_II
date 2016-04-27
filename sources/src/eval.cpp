@@ -214,11 +214,14 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
   if (p->cnt[sd][R] > 1) tmp -= 5;                      // Rook pair
+
+  if (p->cnt[sd][B] > 1)                                // Bishop pair
+	  Add(sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
+
+  // "elephantiasis correction", idea by H.G.Mueller
+
   if (p->cnt[sd][Q]) 
-    tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]); // "elephantiasis correction", idea by H.G.Mueller
-  
-  if (p->cnt[sd][B] > 1) 
-     Add(sd, F_OTHERS, SCALE(50,mat_perc),  SCALE(60,mat_perc));  // Bishop pair
+    tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
 
   Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
   
@@ -227,6 +230,10 @@ void cEval::ScorePieces(POS *p, int sd) {
   bbPieces = p->Knights(sd);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
+
+#ifdef LEAF_PST
+	Add(sd, F_PST, mg_pst_data[sd][N][sq], eg_pst_data[sd][N][sq]);
+#endif
 
     // Knight tropism to enemy king
 
@@ -272,6 +279,10 @@ void cEval::ScorePieces(POS *p, int sd) {
   bbPieces = p->Bishops(sd);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
+
+#ifdef LEAF_PST
+	Add(sd, F_PST, mg_pst_data[sd][B][sq], eg_pst_data[sd][B][sq]);
+#endif
 
   // Bishop tropism to enemy king
 
@@ -336,6 +347,10 @@ void cEval::ScorePieces(POS *p, int sd) {
   bbPieces = p->Rooks(sd);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
+
+#ifdef LEAF_PST
+	Add(sd, F_PST, mg_pst_data[sd][R][sq], eg_pst_data[sd][R][sq]);
+#endif
 
     // Rook tropism to enemy king
 
@@ -418,6 +433,10 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     Add(sd, F_TROPISM, tropism_mg[Q] * dist[sq][ksq], tropism_eg[Q] * dist[sq][ksq]);
 
+#ifdef LEAF_PST
+	Add(sd, F_PST, mg_pst_data[sd][Q][sq], eg_pst_data[sd][Q][sq]);
+#endif
+
     // Queen mobility
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
@@ -463,7 +482,11 @@ void cEval::ScorePieces(POS *p, int sd) {
     }
 
   } // end of queen eval
-  
+
+#ifdef LEAF_PST
+  Add(sd, F_PST, mg_pst_data[sd][K][KingSq(p,sd)], eg_pst_data[sd][K][KingSq(p,sd)]);
+#endif
+
   // Score terms using information gathered during piece eval
 
   if (r_on_7th == 2)          // two rooks on 7th rank
@@ -538,6 +561,10 @@ void cEval::ScorePassers(POS * p, int sd)
 
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
+
+#ifdef LEAF_PST
+	Add(sd, F_PST, mg_pst_data[sd][P][sq], eg_pst_data[sd][P][sq]);
+#endif
 
     // Passed pawn
 
@@ -647,10 +674,12 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Init eval with incrementally updated stuff
 
+#ifndef LEAF_PST
   mg[WC][F_PST] = p->mg_pst[WC];
   mg[BC][F_PST] = p->mg_pst[BC];
   eg[WC][F_PST] = p->eg_pst[WC];
   eg[BC][F_PST] = p->eg_pst[BC];
+#endif
 
   // Calculate variables used during evaluation
 
