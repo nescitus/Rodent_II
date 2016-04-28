@@ -138,7 +138,7 @@ void cEval::ScorePatterns(POS * p) {
   if ((p->Kings(WC) & king_mask)
   &&  (p->Rooks(WC) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
 
-  king_mask = SqBb(A1) | SqBb(B1);
+  king_mask = SqBb(B1) | SqBb(C1);
   rook_mask = SqBb(A1) | SqBb(B1) | SqBb(A2);
 
   if ((p->Kings(WC) & king_mask)
@@ -150,7 +150,7 @@ void cEval::ScorePatterns(POS * p) {
   if ((p->Kings(BC) & king_mask)
   &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
 
-  king_mask = SqBb(C8) | SqBb(B8);
+  king_mask = SqBb(B8) | SqBb(C8);
   rook_mask = SqBb(C8) | SqBb(B8) | SqBb(B7);
 
   if ((p->Kings(BC) & king_mask)
