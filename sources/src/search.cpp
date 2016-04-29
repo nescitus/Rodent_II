@@ -502,15 +502,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     }
   } 
   
-  // end of razoring code
-
-  // Set futility pruning flag
- 
-  if (use_futility
-  && fl_prunable_node
-  && depth <= 6 ) {
-    if (Eval.Return(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
-  }
+  // end of razoring code 
 
   // Init moves and variables before entering main loop
   
@@ -522,6 +514,17 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   while ((move = NextMove(m, &mv_type))) {
 
     mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
+
+    // Set futility pruning flag before the first applicable move is tried
+
+    if (mv_type == MV_NORMAL && quiet_tried == 0) {
+      if (use_futility
+      && fl_prunable_node
+      && depth <= 6) {
+        if (Eval.Return(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
+      }
+    }
+
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 

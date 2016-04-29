@@ -130,10 +130,10 @@ void cEval::ScorePawns(POS *p, int sd) {
     // Weak pawn (two flavours)
 
     if (fl_weak) {
-      if (!(adjacent_mask[File(sq)] & bbOwnPawns))
-        Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20); // isolated pawn
-      else
-        Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8);    // backward pawn
+      if (!(adjacent_mask[File(sq)] & bbOwnPawns)) 
+        Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20);                     // isolated pawn
+      else 
+        Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8); // backward pawn
     }
   }
 }
