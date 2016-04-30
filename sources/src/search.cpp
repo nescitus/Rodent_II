@@ -47,12 +47,10 @@ void InitSearch(void) {
 
   // Set depth of late move reduction using modified Stockfish formula
 
-  double r;
-
   for (int dp = 0; dp < MAX_PLY; dp++)
     for (int mv = 0; mv < MAX_MOVES; mv++) {
 
-      r = log((double)dp) * log((double)Min(mv,63)) / 2;
+      double r = log((double)dp) * log((double)Min(mv,63)) / 2;
       if (r < 0.80) r = 0;
 
       lmr_size[0][dp][mv] = r;            // zero window node
@@ -528,7 +526,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-  // Update move statistics (needed for reduction/pruning decisions)
+  // Update move statistics 
+  // (needed for reduction/pruning decisions and for updating history score)
 
   mv_played[mv_tried] = move;
   mv_tried++;
@@ -537,12 +536,16 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Can we prune this move?
 
   fl_prunable_move = !InCheck(p)
-                  && (mv_type == MV_NORMAL) 
+                  && (mv_type == MV_NORMAL)
                   && (mv_hist_score < hist_limit);
 
   // Set new search depth
 
-  new_depth = depth - 1 + InCheck(p);
+  new_depth = depth - 1;
+
+  // Check extension
+
+  if (is_pv || depth < 9) new_depth += InCheck(p);
 
   // Futility pruning
 
