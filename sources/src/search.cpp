@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
-const int fut_margin[6] = { 0, 125, 290, 520, 880, 880};
 int root_side;
 int fl_has_choice;
 
@@ -727,8 +726,8 @@ int IsDraw(POS *p) {
   return 0; // default: no draw
 }
 
-int KPKdraw(POS *p, int sd)
-{
+int KPKdraw(POS *p, int sd) {
+
   int op = Opp(sd);
   U64 bbPawn = p->Pawns(sd);
   U64 bbStrongKing = p->Kings(sd);
@@ -765,15 +764,15 @@ int KPKdraw(POS *p, int sd)
   return 0;
 }
 
-void DisplayCurrmove(int move, int tried)
-{
+void DisplayCurrmove(int move, int tried) {
+
   printf("info currmove ");
   PrintMove(move);
   printf(" currmovenumber %d \n", tried);
 }
 
-void DisplaySpeed(void)
-{
+void DisplaySpeed(void) {
+
   int elapsed = Timer.GetElapsedTime();
   U64 nps = GetNps(elapsed);
 #if defined _WIN32 || defined _WIN64 
@@ -871,8 +870,8 @@ int Timeout() {
   return (!pondering && !Timer.IsInfiniteMode() && Timer.TimeHasElapsed());
 }
 
-U64 GetNps(int elapsed)
-{
+U64 GetNps(int elapsed) {
+
   U64 nps = 0;
   if (elapsed) nps = (nodes * 1000) / elapsed;
   return nps;
