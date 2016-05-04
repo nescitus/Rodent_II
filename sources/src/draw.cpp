@@ -52,38 +52,7 @@ int GetDrawFactor(POS *p, int sd)
 {
   int op = Opp(sd);
 
-  // Case 1: KBP vs Km
-  // drawn when defending king stands on pawn's path and can't be driven out 
-  // by a bishop (must be dealt with before opposite bishops ending)
-
-  if (PcMatB(p, sd)
-  && PcMat1Minor(p, op)
-  && p->cnt[sd][P] == 1
-  && p->cnt[op][P] == 0
-  && (SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd))
-  && NotOnBishColor(p, sd, p->king_sq[op]) ) 
-     return 0;
-
-  // Case 2: Bishops of opposite color
-
-  if (PcMatB(p, sd) && PcMatB(p, op) && DifferentBishops(p)) {
-
-     // 2a: single bishop cannot win without pawns
-     if (p->cnt[sd][P] == 0) return 0;
-
-     // 2b: different bishops with a single pawn on the own half of the board
-     if (p->cnt[sd][P] == 1
-     &&  p->cnt[op][P] == 0) {
-       if (bbHomeZone[sd] & p->Pawns(sd)) return 0;
-
-     // TODO: 2c: distant bishop controls a square on pawn's path
-     }
-
-     // 2d: halve the score for pure BOC endings
-     return 32;
-  }
-
-  // Case 3: KPK with edge pawn (else KBPK recognizer would break)
+  // Case 1: KPK with edge pawn (else KBPK recognizer would break)
 
   if (PcMatNone(p, sd)
   && PcMatNone(p, op)
@@ -97,20 +66,52 @@ int GetDrawFactor(POS *p, int sd)
     &&  p->Kings(op) & bbKingBlockA[sd]) return 0;
   }
 
-  // Case 4: KBPK(P) draws with edge pawn and wrong bishop
+  // Case 2: KBPK(P) draws with edge pawn and wrong bishop
 
   if (PcMatB(p, sd)
-  && PcMatNone(p, op)
-  &&  p->cnt[sd][P]  == 1 ) { // TODO: all pawns of a stronger side on a rim
+	  && PcMatNone(p, op)
+	  && p->cnt[sd][P] == 1) { // TODO: all pawns of a stronger side on a rim
 
-    if (p->Pawns(sd) & FILE_H_BB
-    && NotOnBishColor(p, sd, REL_SQ(H8,sd))
-    && p->Kings(op)  & bbKingBlockH[sd]) return 0;
+	  if (p->Pawns(sd) & FILE_H_BB
+		  && NotOnBishColor(p, sd, REL_SQ(H8, sd))
+		  && p->Kings(op)  & bbKingBlockH[sd]) return 0;
 
-    if (p->Pawns(sd) & FILE_A_BB
-    && NotOnBishColor(p, sd, REL_SQ(A8,sd))
-    && p->Kings(op)  & bbKingBlockA[sd]) return 0;
+	  if (p->Pawns(sd) & FILE_A_BB
+		  && NotOnBishColor(p, sd, REL_SQ(A8, sd))
+		  && p->Kings(op)  & bbKingBlockA[sd]) return 0;
   }
+
+  // Case 3: KBP vs Km
+  // drawn when defending king stands on pawn's path and can't be driven out 
+  // by a bishop (must be dealt with before opposite bishops ending)
+
+  if (PcMatB(p, sd)
+  && PcMat1Minor(p, op)
+  && p->cnt[sd][P] == 1
+  && p->cnt[op][P] == 0
+  && (SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd))
+  && NotOnBishColor(p, sd, p->king_sq[op]) ) 
+     return 0;
+
+  // Case 4: Bishops of opposite color
+
+  if (PcMatB(p, sd) && PcMatB(p, op) && DifferentBishops(p)) {
+
+     // 4a: single bishop cannot win without pawns
+     if (p->cnt[sd][P] == 0) return 0;
+
+     // 4b: different bishops with a single pawn on the own half of the board
+     if (p->cnt[sd][P] == 1
+     &&  p->cnt[op][P] == 0) {
+       if (bbHomeZone[sd] & p->Pawns(sd)) return 0;
+
+     // TODO: 4c: distant bishop controls a square on pawn's path
+     }
+
+     // 4d: halve the score for pure BOC endings
+     return 32;
+  }
+
 
   if (p->cnt[sd][P] == 0) {
 

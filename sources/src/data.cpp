@@ -36,7 +36,7 @@ const int bit_table[64] = {
   61, 22, 43, 51, 60, 42, 59, 58
 };
 //                         P    N    B    R    Q
-const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 };
+const int tp_value[7] = { 100, 325, 325, 500, 1000, 0, 0 }; // immutable, used in Swap()
 int pc_value[7] =       { 100, 325, 335, 500, 1000, 0, 0 }; // these values might be changed via UCI options
 int history[12][64];
 int refutation[64][64];

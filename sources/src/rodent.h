@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.27"
+#define PROG_NAME "Rodent II 0.9.28"
 
 //#define LEAF_PST
 
