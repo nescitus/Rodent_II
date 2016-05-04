@@ -18,14 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // bench: 776.903
-// bench 12: 6.324.251 7,2 s 2.011
+// bench 12: 7.244.869 7,2 s 2.011
 // bench 15: 30.507.639 28.8 2.929
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5639 lines of code
 // 0.9.25: 54,4% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.28"
+#define PROG_NAME "Rodent II 0.9.27"
 
 //#define LEAF_PST
 
@@ -437,7 +437,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore);
 int Refutation(int move);
 void ReadPersonality(char *fileName);
 int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv);
-int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv);
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int *pv);
 int SelectBest(MOVES *m);
 void SetPosition(POS *p, char *epd);
 void SetAsymmetricEval(int sd);

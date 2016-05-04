@@ -167,6 +167,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   int mv_tried = 0, quiet_tried = 0;
   int mv_played[MAX_MOVES];
   int mv_hist_score;
+  int victim, last_capt;
   int move_change = 0;
   
   fl_has_choice = 0;
@@ -213,7 +214,12 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Main loop
   
   while ((move = NextMove(m, &mv_type))) {
+
     mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
+	victim = TpOnSq(p, Tsq(move));
+	if (victim != NO_TP) last_capt = Tsq(move);
+	else last_capt = -1;
+
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
@@ -261,11 +267,11 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // PVS
 
   if (best == -INF)
-    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
   else {
-    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, new_pv);
     if (!abort_search && score > alpha && score < beta)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
   }
 
   // Reduced move scored above alpha - we need to re-search it
@@ -342,7 +348,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   return best;
 }
 
-int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int *pv) {
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int *pv) {
 
   int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
@@ -351,6 +357,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   int mv_played[MAX_MOVES];
   int mv_hist_score;
+  int victim, last_capt;
 
   MOVES m[1];
   UNDO u[1];
@@ -422,7 +429,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
 
   if (!move && is_pv && depth >= 6 && !fl_check) {
-    Search(p, ply, alpha, beta, depth - 2, 0, 0, new_pv);
+    Search(p, ply, alpha, beta, depth - 2, 0, 0, -1, new_pv);
     if (abort_search) return 0;
     TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
   }
@@ -465,14 +472,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       }
 
       p->DoNull(u);
-      if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, new_pv);
+      if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, -1, new_pv);
       else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
       // Verification search (nb. immediate null move within it is prohibited)
 
       if (new_depth > 6 && score >= beta && use_null_verification)
-         score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, new_pv);
+         score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, -1, new_pv);
 
       if (abort_search ) return 0;
       if (score >= beta) return score;
@@ -511,7 +518,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   while ((move = NextMove(m, &mv_type))) {
 
+    // Gather data about the move
+
     mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
+	victim = TpOnSq(p, Tsq(move));
+	if (victim != NO_TP) last_capt = Tsq(move);
+	else last_capt = -1;
 
     // Set futility pruning flag before the first applicable move is tried
 
@@ -543,9 +555,12 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   new_depth = depth - 1;
 
-  // Check extension
+  // Check extension (pv node or low depth)
 
-  if (is_pv || depth < 9) new_depth += InCheck(p);
+  if (is_pv || depth < 9) {
+	  new_depth += InCheck(p);
+	  if (is_pv && Tsq(move) == last_capt_sq) new_depth += 1;
+  }
 
   // Futility pruning
 
@@ -595,16 +610,18 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     new_depth -= reduction;
   }
 
+  // a place to come back if reduction looks suspect
+
   re_search:
    
   // PVS
 
   if (best == -INF)
-    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
   else {
-    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, new_pv);
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, new_pv);
     if (!abort_search && score > alpha && score < beta)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, new_pv);
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
   }
 
   // Reduced move scored above alpha - we need to re-search it
