@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 776.903
-// bench 12: 7.244.869 7,2 s 2.011
-// bench 15: 30.507.639 28.8 2.929
+// bench: 797.602
+// bench 12: 6.222.318 7,2 s 2.011
+// bench 15: 31.762.112 28.8 2.929
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5639 lines of code
-// 0.9.25: 54,4% vs 0.8.7
+// 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
 #define PROG_NAME "Rodent II 0.9.27"

@@ -21,12 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 void Init(void) {
 
-  int i, j, k, x;
-  static const int dirs[4][2] = {{1, -1}, {16, -16}, {17, -17}, {15, -15}};
-  static const int line[8] = {0, 2, 4, 5, 5, 4, 2, 0};
-
-  for (i = 0; i < 64; i++)
-    castle_mask[i] = 15;
+  for (int sq = 0; sq < 64; sq++)
+    castle_mask[sq] = 15;
 
   castle_mask[A1] = 13;
   castle_mask[E1] = 12;
@@ -35,13 +31,13 @@ void Init(void) {
   castle_mask[E8] = 3;
   castle_mask[H8] = 11;
 
-  for (i = 0; i < 12; i++)
-    for (j = 0; j < 64; j++)
-      zob_piece[i][j] = Random64();
+  for (int tp = 0; tp < 12; tp++)
+    for (int sq = 0; sq < 64; sq++)
+      zob_piece[tp][sq] = Random64();
 
-  for (i = 0; i < 16; i++)
+  for (int i = 0; i < 16; i++)
     zob_castle[i] = Random64();
 
-  for (i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++)
     zob_ep[i] = Random64();
 }
