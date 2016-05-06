@@ -262,15 +262,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight outpost
 
-	ScoreOutpost(sd, N, sq);
-
-    // Pawn in front of a knight
-
-    if (SqBb(sq) & bbHomeZone[sd]) {
-      U64 bbStop = ShiftFwd(SqBb(sq), sd);
-      if (bbStop & PcBb(p, sd, P))
-        Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
-    }
+	ScoreOutpost(p, sd, N, sq);
 
   } // end of knight eval
 
@@ -315,15 +307,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Bishop outpost
 
-    ScoreOutpost(sd, B, sq);
-
-	// Pawn in front of a bishop
-
-    if (SqBb(sq) & bbHomeZone[sd]) {
-      U64 bbStop = ShiftFwd(SqBb(sq), sd);
-      if (bbStop & PcBb(p, sd, P))
-        Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
-    }
+    ScoreOutpost(p, sd, B, sq);
 
     // Pawns on the same square color as our bishop
   
@@ -502,7 +486,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
 }
 
-void cEval::ScoreOutpost(int sd, int pc, int sq) {
+void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
 
   int mul = 0;
   int tmp = sp_pst_data[sd][pc][sq];
@@ -514,6 +498,14 @@ void cEval::ScoreOutpost(int sd, int pc, int sq) {
     tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
+  }
+
+  // Pawn in front of a knight
+
+  if (SqBb(sq) & bbHomeZone[sd]) {
+	  U64 bbStop = ShiftFwd(SqBb(sq), sd);
+	  if (bbStop & PcBb(p, sd, P))
+		  Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
   }
 }
 

@@ -68,7 +68,7 @@ void Think(POS *p, int *pv) {
 
   pv[1] = 0; // fixing rare glitch
 
-  // Play move from opening book, if applicable
+  // Play a move from opening book, if applicable
 
   if (use_book) {
     pv[0] = GuideBook.GetPolyglotMove(p, 1);
@@ -294,12 +294,14 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
       }
       TransStore(p->hash_key, move, score, LOWER, depth, ply);
 
-      // Change the best move and show the new pv
+      // Update search time depending on whether the first move has changed
 
       if (depth > 4) {
         if (pv[0] != move) Timer.OnNewRootMove();
         else               Timer.OnOldRootMove();
       }
+
+	  // Change the best move and show the new pv
 
       BuildPv(pv, new_pv, move);
       DisplayPv(score, pv);
@@ -311,13 +313,18 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
     if (score > best) {
       best = score;
+
       if (score > alpha) {
         alpha = score;
 
-      if (depth > 4) {
-        if (pv[0] != move) Timer.OnNewRootMove();
-        else               Timer.OnOldRootMove();
-      }
+        // Update search time depending on whether the first move has changed
+
+        if (depth > 4) {
+          if (pv[0] != move) Timer.OnNewRootMove();
+          else               Timer.OnOldRootMove();
+        }
+
+	    // Change the best move and show the new pv
 
         BuildPv(pv, new_pv, move);
         DisplayPv(score, pv);
@@ -336,8 +343,8 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   if (*pv) {
     if (!fl_check) {
       UpdateHistory(p, -1, *pv, depth, ply);
-        for (int mv = 0; mv < mv_tried; mv++)
-          DecreaseHistory(p, mv_played[mv], depth);
+      for (int mv = 0; mv < mv_tried; mv++)
+        DecreaseHistory(p, mv_played[mv], depth);
     }
     TransStore(p->hash_key, *pv, best, EXACT, depth, ply);
     

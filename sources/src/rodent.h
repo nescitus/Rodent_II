@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 797.602
 // bench 12: 6.222.318 7,2 s 2.011
-// bench 15: 31.762.112 28.8 2.929
+// bench 15: 31.762.112 28.8 2.470
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5639 lines of code
+// 5741 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
@@ -329,7 +329,7 @@ private:
   int ScoreFileShelter(U64 bbOwnPawns, int sd);
   int ScoreFileStorm(U64 bbOppPawns, int sd);
   int ScoreChains(POS *p, int sd);
-  void ScoreOutpost(int sd, int pc, int sq);
+  void ScoreOutpost(POS * p, int sd, int pc, int sq);
   void ScorePawns(POS * p, int sd);
   void FullPawnEval(POS * p, int use_hash);
 
