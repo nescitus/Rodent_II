@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 
 U64 bbKingZone[2][64];
-U64 passed_mask[2][64];
-U64 adjacent_mask[8];
 int phalanx_data[2][64];
 int defended_data[2][64];
 int castle_mask[64];

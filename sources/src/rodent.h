@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // bench: 797.602
-// bench 12: 6.222.318 7,2 s 2.011
-// bench 15: 31.762.112 28.8 2.470
+// bench 12: 6.222.318 7,9 s 1.815
+// bench 15: 31.762.112 27.2 2.702
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5741 lines of code
+// 5738 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
@@ -317,6 +317,9 @@ private:
   int danger[512];   // table for evaluating king safety
   int dist[64][64];  // table for evaluating king tropism
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
+  U64 adjacent_mask[8];
+  U64 passed_mask[2][64];
+  U64 support_mask[2][64];
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
   void ScorePassers(POS * p, int sd);
@@ -452,9 +455,6 @@ void UciLoop(void);
 
 extern U64 bbKingZone[2][64];
 extern int dist[64][64];
-extern U64 passed_mask[2][64];
-extern U64 adjacent_mask[8];
-extern U64 support_mask[2][64];
 extern int mg_pst_data[2][6][64];
 extern int eg_pst_data[2][6][64];
 extern int phalanx_data[2][64];

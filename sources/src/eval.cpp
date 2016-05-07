@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
-U64 support_mask[2][64];
 int mg_pst_data[2][6][64];
 int eg_pst_data[2][6][64];
 int sp_pst_data[2][6][64];
@@ -93,7 +92,7 @@ int GetDefendedPst(int sq) {
 
 void cEval::Init(void) {
 
-  int rank_delta, file_delta;
+  int r_delta, f_delta;
   prog_side = NO_CL;
 
   // Init piece/square values together with material value of the pieces.
@@ -132,10 +131,10 @@ void cEval::Init(void) {
 
   // Init king zone
 
-  for (int i = 0; i < 64; i++) {
-    bbKingZone[WC][i] = bbKingZone[BC][i] = BB.KingAttacks(i);
-    bbKingZone[WC][i] |= ShiftSouth(bbKingZone[WC][i]);
-    bbKingZone[BC][i] |= ShiftNorth(bbKingZone[BC][i]);
+  for (int sq = 0; sq < 64; sq++) {
+    bbKingZone[WC][sq] = bbKingZone[BC][sq] = BB.KingAttacks(sq);
+    bbKingZone[WC][sq] |= ShiftSouth(bbKingZone[WC][sq]);
+    bbKingZone[BC][sq] |= ShiftNorth(bbKingZone[BC][sq]);
   }
 
   // Init mask for passed pawn detection
@@ -169,12 +168,12 @@ void cEval::Init(void) {
 
   // Init distance tables (for evaluating king tropism and unstoppable passers)
 
-  for (int i = 0; i < 64; ++i) {
-    for (int j = 0; j < 64; ++j) {
-      rank_delta = Abs(Rank(i) - Rank(j));
-	  file_delta = Abs(File(i) - File(j));
-      dist[i][j] = 14 - (rank_delta + file_delta);
-	  chebyshev_dist[i][j] = Max(rank_delta, file_delta);
+  for (int sq1 = 0; sq1 < 64; ++sq1) {
+    for (int sq2 = 0; sq2 < 64; ++sq2) {
+      r_delta = Abs(Rank(sq1) - Rank(sq2));
+	  f_delta = Abs(File(sq1) - File(sq2));
+      dist[sq1][sq2] = 14 - (r_delta + f_delta);
+	  chebyshev_dist[sq1][sq2] = Max(r_delta, f_delta);
     }
   }
 }
