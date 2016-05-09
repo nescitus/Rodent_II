@@ -473,7 +473,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Score terms using information gathered during piece eval
 
   if (r_on_7th == 2)          // two rooks on 7th rank
-    Add(sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg); 
+    Add(sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
@@ -574,6 +574,14 @@ void cEval::ScorePassers(POS * p, int sd)
     
       else if ( (bbStop & bbAllAttacks[sd]) 
       &&   (bbStop & ~bbAllAttacks[op]) ) mul += 10;
+
+	  // rook behind passer
+	  /*
+	  U64 bbRookSpan = BB.RookAttacks(OccBb(p), sq) | GetFrontSpan(SqBb(sq), op);
+	  if (bbRookSpan & PcBb(p, sd, R)) mul += 5;
+	  else if (bbRookSpan & PcBb(p, op, R)) mul -= 10;
+	  */
+	  
    
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }

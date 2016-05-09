@@ -338,10 +338,52 @@ int *GenerateQuietChecks(POS *p, int *list)
   U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
+  U64 bbPawnChk = ShiftFwd( ShiftWest(SqBb(ksq)) | ShiftEast(SqBb(ksq)), Opp(p->side));
 
   int side, from, to;
 
   side = p->side;
+
+  if (side == WC) {
+
+	  // White double pawn checks
+
+	  bbMoves = ((((p->Pawns(WC) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
+	  bbMoves &= bbPawnChk;
+	  while (bbMoves) {
+		  to = BB.PopFirstBit(&bbMoves);
+		  *list++ = (EP_SET << 12) | (to << 6) | (to - 16);
+	  }
+
+	  // White normal pawn checks
+
+	  bbMoves = ((p->Pawns(WC) & ~RANK_7_BB) << 8) & UnoccBb(p);
+	  bbMoves &= bbPawnChk;
+	  while (bbMoves) {
+		  to = BB.PopFirstBit(&bbMoves);
+		  *list++ = (to << 6) | (to - 8);
+	  }
+  }
+  else {
+
+	  // Black double pawn checks
+
+	  bbMoves = ((((p->Pawns(BC) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
+	  bbMoves &= bbPawnChk;
+	  while (bbMoves) {
+		  to = BB.PopFirstBit(&bbMoves);
+		  *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
+	  }
+
+	  // Black single pawn checks
+
+	  bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
+	  bbMoves &= bbPawnChk;
+	  while (bbMoves) {
+		  to = BB.PopFirstBit(&bbMoves);
+		  *list++ = (to << 6) | (to + 8);
+	  }
+  }
 
   bbPieces = p->Knights(side);
   while (bbPieces) {
