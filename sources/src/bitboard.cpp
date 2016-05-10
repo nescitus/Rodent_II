@@ -57,6 +57,33 @@ void cBitBoard::Init() {
     k_attacks[sq] |= (ShiftNorth(k_attacks[sq]) | ShiftSouth(k_attacks[sq]));
   }
 
+  for (int sq1 = 0; sq1 < 64; sq1++) {
+    for (int sq2 = 0; sq2 < 64; sq2++) {
+      bbBetween[sq1][sq2] = GetBetween(sq1, sq2);
+    }
+  }
+
+}
+
+// from chessprogramming wiki
+
+U64 cBitBoard::GetBetween(int sq1, int sq2) {
+
+  const U64 m1 = C64(-1);
+  const U64 a2a7 = C64(0x0001010101010100);
+  const U64 b2g7 = C64(0x0040201008040200);
+  const U64 h1b7 = C64(0x0002040810204080); /* Thanks Dustin, g2b7 did not work for c1-a3 */
+  U64 btwn, line, rank, file;
+
+  btwn = (m1 << sq1) ^ (m1 << sq2);
+  file = (sq2 & 7) - (sq1 & 7);
+  rank = ((sq2 | 7) - sq1) >> 3;
+  line = ((file & 7) - 1) & a2a7; /* a2a7 if same file */
+  line += 2 * (((rank & 7) - 1) >> 58); /* b1g1 if same rank */
+  line += (((rank - file) & 15) - 1) & b2g7; /* b2g7 if same diagonal */
+  line += (((rank + file) & 15) - 1) & h1b7; /* h1b7 if same antidiag */
+  line *= btwn & -btwn; /* mul acts like shift by smaller square */
+  return line & btwn;   /* return the bits on that line in-between */
 }
 
 #if defined(__GNUC__)

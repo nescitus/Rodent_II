@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 797.602
-// bench 12: 6.222.318 7,9 s 1.815
-// bench 15: 31.762.112 27.2 2.702
+// bench: 804.177
+// bench 12: 7.109.498 9,2 s 1.780
+// bench 15: 37.507.284 35.0 2.481
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5738 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.28"
+#define PROG_NAME "Rodent II 0.9.29"
 
 //#define LEAF_PST
 
@@ -110,6 +110,7 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 #define ShiftSW(x)      ((x & bbNotA)>>9)
 #define ShiftSE(x)      ((x & bbNotH)>>7)
 
+#define JustOne(bb)     (bb && !(bb & (bb-1)))
 #define MoreThanOne(bb) ( bb & (bb - 1) )
 
 #define SIDE_RANDOM     (~((U64)0))
@@ -234,20 +235,22 @@ typedef struct {
 
 typedef class {
 private:
-	U64 p_attacks[2][64];
-	U64 n_attacks[64];
-	U64 k_attacks[64];
+  U64 p_attacks[2][64];
+  U64 n_attacks[64];
+  U64 k_attacks[64];
 
-	U64 FillOcclSouth(U64 bbStart, U64 bbBlock);
-	U64 FillOcclNorth(U64 bbStart, U64 bbBlock);
-	U64 FillOcclEast(U64 bbStart, U64 bbBlock);
-	U64 FillOcclWest(U64 bbStart, U64 bbBlock);
-	U64 FillOcclNE(U64 bbStart, U64 bbBlock);
-	U64 FillOcclNW(U64 bbStart, U64 bbBlock);
-	U64 FillOcclSE(U64 bbStart, U64 bbBlock);
-	U64 FillOcclSW(U64 bbStart, U64 bbBlock);
+  U64 FillOcclSouth(U64 bbStart, U64 bbBlock);
+  U64 FillOcclNorth(U64 bbStart, U64 bbBlock);
+  U64 FillOcclEast(U64 bbStart, U64 bbBlock);
+  U64 FillOcclWest(U64 bbStart, U64 bbBlock);
+  U64 FillOcclNE(U64 bbStart, U64 bbBlock);
+  U64 FillOcclNW(U64 bbStart, U64 bbBlock);
+  U64 FillOcclSE(U64 bbStart, U64 bbBlock);
+  U64 FillOcclSW(U64 bbStart, U64 bbBlock);
+  U64 GetBetween(int sq1, int sq2);
 
 public:
+  U64 bbBetween[64][64];
   void Init(void);
   U64 FillNorth(U64 bb);
   U64 FillSouth(U64 bb);
@@ -312,6 +315,9 @@ private:
   U64 bbPawnTakes[2];
   U64 bbTwoPawnsTake[2];
   U64 bbPawnCanTake[2];
+  U64 bbKingZone[2][64];
+  int phalanx_data[2][64];
+  int defended_data[2][64];
   int mg[2][N_OF_FACTORS];
   int eg[2][N_OF_FACTORS];
   int danger[512];   // table for evaluating king safety
@@ -453,12 +459,8 @@ int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth
 void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
 
-extern U64 bbKingZone[2][64];
-extern int dist[64][64];
 extern int mg_pst_data[2][6][64];
 extern int eg_pst_data[2][6][64];
-extern int phalanx_data[2][64];
-extern int defended_data[2][64];
 extern int castle_mask[64];
 extern const int bit_table[64];
 extern const int tp_value[7];

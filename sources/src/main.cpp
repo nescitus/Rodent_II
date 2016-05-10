@@ -34,7 +34,6 @@ POS p;
 
 
 int main() {
-
   eval_blur = 0;
   draw_score = 0;
   time_percentage = 100;

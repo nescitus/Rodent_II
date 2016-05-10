@@ -330,6 +330,8 @@ int *GenerateQuiet(POS *p, int *list) {
   return list;
 }
 
+
+
 int *GenerateQuietChecks(POS *p, int *list)
 {
   U64 bbPieces, bbMoves;
@@ -377,11 +379,11 @@ int *GenerateQuietChecks(POS *p, int *list)
 
 	  // Black single pawn checks
 
-	  bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
+      bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
 	  bbMoves &= bbPawnChk;
 	  while (bbMoves) {
-		  to = BB.PopFirstBit(&bbMoves);
-		  *list++ = (to << 6) | (to + 8);
+        to = BB.PopFirstBit(&bbMoves);
+        *list++ = (to << 6) | (to + 8);
 	  }
   }
 

@@ -363,7 +363,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     }
 
     bbAllAttacks[sd] |= bbMob;
-    bbMinorAttacks[sd] |= bbMob;  // TEMPORARY
+    bbMinorAttacks[sd] |= bbMob;
 
     // Rook attacks on enemy king zone
 
