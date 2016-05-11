@@ -252,6 +252,7 @@ private:
 public:
   U64 bbBetween[64][64];
   void Init(void);
+  U64 ShiftSideways(U64 bb);
   U64 FillNorth(U64 bb);
   U64 FillSouth(U64 bb);
   U64 FillNorthSq(int sq);

@@ -53,7 +53,7 @@ void cBitBoard::Init() {
 
   for (int sq = 0; sq < 64; sq++) {
     k_attacks[sq] = SqBb(sq);
-    k_attacks[sq] |= (ShiftWest(k_attacks[sq])  | ShiftEast(k_attacks[sq]));
+	k_attacks[sq] |= ShiftSideways(k_attacks[sq]);
     k_attacks[sq] |= (ShiftNorth(k_attacks[sq]) | ShiftSouth(k_attacks[sq]));
   }
 
@@ -179,6 +179,10 @@ U64 ShiftFwd(U64 bb, int sd) {
 
   if (sd == WC) return ShiftNorth(bb);
   return ShiftSouth(bb);
+}
+
+U64 cBitBoard::ShiftSideways(U64 bb) {
+  return (ShiftWest(bb) | ShiftEast(bb));
 }
 
 U64 cBitBoard::PawnAttacks(int sd, int sq) {

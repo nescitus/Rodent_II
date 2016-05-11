@@ -127,11 +127,9 @@ void cEval::Init(void) {
 
   for (int sq = 0; sq < 64; sq++) {
     passed_mask[WC][sq] = BB.FillNorthExcl(SqBb(sq));
-    passed_mask[WC][sq] |= ShiftWest(passed_mask[WC][sq]);
-    passed_mask[WC][sq] |= ShiftEast(passed_mask[WC][sq]);
+    passed_mask[WC][sq] |= BB.ShiftSideways(passed_mask[WC][sq]);
     passed_mask[BC][sq] = BB.FillSouthExcl(SqBb(sq));
-    passed_mask[BC][sq] |= ShiftWest(passed_mask[BC][sq]);
-    passed_mask[BC][sq] |= ShiftEast(passed_mask[BC][sq]);
+    passed_mask[BC][sq] |= BB.ShiftSideways(passed_mask[BC][sq]);
   }
 
   // Init adjacent mask (for detecting isolated pawns)
@@ -145,10 +143,10 @@ void cEval::Init(void) {
   // Init support mask (for detecting weak pawns)
 
   for (int sq = 0; sq < 64; sq++) {
-    support_mask[WC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+    support_mask[WC][sq] = BB.ShiftSideways(SqBb(sq));
     support_mask[WC][sq] |= BB.FillSouth(support_mask[WC][sq]);
 
-    support_mask[BC][sq] = ShiftWest(SqBb(sq)) | ShiftEast(SqBb(sq));
+    support_mask[BC][sq] = BB.ShiftSideways(SqBb(sq));
     support_mask[BC][sq] |= BB.FillNorth(support_mask[BC][sq]);
   }
 

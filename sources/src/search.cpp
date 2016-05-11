@@ -762,7 +762,7 @@ int KPKdraw(POS *p, int sd) {
   ) return 1;
 
   if (p->side == sd
-  && (bbStrongKing & ShiftWest(bbPawn))
+  && (bbStrongKing & ShiftEast(bbPawn))
   && (bbWeakKing & ShiftFwd(ShiftFwd(bbStrongKing,sd) ,sd)) 
   ) return 1;
 

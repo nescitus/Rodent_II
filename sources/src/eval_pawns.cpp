@@ -106,7 +106,7 @@ void cEval::ScorePawns(POS *p, int sd) {
     fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & bbOppPawns) == 0);
     fl_weak      = ((support_mask[sd][sq] & bbOwnPawns) == 0);
-    fl_phalanx   = (ShiftEast(SqBb(sq)) & bbOwnPawns) | (ShiftWest(SqBb(sq)) & bbOwnPawns);
+    fl_phalanx   = (BB.ShiftSideways(SqBb(sq)) & bbOwnPawns);
 
     // Candidate passer
 
