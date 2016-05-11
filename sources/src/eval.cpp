@@ -76,20 +76,6 @@ void InitWeights(void) {
   dyn_weights[DF_OPP_MOB] = 110;
 }
 
-const int pawnAdv[8] = { 0, 1, 1, 3, 5, 8, 12, 0 };
-
-int GetPhalanxPst(int sq) {
-
-  if (sq == D4) return 15;             // D4/E4 pawns
-  if (sq == D3) return 10;             // D3/E3 pawns
-  if (sq == C4 || sq == E4) return 10; // C4/D4 or E4/F4 pawns
-  return pawnAdv[Rank(sq)] * 2;        // generic bonus for advanced phalanxes
-}
-
-int GetDefendedPst(int sq) {
-  return pawnAdv[Rank(sq)];
-}
-
 void cEval::Init(void) {
 
   int r_delta, f_delta;
@@ -113,8 +99,8 @@ void cEval::Init(void) {
       mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
       eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 
-      phalanx_data[sd][REL_SQ(sq, sd)] = GetPhalanxPst(sq);
-      defended_data[sd][REL_SQ(sq, sd)] = GetDefendedPst(sq);
+      phalanx_data[sd][REL_SQ(sq, sd)] = pstPhalanx[sq];
+      defended_data[sd][REL_SQ(sq, sd)] = pstDefended[sq];
 
       sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
       sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];

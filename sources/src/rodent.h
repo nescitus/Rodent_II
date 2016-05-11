@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 804.177
-// bench 12: 7.109.498 9,2 s 1.780
-// bench 15: 37.507.284 35.0 2.481
+// bench: 854.779
+// bench 12: 6.154.092 7,6 s 1.865
+// bench 15: 36.663.372 34.1 2.492
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5738 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.29"
+#define PROG_NAME "Rodent II 0.9.30"
 
 //#define LEAF_PST
 
@@ -403,8 +403,6 @@ U64 GetDoubleWPControl(U64 bb);
 U64 GetDoubleBPControl(U64 bb);
 U64 GetFrontSpan(U64 bb, int sd);
 int GetDrawFactor(POS *p, int sd);
-int GetPhalanxPst(int sq);
-int GetDefendedPst(int sq);
 void UpdateHistory(POS *p, int last_move, int move, int depth, int ply);
 void Init(void);
 void InitSearch(void);
