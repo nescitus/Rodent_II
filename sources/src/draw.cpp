@@ -89,7 +89,7 @@ int GetDrawFactor(POS *p, int sd)
   && PcMat1Minor(p, op)
   && p->cnt[sd][P] == 1
   && p->cnt[op][P] == 0
-  && (SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd))
+  && (SqBb(p->king_sq[op]) & BB.GetFrontSpan(p->Pawns(sd), sd))
   && NotOnBishColor(p, sd, p->king_sq[op]) ) 
      return 0;
 
@@ -165,7 +165,7 @@ int GetDrawFactor(POS *p, int sd)
 
     // 15a: good defensive position with a king on pawn's path increases drawing chances
 
-    if ((SqBb(p->king_sq[op]) & GetFrontSpan(p->Pawns(sd), sd)))
+    if ((SqBb(p->king_sq[op]) & BB.GetFrontSpan(p->Pawns(sd), sd)))
       return 32; // 1/2
 
     // 15b: draw code for rook endgame with edge pawn

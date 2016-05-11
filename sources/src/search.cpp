@@ -743,27 +743,27 @@ int KPKdraw(POS *p, int sd) {
   // opposition through a pawn
 
   if (p->side == sd
-  && (bbWeakKing & ShiftFwd(bbPawn, sd))
-  && (bbStrongKing & ShiftFwd(bbPawn, op))
+  && (bbWeakKing & BB.ShiftFwd(bbPawn, sd))
+  && (bbStrongKing & BB.ShiftFwd(bbPawn, op))
   ) return 1;
   
   // weaker side can create opposition through a pawn in one move
 
   if (p->side == op
-  && (BB.KingAttacks(p->king_sq[op]) & ShiftFwd(bbPawn, sd))
-  && (bbStrongKing & ShiftFwd(bbPawn, op))
+  && (BB.KingAttacks(p->king_sq[op]) & BB.ShiftFwd(bbPawn, sd))
+  && (bbStrongKing & BB.ShiftFwd(bbPawn, op))
   ) if (!Illegal(p)) return 1;
 
   // opposition next to a pawn
   
   if (p->side == sd
   && (bbStrongKing & ShiftWest(bbPawn))
-  && (bbWeakKing & ShiftFwd(ShiftFwd(bbStrongKing,sd) ,sd)) 
+  && (bbWeakKing & BB.ShiftFwd(BB.ShiftFwd(bbStrongKing,sd) ,sd)) 
   ) return 1;
 
   if (p->side == sd
   && (bbStrongKing & ShiftEast(bbPawn))
-  && (bbWeakKing & ShiftFwd(ShiftFwd(bbStrongKing,sd) ,sd)) 
+  && (bbWeakKing & BB.ShiftFwd(BB.ShiftFwd(bbStrongKing,sd) ,sd)) 
   ) return 1;
 
   // TODO: pawn checks king

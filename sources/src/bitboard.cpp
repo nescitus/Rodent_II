@@ -153,29 +153,29 @@ U64 cBitBoard::FillSouthSq(int sq) {
   return FillSouth(SqBb(sq));
 }
 
-U64 GetWPControl(U64 bb) {
+U64 cBitBoard::GetWPControl(U64 bb) {
   return (ShiftNE(bb) | ShiftNW(bb));
 }
 
-U64 GetBPControl(U64 bb) {
+U64 cBitBoard::GetBPControl(U64 bb) {
   return (ShiftSE(bb) | ShiftSW(bb));
 }
 
-U64 GetDoubleWPControl(U64 bb) {
+U64 cBitBoard::GetDoubleWPControl(U64 bb) {
   return (ShiftNE(bb) & ShiftNW(bb));
 }
 
-U64 GetDoubleBPControl(U64 bb) {
+U64 cBitBoard::GetDoubleBPControl(U64 bb) {
   return (ShiftSE(bb) & ShiftSW(bb));
 }
 
-U64 GetFrontSpan(U64 bb, int sd) {
+U64 cBitBoard::GetFrontSpan(U64 bb, int sd) {
 
   if (sd == WC) return BB.FillNorthExcl(bb);
   else          return BB.FillSouthExcl(bb);
 }
 
-U64 ShiftFwd(U64 bb, int sd) {
+U64 cBitBoard::ShiftFwd(U64 bb, int sd) {
 
   if (sd == WC) return ShiftNorth(bb);
   return ShiftSouth(bb);

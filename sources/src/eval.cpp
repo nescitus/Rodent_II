@@ -99,8 +99,8 @@ void cEval::Init(void) {
       mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
       eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 
-      phalanx_data[sd][REL_SQ(sq, sd)] = pstPhalanx[sq];
-      defended_data[sd][REL_SQ(sq, sd)] = pstDefended[sq];
+      phalanx_data[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
+      defended_data[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
 
       sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
       sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];
@@ -486,7 +486,7 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
   // Pawn in front of a knight
 
   if (SqBb(sq) & bbHomeZone[sd]) {
-	  U64 bbStop = ShiftFwd(SqBb(sq), sd);
+	  U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
 	  if (bbStop & PcBb(p, sd, P))
 		  Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
   }
@@ -545,7 +545,7 @@ void cEval::ScorePassers(POS * p, int sd)
 
     if (!(passed_mask[sd][sq] & p->Pawns(op))) {
 
-      bbStop = ShiftFwd(SqBb(sq), sd);
+      bbStop = BB.ShiftFwd(SqBb(sq), sd);
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
       eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
       mul = 100;
@@ -592,7 +592,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
     if (!(passed_mask[WC][sq] & p->Pawns(BC))) {
-      bbSpan = GetFrontSpan(SqBb(sq), WC);
+      bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
       psq = ((WC - 1) & 56) + (sq & 7);
       prom_dist = Min(5, chebyshev_dist[sq] [psq]);
 
@@ -610,7 +610,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
     if (!(passed_mask[BC][sq] & p->Pawns(WC))) {
-      bbSpan = GetFrontSpan(SqBb(sq), BC);
+      bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
       if (bbSpan & p->Kings(WC)) tempo -= 1;
       psq = ((BC - 1) & 56) + (sq & 7);
       prom_dist = Min(5, chebyshev_dist[sq][psq]);
@@ -666,10 +666,10 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Calculate variables used during evaluation
 
-  bbPawnTakes[WC] = GetWPControl(p->Pawns(WC));
-  bbPawnTakes[BC] = GetBPControl(p->Pawns(BC));
-  bbTwoPawnsTake[WC] = GetDoubleWPControl(p->Pawns(WC));
-  bbTwoPawnsTake[BC] = GetDoubleBPControl(p->Pawns(BC));
+  bbPawnTakes[WC] = BB.GetWPControl(p->Pawns(WC));
+  bbPawnTakes[BC] = BB.GetBPControl(p->Pawns(BC));
+  bbTwoPawnsTake[WC] = BB.GetDoubleWPControl(p->Pawns(WC));
+  bbTwoPawnsTake[BC] = BB.GetDoubleBPControl(p->Pawns(BC));
   bbAllAttacks[WC] = bbPawnTakes[WC] | BB.KingAttacks(p->king_sq[WC]);
   bbAllAttacks[BC] = bbPawnTakes[BC] | BB.KingAttacks(p->king_sq[BC]);
   bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;

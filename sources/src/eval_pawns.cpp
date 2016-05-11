@@ -102,7 +102,7 @@ void cEval::ScorePawns(POS *p, int sd) {
 
     // Get some information about the pawn we are evaluating
 
-    bbSpan = GetFrontSpan(SqBb(sq), sd);
+    bbSpan = BB.GetFrontSpan(SqBb(sq), sd);
     fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & bbOppPawns) == 0);
     fl_weak      = ((support_mask[sd][sq] & bbOwnPawns) == 0);

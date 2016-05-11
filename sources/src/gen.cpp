@@ -338,7 +338,7 @@ int *GenerateQuietChecks(POS *p, int *list)
   U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
-  U64 bbPawnChk = ShiftFwd( BB.ShiftSideways(SqBb(ksq)), Opp(p->side));
+  U64 bbPawnChk = BB.ShiftFwd( BB.ShiftSideways(SqBb(ksq)), Opp(p->side));
 
   int side, from, to;
 
