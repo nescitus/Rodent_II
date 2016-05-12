@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 854.779
 // bench 12: 6.154.092 7,6 s 1.865
-// bench 15: 36.663.372 34.1 2.492
+// bench 15: 36.663.372 32.3 2.630
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5738 lines of code
+// 5801 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.30"
+#define PROG_NAME "Rodent II 0.9.31"
 
 //#define LEAF_PST
 
@@ -502,6 +502,8 @@ extern int np_bonus;
 extern int rp_malus;
 extern int hist_limit;
 extern int hist_perc;
+extern int fl_reading_personality;
+extern int fl_separate_books;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);

@@ -34,6 +34,8 @@ POS p;
 
 
 int main() {
+  fl_reading_personality = 0;
+  fl_separate_books = 0; // opening book files can be defined in a personality description
   eval_blur = 0;
   draw_score = 0;
   time_percentage = 100;

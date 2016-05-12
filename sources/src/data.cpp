@@ -71,3 +71,5 @@ int hist_limit;
 int hist_perc;
 int panel_style;
 int verbose;
+int fl_reading_personality;
+int fl_separate_books;

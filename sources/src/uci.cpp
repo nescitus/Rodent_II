@@ -85,6 +85,10 @@ void UciLoop(void) {
 	 if (panel_style == 1) {
         printf("option name PersonalityFile type string default rodent.txt\n");
 		printf("option name OwnBook type check default true\n");
+        if (fl_separate_books) {
+          printf("option name GuideBookFile type string default guide.bin\n");
+          printf("option name MainBookFile type string default rodent.bin\n");
+        }
 	 }
 
       printf("uciok\n");
@@ -242,13 +246,17 @@ void ParseSetoption(char *ptr) {
 	hist_perc = atoi(value);
 	hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
   } else if (strcmp(name, "GuideBookFile") == 0) {
-    GuideBook.ClosePolyglot();
-    GuideBook.bookName = value;
-    GuideBook.OpenPolyglot();
+    if (!fl_separate_books || !fl_reading_personality) {
+      GuideBook.ClosePolyglot();
+      GuideBook.bookName = value;
+      GuideBook.OpenPolyglot();
+	}
   } else if (strcmp(name, "MainBookFile") == 0) {
-    MainBook.ClosePolyglot();
-    MainBook.bookName = value;
-    MainBook.OpenPolyglot();
+    if (!fl_separate_books || !fl_reading_personality) {
+      MainBook.ClosePolyglot();
+      MainBook.bookName = value;
+      MainBook.OpenPolyglot();
+	}
   } else if (strcmp(name, "PersonalityFile") == 0) {
     printf("info string reading ");
     printf(value);
@@ -389,18 +397,24 @@ void ReadPersonality(char *fileName)
   if ((personalityFile = fopen(fileName, "r")) == NULL)
     return;
 
+  fl_reading_personality = 1;
+
   // read options line by line
+
   while (fgets(line, 256, personalityFile)) {
     ptr = ParseToken(line, token);
 
     if (strstr(line, "HIDE_OPTIONS")) panel_style = 1;
     if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
+    if (strstr(line, "PERSONALITY_BOOKS")) fl_separate_books = 0;
+    if (strstr(line, "GENERAL_BOOKS")) fl_separate_books = 1;
 
     if (strcmp(token, "setoption") == 0)
       ParseSetoption(ptr);
   }
 
   fclose(personalityFile);
+  fl_reading_personality = 0;
 }
 
 int Perft(POS *p, int ply, int depth) {
