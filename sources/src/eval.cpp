@@ -694,11 +694,11 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Add stylistic asymmetric stuff
 
-  mg[prog_side][F_OTHERS] += keep_queen  * p->cnt[prog_side][Q];
-  mg[prog_side][F_OTHERS] += keep_rook   * p->cnt[prog_side][R];
-  mg[prog_side][F_OTHERS] += keep_bishop * p->cnt[prog_side][B];
-  mg[prog_side][F_OTHERS] += keep_knight * p->cnt[prog_side][N];
-  mg[prog_side][F_OTHERS] += keep_pawn   * p->cnt[prog_side][P];
+  mg[prog_side][F_OTHERS] += keep_pc[Q]  * p->cnt[prog_side][Q];
+  mg[prog_side][F_OTHERS] += keep_pc[R]   * p->cnt[prog_side][R];
+  mg[prog_side][F_OTHERS] += keep_pc[B] * p->cnt[prog_side][B];
+  mg[prog_side][F_OTHERS] += keep_pc[N] * p->cnt[prog_side][N];
+  mg[prog_side][F_OTHERS] += keep_pc[P]   * p->cnt[prog_side][P];
 
   // Sum all the symmetric eval factors
   // (we start from 2 so that we won't touch king attacks 

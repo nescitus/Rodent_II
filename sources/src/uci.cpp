@@ -53,11 +53,11 @@ void UciLoop(void) {
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
-		printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pawn);
-		printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_knight);
-		printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_bishop);
-		printf("option name KeepRook type spin default %d min -200 max 200\n", keep_rook);
-		printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_queen);
+		printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
+		printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
+		printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
+		printf("option name KeepRook type spin default %d min -200 max 200\n", keep_pc[R]);
+		printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_pc[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
 		printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
@@ -187,19 +187,19 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
     Eval.Init();
   } else if (strcmp(name, "KeepQueen") == 0) {
-    keep_queen = atoi(value);
+    keep_pc[Q] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepRook") == 0) {
-    keep_rook = atoi(value);
+    keep_pc[R] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepBishop") == 0) {
-    keep_bishop = atoi(value);
+    keep_pc[B] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepKnight") == 0) {
-    keep_knight = atoi(value);
+    keep_pc[N] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepPawn") == 0) {
-    keep_pawn = atoi(value);
+    keep_pc[P] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KnightLikedClosed") == 0) {
     np_bonus = atoi(value);
