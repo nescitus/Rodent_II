@@ -757,15 +757,9 @@ int KPKdraw(POS *p, int sd) {
   ) if (!Illegal(p)) return 1;
 
   // opposition next to a pawn
-  // TODO: should work woth ShiftSideways()
   
   if (p->side == sd
-  && (bbStrongKing & ShiftWest(bbPawn))
-  && (bbWeakKing & BB.ShiftFwd(BB.ShiftFwd(bbStrongKing,sd) ,sd)) 
-  ) return 1;
-
-  if (p->side == sd
-  && (bbStrongKing & ShiftEast(bbPawn))
+  && (bbStrongKing & BB.ShiftSideways(bbPawn))
   && (bbWeakKing & BB.ShiftFwd(BB.ShiftFwd(bbStrongKing,sd) ,sd)) 
   ) return 1;
 

@@ -9,6 +9,7 @@
  *to optimal.
  *
  *Copyright (C) 2007 Pradyumna Kannan.
+ *Shortened 2016 Pawel Koziol (removed unused functions and compiler directives)
  *
  *This code is provided 'as-is', without any express or implied warranty.
  *In no event will the authors be held liable for any damages arising from
@@ -117,7 +118,6 @@ const U64 magicmoves_b_magics[64]=
   C64(0x0000104104104000), C64(0x0000002082082000), C64(0x0000000020841000), C64(0x0000000000208800),
   C64(0x0000000010020200), C64(0x0000000404080200), C64(0x0000040404040400), C64(0x0002020202020200)
 };
-
 
 const U64 magicmoves_b_mask[64]=
 {
