@@ -35,20 +35,6 @@
   #pragma warning( disable : 4146)
 #endif
 
-//For rooks
-
-//original 12 bit keys
-//C64(0x0000002040810402) - H8 12 bit
-//C64(0x0000102040800101) - A8 12 bit
-//C64(0x0000102040008101) - B8 11 bit
-//C64(0x0000081020004101) - C8 11 bit
-
-//Adapted Grant Osborne's keys
-//C64(0x0001FFFAABFAD1A2) - H8 11 bit
-//C64(0x00FFFCDDFCED714A) - A8 11 bit
-//C64(0x007FFCDDFCED714A) - B8 10 bit
-//C64(0x003FFFCDFFD88096) - C8 10 bit
-
 const unsigned int magicmoves_r_shift[64]=
 {
   52, 53, 53, 53, 53, 53, 53, 52,
@@ -100,7 +86,6 @@ const U64 magicmoves_r_mask[64]=
   C64(0x6E10101010101000), C64(0x5E20202020202000), C64(0x3E40404040404000), C64(0x7E80808080808000)
 };
 
-//my original tables for bishops
 const unsigned int magicmoves_b_shift[64]=
 {
   58, 59, 59, 59, 59, 59, 59, 58,
@@ -154,7 +139,6 @@ const U64 magicmoves_b_mask[64]=
   C64(0x0028440200000000), C64(0x0050080402000000), C64(0x0020100804020000), C64(0x0040201008040200)
 };
 
-#ifdef MINIMIZE_MAGIC
 U64 magicmovesbdb[5248];
 const U64* magicmoves_b_indices[64]=
 {
@@ -175,11 +159,7 @@ const U64* magicmoves_b_indices[64]=
   magicmovesbdb+5056, magicmovesbdb+2720,  magicmovesbdb+864, magicmovesbdb+1248,
   magicmovesbdb+1632, magicmovesbdb+2272, magicmovesbdb+4896, magicmovesbdb+5184
 };
-#else
-    U64 magicmovesbdb[64][1<<9];
-#endif
 
-#ifdef MINIMIZE_MAGIC
 U64 magicmovesrdb[102400];
 const U64* magicmoves_r_indices[64]=
 {
@@ -200,9 +180,6 @@ const U64* magicmoves_r_indices[64]=
   magicmovesrdb+90112, magicmovesrdb+75776, magicmovesrdb+40960, magicmovesrdb+45056,
   magicmovesrdb+49152, magicmovesrdb+55296, magicmovesrdb+79872, magicmovesrdb+98304
 };
-#else
-    U64 magicmovesrdb[64][1<<12];
-#endif
 
 U64 initmagicmoves_occ(const int* squares, const int numSquares, const U64 linocc)
 {
@@ -296,13 +273,8 @@ U64 initmagicmoves_Bmoves(const int square, const U64 occ)
 
 //used so that the original indices can be left as const so that the compiler can optimize better
 
-  #ifdef MINIMIZE_MAGIC
     #define BmagicNOMASK2(square, occupancy) *(magicmoves_b_indices2[square]+(((occupancy)*magicmoves_b_magics[square])>>magicmoves_b_shift[square]))
     #define RmagicNOMASK2(square, occupancy) *(magicmoves_r_indices2[square]+(((occupancy)*magicmoves_r_magics[square])>>magicmoves_r_shift[square]))
-  #else
-    #define BmagicNOMASK2(square, occupancy) magicmovesbdb[square][((occupancy)*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)]
-    #define RmagicNOMASK2(square, occupancy) magicmovesrdb[square][((occupancy)*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)]
-  #endif
 
 void initmagicmoves(void)
 {
@@ -320,7 +292,6 @@ void initmagicmoves(void)
   56, 45, 25, 31, 35, 16,  9, 12,
   44, 24, 15,  8, 23,  7,  6,  5};
 
-#ifdef MINIMIZE_MAGIC
   //identical to magicmove_x_indices except without the const modifer
   U64* magicmoves_b_indices2[64]=
   {
@@ -360,7 +331,6 @@ void initmagicmoves(void)
     magicmovesrdb+90112, magicmovesrdb+75776, magicmovesrdb+40960, magicmovesrdb+45056,
     magicmovesrdb+49152, magicmovesrdb+55296, magicmovesrdb+79872, magicmovesrdb+98304
   };
-#endif // MINIMIZE_MAGIC
 
   for(i=0;i<64;i++)
   {

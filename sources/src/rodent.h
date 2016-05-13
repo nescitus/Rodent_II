@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bench 12: 6.154.092 7,6 s 1.865
 // bench 15: 36.663.372 32.3 2.630
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5707 lines of code
+// 5627 lines of code
 // 0.9.27: 55,6% vs 0.8.7
 
 #pragma once

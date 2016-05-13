@@ -11,9 +11,8 @@
  *the correct move bitboard for that particular square and occupancy. It
  *has been named Rmagic and Bmagic so that it will not conflict with
  *any functions/macros in your chess program called Rmoves/Bmoves. You
- *can macro Bmagic/Rmagic to Bmoves/Rmoves if you wish.  If you want to
- *minimize the size of the bitboards, make MINIMIZE_MAGIC uncommented in this
- *header (more info on this later).  Where you typedef your unsigned 64-bit
+ *can macro Bmagic/Rmagic to Bmoves/Rmoves if you wish.
+ Where you typedef your unsigned 64-bit
  *integer declare __64_BIT_INTEGER_DEFINED__.  If USE_INLINING is uncommented,
  *the macros will be expressed as MMINLINEd functions.  
 
@@ -24,31 +23,10 @@
  *Occupancy is any unsigned 64-bit integer that describes which squares on
  *the board are occupied.
  *
- *The following macros are identical to Rmagic and Bmagic except that the 
- *occupancy is assumed to already have been "masked".  Look at the following
- *source or read up on the internet about magic bitboard move generation to
- *understand the usage of these macros and what it means by "an occupancy that
- *has already been masked".  Using the following macros when possible might be
- *a tiny bit faster than using Rmagic and Bmagic because it avoids an array
- *access and a 64-bit & operation.
- *
- *BmagicNOMASK(square, occupancy)
- *RmagicNOMASK(square, occupancy)
  *
  *Unsigned 64 bit integers are referenced by this generator as U64.
  *Edit the beginning lines of this header for the defenition of a 64 bit
  *integer if necessary.
- *
- *If MINIMIZE_MAGIC is defined before including this file:
- *The move bitboard generator will use up 841kb of memory.
- *41kb of memory is used for the bishop database and 800kb is used for the rook
- *database.  If you feel the 800kb rook database is too big, then comment it out
- *and use a more traditional move bitboard generator in conjunction with the
- *magic move bitboard generator for bishops.
- *
- *If MINIMIAZE_MAGIC is not defined before including this file:
- *The move bitboard generator will use up 2304kb of memory but might perform a bit
- *faster.
  *
  *Copyright (C) 2007 Pradyumna Kannan.
  *
@@ -75,9 +53,6 @@
 
 /*********MODIFY THE FOLLOWING IF NECESSARY********/
 //the default configuration is the best
-
-//Uncommont either one of the following or none
-#define MINIMIZE_MAGIC
 
 #define USE_INLINING /*the MMINLINE keyword is assumed to be available*/
 
@@ -120,14 +95,10 @@ extern const unsigned int magicmoves_r_shift[64];
   #define MINIMAL_B_BITS_SHIFT(square) 55
   #define MINIMAL_R_BITS_SHIFT(square) 52
 
-  #ifdef MINIMIZE_MAGIC
-
     #ifndef USE_INLINING
       #define Bmagic(square, occupancy) *(magicmoves_b_indices[square]+((((occupancy)&magicmoves_b_mask[square])*magicmoves_b_magics[square])>>magicmoves_b_shift[square]))
       #define Rmagic(square, occupancy) *(magicmoves_r_indices[square]+((((occupancy)&magicmoves_r_mask[square])*magicmoves_r_magics[square])>>magicmoves_r_shift[square]))
-      #define BmagicNOMASK(square, occupancy) *(magicmoves_b_indices[square]+(((occupancy)*magicmoves_b_magics[square])>>magicmoves_b_shift[square]))
-      #define RmagicNOMASK(square, occupancy) *(magicmoves_r_indices[square]+(((occupancy)*magicmoves_r_magics[square])>>magicmoves_r_shift[square]))
-    #endif //USE_INLINING
+   #endif //USE_INLINING
 
     //extern U64 magicmovesbdb[5248];
     extern const U64* magicmoves_b_indices[64];
@@ -135,68 +106,24 @@ extern const unsigned int magicmoves_r_shift[64];
     //extern U64 magicmovesrdb[102400];
     extern const U64* magicmoves_r_indices[64];
 
-  #else //Don't Minimize database size
-
-    #ifndef USE_INLINING
-      #define Bmagic(square, occupancy) magicmovesbdb[square][(((occupancy)&magicmoves_b_mask[square])*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)]
-      #define Rmagic(square, occupancy) magicmovesrdb[square][(((occupancy)&magicmoves_r_mask[square])*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)]
-      #define BmagicNOMASK(square, occupancy) magicmovesbdb[square][((occupancy)*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)]
-      #define RmagicNOMASK(square, occupancy) magicmovesrdb[square][((occupancy)*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)]
-    #endif //USE_INLINING
-
-    extern U64 magicmovesbdb[64][1<<9];
-    extern U64 magicmovesrdb[64][1<<12];
-
-  #endif //MINIMIAZE_MAGICMOVES
-
 #ifdef USE_INLINING
   static MMINLINE U64 Bmagic(const unsigned int square,const U64 occupancy)
   {
-      #ifdef MINIMIZE_MAGIC
         return *(magicmoves_b_indices[square]+(((occupancy&magicmoves_b_mask[square])*magicmoves_b_magics[square])>>magicmoves_b_shift[square]));
-      #else
-        return magicmovesbdb[square][(((occupancy)&magicmoves_b_mask[square])*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)];
-      #endif
-
   }
   static MMINLINE U64 Rmagic(const unsigned int square,const U64 occupancy)
   {
-      #ifdef MINIMIZE_MAGIC
         return *(magicmoves_r_indices[square]+(((occupancy&magicmoves_r_mask[square])*magicmoves_r_magics[square])>>magicmoves_r_shift[square]));
-      #else
-        return magicmovesrdb[square][(((occupancy)&magicmoves_r_mask[square])*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)];
-      #endif
-
-  }
-  static MMINLINE U64 BmagicNOMASK(const unsigned int square,const U64 occupancy)
-  {
-      #ifdef MINIMIZE_MAGIC
-        return *(magicmoves_b_indices[square]+(((occupancy)*magicmoves_b_magics[square])>>magicmoves_b_shift[square]));
-      #else
-        return magicmovesbdb[square][((occupancy)*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)];
-      #endif
-  }
-  static MMINLINE U64 RmagicNOMASK(const unsigned int square, const U64 occupancy)
-  {
-      #ifdef MINIMIZE_MAGIC
-        return *(magicmoves_r_indices[square]+(((occupancy)*magicmoves_r_magics[square])>>magicmoves_r_shift[square]));
-      #else
-        return magicmovesrdb[square][((occupancy)*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)];
-      #endif
   }
 
   static MMINLINE U64 Qmagic(const unsigned int square,const U64 occupancy)
   {
     return Bmagic(square,occupancy)|Rmagic(square,occupancy);
   }
-  static MMINLINE U64 QmagicNOMASK(const unsigned int square, const U64 occupancy)
-  {
-    return BmagicNOMASK(square,occupancy)|RmagicNOMASK(square,occupancy);
-  }
+
 #else //!USE_INLINING
 
 #define Qmagic(square, occupancy) (Bmagic(square,occupancy)|Rmagic(square,occupancy))
-#define QmagicNOMASK(square, occupancy) (BmagicNOMASK(square,occupancy)|RmagicNOMASK(square,occupancy))
 
 #endif //USE_INLINING
 
