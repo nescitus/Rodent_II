@@ -176,12 +176,7 @@ const U64* magicmoves_b_indices[64]=
   magicmovesbdb+1632, magicmovesbdb+2272, magicmovesbdb+4896, magicmovesbdb+5184
 };
 #else
-  #ifndef PERFECT_MAGIC_HASH
     U64 magicmovesbdb[64][1<<9];
-  #else
-    U64 magicmovesbdb[1428];
-    PERFECT_MAGIC_HASH magicmoves_b_indices[64][1<<9];
-  #endif
 #endif
 
 #ifdef MINIMIZE_MAGIC
@@ -206,12 +201,7 @@ const U64* magicmoves_r_indices[64]=
   magicmovesrdb+49152, magicmovesrdb+55296, magicmovesrdb+79872, magicmovesrdb+98304
 };
 #else
-  #ifndef PERFECT_MAGIC_HASH
     U64 magicmovesrdb[64][1<<12];
-  #else
-    U64 magicmovesrdb[4900];
-    PERFECT_MAGIC_HASH magicmoves_r_indices[64][1<<12];
-  #endif
 #endif
 
 U64 initmagicmoves_occ(const int* squares, const int numSquares, const U64 linocc)
@@ -306,7 +296,6 @@ U64 initmagicmoves_Bmoves(const int square, const U64 occ)
 
 //used so that the original indices can be left as const so that the compiler can optimize better
 
-#ifndef PERFECT_MAGIC_HASH
   #ifdef MINIMIZE_MAGIC
     #define BmagicNOMASK2(square, occupancy) *(magicmoves_b_indices2[square]+(((occupancy)*magicmoves_b_magics[square])>>magicmoves_b_shift[square]))
     #define RmagicNOMASK2(square, occupancy) *(magicmoves_r_indices2[square]+(((occupancy)*magicmoves_r_magics[square])>>magicmoves_r_shift[square]))
@@ -314,11 +303,6 @@ U64 initmagicmoves_Bmoves(const int square, const U64 occ)
     #define BmagicNOMASK2(square, occupancy) magicmovesbdb[square][((occupancy)*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT(square)]
     #define RmagicNOMASK2(square, occupancy) magicmovesrdb[square][((occupancy)*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT(square)]
   #endif
-/*#else
-  #define BmagicNOMASK2(square, occupancy) magicmovesbdb[magicmoves_b_indices[square][((occupancy)*magicmoves_b_magics[square])>>MINIMAL_B_BITS_SHIFT]]
-  #define RmagicNOMASK2(square, occupancy) magicmovesrdb[magicmoves_r_indices[square][((occupancy)*magicmoves_r_magics[square])>>MINIMAL_R_BITS_SHIFT]]
-*/
-#endif
 
 void initmagicmoves(void)
 {
@@ -378,14 +362,6 @@ void initmagicmoves(void)
   };
 #endif // MINIMIZE_MAGIC
 
-
-#ifdef PERFECT_MAGIC_HASH
-  for(i=0;i<1428;i++)
-    magicmovesbdb[i]=0;
-  for(i=0;i<4900;i++)
-    magicmovesrdb[i]=0;
-#endif
-
   for(i=0;i<64;i++)
   {
     int squares[64];
@@ -400,27 +376,7 @@ void initmagicmoves(void)
     for(temp=0;temp<(((U64)(1))<<numsquares);temp++)
     {
       U64 tempocc=initmagicmoves_occ(squares,numsquares,temp);
-      #ifndef PERFECT_MAGIC_HASH
-        BmagicNOMASK2(i,tempocc)=initmagicmoves_Bmoves(i,tempocc);
-      #else
-        U64 moves=initmagicmoves_Bmoves(i,tempocc);
-        U64 index=(((tempocc)*magicmoves_b_magics[i])>>MINIMAL_B_BITS_SHIFT);
-        int j;
-        for(j=0;j<1428;j++)
-        {
-          if(!magicmovesbdb[j])
-          {
-            magicmovesbdb[j]=moves;
-            magicmoves_b_indices[i][index]=j;
-            break;
-          }
-          else if(magicmovesbdb[j]==moves)
-          {
-            magicmoves_b_indices[i][index]=j;
-            break;
-          }
-        }
-      #endif
+      BmagicNOMASK2(i,tempocc)=initmagicmoves_Bmoves(i,tempocc);
     }
   }
   for(i=0;i<64;i++)
@@ -437,27 +393,7 @@ void initmagicmoves(void)
     for(temp=0;temp<(((U64)(1))<<numsquares);temp++)
     {
       U64 tempocc=initmagicmoves_occ(squares,numsquares,temp);
-      #ifndef PERFECT_MAGIC_HASH
-        RmagicNOMASK2(i,tempocc)=initmagicmoves_Rmoves(i,tempocc);
-      #else
-        U64 moves=initmagicmoves_Rmoves(i,tempocc);
-        U64 index=(((tempocc)*magicmoves_r_magics[i])>>MINIMAL_R_BITS_SHIFT);
-        int j;
-        for(j=0;j<4900;j++)
-        {
-          if(!magicmovesrdb[j])
-          {
-            magicmovesrdb[j]=moves;
-            magicmoves_r_indices[i][index]=j;
-            break;
-          }
-          else if(magicmovesrdb[j]==moves)
-          {
-            magicmoves_r_indices[i][index]=j;
-            break;
-          }
-        }
-      #endif
+      RmagicNOMASK2(i,tempocc)=initmagicmoves_Rmoves(i,tempocc);
     }
   }
 }
