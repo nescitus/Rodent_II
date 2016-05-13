@@ -29,8 +29,8 @@ void cEval::ScorePatterns(POS * p) {
 
   static const U64 wb_mask = {SqBb(F1) | SqBb(C1) | SqBb(A7) | SqBb(B8) | SqBb(H7) | SqBb(G8) | SqBb(A6) | SqBb(H6) | SqBb(B2) | SqBb(G2) };
   static const U64 bb_mask = {SqBb(F8) | SqBb(C8) | SqBb(A2) | SqBb(B1) | SqBb(H2) | SqBb(G1) | SqBb(A3) | SqBb(H3) | SqBb(B7) | SqBb(G7) };
-  static const U64 wn_mask = {SqBb(A7) | SqBb(H7)};
-  static const U64 bn_mask = {SqBb(A2) | SqBb(H2)};
+  static const U64 wn_mask = {SqBb(A7) | SqBb(H7) };
+  static const U64 bn_mask = {SqBb(A2) | SqBb(H2) };
 
   // White bishop patterns
 

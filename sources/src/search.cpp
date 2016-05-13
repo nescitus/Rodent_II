@@ -27,6 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
+int fut_margin[7] = { 0, 100, 150, 200, 250, 300, 350 };
+int razor_margin[4] = { 0, 300, 360, 420 };
 int root_side;
 int fl_has_choice;
 
@@ -504,7 +506,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !was_null
   && !(p->Pawns(p->side) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
   &&  depth <= 3) {
-    int threshold = beta - 300 - (depth - 1) * 60;
+    int threshold = beta - razor_margin[depth];
     int eval = Eval.Return(p, 1);
 
     if (eval < threshold) {
@@ -537,7 +539,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       if (use_futility
       && fl_prunable_node
       && depth <= 6) {
-        if (Eval.Return(p, 1) + 50 + 50 * depth < beta) fl_futility = 1;
+        if (Eval.Return(p, 1) + fut_margin[depth] < beta) fl_futility = 1;
       }
     }
 
@@ -755,6 +757,7 @@ int KPKdraw(POS *p, int sd) {
   ) if (!Illegal(p)) return 1;
 
   // opposition next to a pawn
+  // TODO: should work woth ShiftSideways()
   
   if (p->side == sd
   && (bbStrongKing & ShiftWest(bbPawn))
