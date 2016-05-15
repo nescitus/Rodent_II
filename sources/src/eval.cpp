@@ -388,6 +388,15 @@ void cEval::ScorePieces(POS *p, int sd) {
       }
     }
 
+	// Rook on the 6th rank attacking pawns or cutting off enemy king
+
+	if (SqBb(sq) & bbRelRank[sd][RANK_6]) {
+      if ( (p->Pawns(op) & bbRelRank[sd][RANK_6] &~bbPawnTakes[op])
+      ||   (p->Kings(op) & (bbRelRank[sd][RANK_8] | bbRelRank[sd][RANK_7])) ) {
+        Add(sd, F_LINES, 4, 8);
+      }
+    }
+
   } // end of rook eval
 
   // Queen
@@ -477,18 +486,19 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
     if (SqBb(sq) & ~bbPawnCanTake[Opp(sd)]) mul += 2;  // in the hole of enemy pawn structure
     if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;          // defended by own pawn
     if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;       // defended by two pawns
+
     tmp *= mul;
     tmp /= 2;
 
     Add(sd, F_OUTPOST, tmp, tmp);
   }
 
-  // Pawn in front of a knight
+  // Pawn in front of a minor
 
   if (SqBb(sq) & bbHomeZone[sd]) {
-	  U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
-	  if (bbStop & PcBb(p, sd, P))
-		  Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
+    U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
+    if (bbStop & PcBb(p, sd, P))
+      Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
   }
 }
 
