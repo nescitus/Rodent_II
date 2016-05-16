@@ -38,6 +38,45 @@ char *factor_name[] = { "Attack    ", "Mobility  ", "Pst       ", "Pawns     ", 
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 
+void cMask::Init(void) {
+
+  // Init mask for passed pawn detection
+
+  for (int sq = 0; sq < 64; sq++) {
+    passed[WC][sq] = BB.FillNorthExcl(SqBb(sq));
+    passed[WC][sq] |= BB.ShiftSideways(passed[WC][sq]);
+    passed[BC][sq] = BB.FillSouthExcl(SqBb(sq));
+    passed[BC][sq] |= BB.ShiftSideways(passed[BC][sq]);
+  }
+
+  // Init adjacent mask for isolated pawns detection
+
+  for (int f = 0; f < 8; f++) {
+	  adjacent[f] = 0ULL;
+	  if (f > 0) adjacent[f] |= FILE_A_BB << (f - 1);
+	  if (f < 7) adjacent[f] |= FILE_A_BB << (f + 1);
+  }
+
+  // Init supported mask for weak pawns detection
+
+  for (int sq = 0; sq < 64; sq++) {
+    supported[WC][sq] = BB.ShiftSideways(SqBb(sq));
+    supported[WC][sq] |= BB.FillSouth(supported[WC][sq]);
+
+    supported[BC][sq] = BB.ShiftSideways(SqBb(sq));
+    supported[BC][sq] |= BB.FillNorth(supported[BC][sq]);
+  }
+
+  // Init king zone
+
+  for (int sq = 0; sq < 64; sq++) {
+    king_zone[WC][sq] = king_zone[BC][sq] = BB.KingAttacks(sq);
+    king_zone[WC][sq] |= ShiftSouth(king_zone[WC][sq]);
+    king_zone[BC][sq] |= ShiftNorth(king_zone[BC][sq]);
+  }
+
+};
+
 void SetAsymmetricEval(int sd) {
 
   int op = Opp(sd);
@@ -115,41 +154,6 @@ void cEval::Init(void) {
     // TODO: init separately for Black and White in SetAsymmetricEval() to gain some speed
   }
 
-  // Init king zone
-
-  for (int sq = 0; sq < 64; sq++) {
-    bbKingZone[WC][sq] = bbKingZone[BC][sq] = BB.KingAttacks(sq);
-    bbKingZone[WC][sq] |= ShiftSouth(bbKingZone[WC][sq]);
-    bbKingZone[BC][sq] |= ShiftNorth(bbKingZone[BC][sq]);
-  }
-
-  // Init mask for passed pawn detection
-
-  for (int sq = 0; sq < 64; sq++) {
-    passed_mask[WC][sq] = BB.FillNorthExcl(SqBb(sq));
-    passed_mask[WC][sq] |= BB.ShiftSideways(passed_mask[WC][sq]);
-    passed_mask[BC][sq] = BB.FillSouthExcl(SqBb(sq));
-    passed_mask[BC][sq] |= BB.ShiftSideways(passed_mask[BC][sq]);
-  }
-
-  // Init adjacent mask (for detecting isolated pawns)
-
-  for (int i = 0; i < 8; i++) {
-    adjacent_mask[i] = 0;
-    if (i > 0) adjacent_mask[i] |= FILE_A_BB << (i - 1);
-    if (i < 7) adjacent_mask[i] |= FILE_A_BB << (i + 1);
-  }
-
-  // Init support mask (for detecting weak pawns)
-
-  for (int sq = 0; sq < 64; sq++) {
-    support_mask[WC][sq] = BB.ShiftSideways(SqBb(sq));
-    support_mask[WC][sq] |= BB.FillSouth(support_mask[WC][sq]);
-
-    support_mask[BC][sq] = BB.ShiftSideways(SqBb(sq));
-    support_mask[BC][sq] |= BB.FillNorth(support_mask[BC][sq]);
-  }
-
   // Init distance tables (for evaluating king tropism and unstoppable passers)
 
   for (int sq1 = 0; sq1 < 64; ++sq1) {
@@ -181,7 +185,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
 
-  U64 bbZone = bbKingZone[sd][ksq];
+  U64 bbZone = Mask.king_zone[sd][ksq];
 
   // Init bitboards to detect check threats
   
@@ -553,7 +557,7 @@ void cEval::ScorePassers(POS * p, int sd)
 
     // Passed pawn
 
-    if (!(passed_mask[sd][sq] & p->Pawns(op))) {
+    if (!(Mask.passed[sd][sq] & p->Pawns(op))) {
 
       bbStop = BB.ShiftFwd(SqBb(sq), sd);
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
@@ -601,7 +605,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   bbPieces = p->Pawns(WC);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
-    if (!(passed_mask[WC][sq] & p->Pawns(BC))) {
+    if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
       bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
       psq = ((WC - 1) & 56) + (sq & 7);
       prom_dist = Min(5, chebyshev_dist[sq] [psq]);
@@ -619,7 +623,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   if (p->side == WC) tempo = 1; else tempo = 0;
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
-    if (!(passed_mask[BC][sq] & p->Pawns(WC))) {
+    if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
       bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
       if (bbSpan & p->Kings(WC)) tempo -= 1;
       psq = ((BC - 1) & 56) + (sq & 7);

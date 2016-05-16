@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "book.h"
 
 cBitBoard BB;
+cMask Mask;
 sTimer Timer; // class for setting and observing time limits
 sBook  MainBook;  // opening book
 sBook  GuideBook;
@@ -53,6 +54,7 @@ int main() {
 
   Timer.Init();
   BB.Init();
+  Mask.Init();
   Init();
   InitWeights();
   Eval.Init();

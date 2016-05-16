@@ -105,14 +105,14 @@ void cEval::ScorePawns(POS *p, int sd) {
     bbSpan = BB.GetFrontSpan(SqBb(sq), sd);
     fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & bbOppPawns) == 0);
-    fl_weak      = ((support_mask[sd][sq] & bbOwnPawns) == 0);
+    fl_weak      = ((Mask.supported[sd][sq] & bbOwnPawns) == 0);
     fl_phalanx   = (BB.ShiftSideways(SqBb(sq)) & bbOwnPawns);
 
     // Candidate passer
 
     if (fl_unopposed) {
       if (fl_phalanx) {
-      if (BB.PopCnt((passed_mask[sd][sq] & bbOppPawns)) == 1)
+      if (BB.PopCnt((Mask.passed[sd][sq] & bbOppPawns)) == 1)
         Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
       }
     }
@@ -130,7 +130,7 @@ void cEval::ScorePawns(POS *p, int sd) {
     // Weak pawn (two flavours)
 
     if (fl_weak) {
-      if (!(adjacent_mask[File(sq)] & bbOwnPawns)) 
+      if (!(Mask.adjacent[File(sq)] & bbOwnPawns)) 
         Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20);                     // isolated pawn
       else 
         Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8); // backward pawn

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 883.176
 // bench 12: 7.053.955 8,5 s 1.919
-// bench 15: 27.866.363 25.7 2.510
+// bench 15: 27.866.363 25.1 2.575
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5624 lines of code
 // 0.9.31: 56,5% vs 0.8.7
@@ -316,13 +316,23 @@ public:
 } POS;
 
 typedef class {
+public:
+  U64 passed[2][64];
+  U64 adjacent[8];
+  U64 supported[2][64];
+  U64 king_zone[2][64];
+  void Init(void);
+} cMask;
+
+extern cMask Mask;
+
+typedef class {
 private:
   U64 bbAllAttacks[2];
   U64 bbMinorAttacks[2];
   U64 bbPawnTakes[2];
   U64 bbTwoPawnsTake[2];
   U64 bbPawnCanTake[2];
-  U64 bbKingZone[2][64];
   int phalanx_data[2][64];
   int defended_data[2][64];
   int mg[2][N_OF_FACTORS];
@@ -330,9 +340,6 @@ private:
   int danger[512];   // table for evaluating king safety
   int dist[64][64];  // table for evaluating king tropism
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
-  U64 adjacent_mask[8];
-  U64 passed_mask[2][64];
-  U64 support_mask[2][64];
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
   void ScorePassers(POS * p, int sd);
