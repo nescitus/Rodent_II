@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 883.176
 // bench 12: 7.053.955 8,5 s 1.919
-// bench 15: 27.866.363 25.1 2.575
+// bench 15: 27.866.363 25.1 2.619
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5624 lines of code
 // 0.9.31: 56,5% vs 0.8.7
@@ -333,13 +333,8 @@ private:
   U64 bbPawnTakes[2];
   U64 bbTwoPawnsTake[2];
   U64 bbPawnCanTake[2];
-  int phalanx_data[2][64];
-  int defended_data[2][64];
   int mg[2][N_OF_FACTORS];
   int eg[2][N_OF_FACTORS];
-  int danger[512];   // table for evaluating king safety
-  int dist[64][64];  // table for evaluating king tropism
-  int chebyshev_dist[64][64]; // table for unstoppable passer detection
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
   void ScorePassers(POS * p, int sd);
@@ -364,6 +359,21 @@ public:
 } cEval;
 
 extern cEval Eval;
+
+typedef class cParam {
+public:
+  int mg_pst_data[2][6][64];
+  int eg_pst_data[2][6][64];
+  int sp_pst_data[2][6][64];
+  int danger[512];   // table for evaluating king safety
+  int dist[64][64];  // table for evaluating king tropism
+  int chebyshev_dist[64][64]; // table for unstoppable passer detection
+  int phalanx_data[2][64];
+  int defended_data[2][64];
+  void Init(void);
+};
+
+extern cParam Param;
 
 typedef struct {
   POS *p;
@@ -465,8 +475,6 @@ int TransRetrieve(U64 key, int *move, int *score, int alpha, int beta, int depth
 void TransStore(U64 key, int move, int score, int flags, int depth, int ply);
 void UciLoop(void);
 
-extern int mg_pst_data[2][6][64];
-extern int eg_pst_data[2][6][64];
 extern int castle_mask[64];
 extern const int bit_table[64];
 extern const int tp_value[7];

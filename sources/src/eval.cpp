@@ -30,10 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 static const int max_phase = 24;
 const int phase_value[7] = { 0, 1, 1, 2, 4, 0, 0 };
 
-int mg_pst_data[2][6][64];
-int eg_pst_data[2][6][64];
-int sp_pst_data[2][6][64];
-
 char *factor_name[] = { "Attack    ", "Mobility  ", "Pst       ", "Pawns     ", "Passers   ", "Tropism   ", "Outposts  ", "Lines     ", "Pressure  ", "Others    "};
 
 sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
@@ -115,10 +111,10 @@ void InitWeights(void) {
   dyn_weights[DF_OPP_MOB] = 110;
 }
 
-void cEval::Init(void) {
+void cParam::Init(void) {
 
   int r_delta, f_delta;
-  prog_side = NO_CL;
+  Eval.prog_side = NO_CL;
 
   // Init piece/square values together with material value of the pieces.
 
@@ -219,12 +215,12 @@ void cEval::ScorePieces(POS *p, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, mg_pst_data[sd][N][sq], eg_pst_data[sd][N][sq]);
+	Add(sd, F_PST, Param.mg_pst_data[sd][N][sq], Param.eg_pst_data[sd][N][sq]);
 #endif
 
     // Knight tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[N] * dist[sq][ksq], tropism_eg[N] * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[N] * Param.dist[sq][ksq], tropism_eg[N] * Param.dist[sq][ksq]);
     
     // Knight mobility
 
@@ -260,12 +256,12 @@ void cEval::ScorePieces(POS *p, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, mg_pst_data[sd][B][sq], eg_pst_data[sd][B][sq]);
+	Add(sd, F_PST, Param.mg_pst_data[sd][B][sq], Param.eg_pst_data[sd][B][sq]);
 #endif
 
   // Bishop tropism to enemy king
 
-  Add(sd, F_TROPISM, tropism_mg[B] * dist[sq][ksq], tropism_eg[B] * dist[sq][ksq]);
+  Add(sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
 
     // Bishop mobility
 
@@ -320,12 +316,12 @@ void cEval::ScorePieces(POS *p, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, mg_pst_data[sd][R][sq], eg_pst_data[sd][R][sq]);
+	Add(sd, F_PST, Param.mg_pst_data[sd][R][sq], Param.eg_pst_data[sd][R][sq]);
 #endif
 
     // Rook tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[R] * dist[sq][ksq], tropism_eg[R] * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[R] * Param.dist[sq][ksq], tropism_eg[R] * Param.dist[sq][ksq]);
   
     // Rook mobility
 
@@ -377,8 +373,9 @@ void cEval::ScorePieces(POS *p, int sd) {
 		// score differs depending on whether half-open file is blocked by defended enemy pawn
         if ((bbFile & p->Pawns(op)) & bbPawnTakes[op])
           Add(sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
-        else
+        else {
           Add(sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
+		}
       }
     }
 
@@ -411,10 +408,10 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[Q] * dist[sq][ksq], tropism_eg[Q] * dist[sq][ksq]);
+    Add(sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, mg_pst_data[sd][Q][sq], eg_pst_data[sd][Q][sq]);
+	Add(sd, F_PST, Param.mg_pst_data[sd][Q][sq], Param.eg_pst_data[sd][Q][sq]);
 #endif
 
     // Queen mobility
@@ -464,7 +461,7 @@ void cEval::ScorePieces(POS *p, int sd) {
   } // end of queen eval
 
 #ifdef LEAF_PST
-  Add(sd, F_PST, mg_pst_data[sd][K][KingSq(p,sd)], eg_pst_data[sd][K][KingSq(p,sd)]);
+  Add(sd, F_PST, Param.mg_pst_data[sd][K][KingSq(p,sd)], Param.eg_pst_data[sd][K][KingSq(p,sd)]);
 #endif
 
   // Score terms using information gathered during piece eval
@@ -476,7 +473,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   if (wood > 1 && p->cnt[sd][Q]) {
     if (att > 399) att = 399;
-    tmp = danger[att];
+    tmp = Param.danger[att];
     Add(sd, F_ATT, tmp, tmp);
   }
 
@@ -485,7 +482,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
 
   int mul = 0;
-  int tmp = sp_pst_data[sd][pc][sq];
+  int tmp = Param.sp_pst_data[sd][pc][sq];
   if (tmp) {
     if (SqBb(sq) & ~bbPawnCanTake[Opp(sd)]) mul += 2;  // in the hole of enemy pawn structure
     if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;          // defended by own pawn
@@ -552,7 +549,7 @@ void cEval::ScorePassers(POS * p, int sd)
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, mg_pst_data[sd][P][sq], eg_pst_data[sd][P][sq]);
+	Add(sd, F_PST, Param.mg_pst_data[sd][P][sq], Param.eg_pst_data[sd][P][sq]);
 #endif
 
     // Passed pawn
@@ -561,7 +558,9 @@ void cEval::ScorePassers(POS * p, int sd)
 
       bbStop = BB.ShiftFwd(SqBb(sq), sd);
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
-      eg_tmp = passed_bonus_eg[sd][Rank(sq)] - ((passed_bonus_eg[sd][Rank(sq)] * dist[sq][p->king_sq[op]]) / 30);
+      eg_tmp = passed_bonus_eg[sd][Rank(sq)] 
+		     - ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[op]]) / 30);
+		     //+ ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[sd]]) / 60);// equal, find better value
       mul = 100;
 
       // blocked passers score less
@@ -580,7 +579,6 @@ void cEval::ScorePassers(POS * p, int sd)
 	  else if (bbRookSpan & PcBb(p, op, R)) mul -= 10;
 	  */
 	  
-   
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
   }
@@ -608,9 +606,9 @@ void cEval::ScoreUnstoppable(POS * p) {
     if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
       bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
       psq = ((WC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, chebyshev_dist[sq] [psq]);
+      prom_dist = Min(5, Param.chebyshev_dist[sq] [psq]);
 
-      if ( prom_dist < (chebyshev_dist[ksq] [psq] - tempo)) {
+      if ( prom_dist < (Param.chebyshev_dist[ksq] [psq] - tempo)) {
         if (bbSpan & p->Kings(WC)) prom_dist++;
         w_dist = Min(w_dist, prom_dist);
       }
@@ -627,9 +625,9 @@ void cEval::ScoreUnstoppable(POS * p) {
       bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
       if (bbSpan & p->Kings(WC)) tempo -= 1;
       psq = ((BC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, chebyshev_dist[sq][psq]);
+      prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
 
-      if (prom_dist < (chebyshev_dist[ksq][psq] - tempo)) {
+      if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
         if (bbSpan & p->Kings(BC)) prom_dist++;
         b_dist = Min(b_dist, prom_dist);
       }

@@ -39,8 +39,8 @@ void POS::UndoMove(int move, UNDO *u) {
   cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
   tp_bb[ftp] ^= SqBb(fsq) | SqBb(tsq);
 #ifndef LEAF_PST
-  mg_pst[sd] += mg_pst_data[sd][ftp][fsq] - mg_pst_data[sd][ftp][tsq];
-  eg_pst[sd] += eg_pst_data[sd][ftp][fsq] - eg_pst_data[sd][ftp][tsq];
+  mg_pst[sd] += Param.mg_pst_data[sd][ftp][fsq] - Param.mg_pst_data[sd][ftp][tsq];
+  eg_pst[sd] += Param.eg_pst_data[sd][ftp][fsq] - Param.eg_pst_data[sd][ftp][tsq];
 #endif
 
   // Update king location
@@ -55,8 +55,8 @@ void POS::UndoMove(int move, UNDO *u) {
     tp_bb[ttp] ^= SqBb(tsq);
     phase += phase_value[ttp];
 #ifndef LEAF_PST
-    mg_pst[op] += mg_pst_data[op][ttp][tsq];
-    eg_pst[op] += eg_pst_data[op][ttp][tsq];
+    mg_pst[op] += Param.mg_pst_data[op][ttp][tsq];
+    eg_pst[op] += Param.eg_pst_data[op][ttp][tsq];
 #endif
     cnt[op][ttp]++;
   }
@@ -82,8 +82,8 @@ void POS::UndoMove(int move, UNDO *u) {
     cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
     tp_bb[R] ^= SqBb(fsq) | SqBb(tsq);
 #ifndef LEAF_PST
-    mg_pst[sd] += mg_pst_data[sd][R][fsq] - mg_pst_data[sd][R][tsq];
-    eg_pst[sd] += eg_pst_data[sd][R][fsq] - eg_pst_data[sd][R][tsq];
+    mg_pst[sd] += Param.mg_pst_data[sd][R][fsq] - Param.mg_pst_data[sd][R][tsq];
+    eg_pst[sd] += Param.eg_pst_data[sd][R][fsq] - Param.eg_pst_data[sd][R][tsq];
 #endif
     break;
 
@@ -94,8 +94,8 @@ void POS::UndoMove(int move, UNDO *u) {
     tp_bb[P] ^= SqBb(tsq);
     phase += phase_value[P];
 #ifndef LEAF_PST
-    mg_pst[op] += mg_pst_data[op][P][tsq];
-    eg_pst[op] += eg_pst_data[op][P][tsq];
+    mg_pst[op] += Param.mg_pst_data[op][P][tsq];
+    eg_pst[op] += Param.eg_pst_data[op][P][tsq];
 #endif
     cnt[op][P]++;
     break;
@@ -109,8 +109,8 @@ void POS::UndoMove(int move, UNDO *u) {
     tp_bb[ftp] ^= SqBb(fsq);
     phase += phase_value[P] - phase_value[ftp];
 #ifndef LEAF_PST
-    mg_pst[sd] += mg_pst_data[sd][P][fsq] - mg_pst_data[sd][ftp][fsq];
-    eg_pst[sd] += eg_pst_data[sd][P][fsq] - eg_pst_data[sd][ftp][fsq];
+    mg_pst[sd] += Param.mg_pst_data[sd][P][fsq] - Param.mg_pst_data[sd][ftp][fsq];
+    eg_pst[sd] += Param.eg_pst_data[sd][P][fsq] - Param.eg_pst_data[sd][ftp][fsq];
 #endif
     cnt[sd][P]++;
     cnt[sd][ftp]--;

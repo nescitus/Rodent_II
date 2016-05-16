@@ -201,8 +201,8 @@ void ScoreQuiet(MOVES *m) {
     move_score = history[m->p->pc[Fsq(*movep)]][Tsq(*movep)];
 
 	if (TpOnSq(m->p,Fsq(*movep)) != K)
-		move_score += mg_pst_data[m->p->side][TpOnSq(m->p,Fsq(*movep))][Tsq(*movep)]
-		            - mg_pst_data[m->p->side][TpOnSq(m->p, Fsq(*movep))][Fsq(*movep)];
+		move_score += Param.mg_pst_data[m->p->side][TpOnSq(m->p,Fsq(*movep))][Tsq(*movep)]
+		            - Param.mg_pst_data[m->p->side][TpOnSq(m->p, Fsq(*movep))][Fsq(*movep)];
     
     *valuep++ = move_score;
   }

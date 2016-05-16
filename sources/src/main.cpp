@@ -26,6 +26,7 @@ cMask Mask;
 sTimer Timer; // class for setting and observing time limits
 sBook  MainBook;  // opening book
 sBook  GuideBook;
+cParam Param;
 cEval Eval;
 POS p;
 
@@ -57,7 +58,7 @@ int main() {
   Mask.Init();
   Init();
   InitWeights();
-  Eval.Init();
+  Param.Init();
   InitSearch();
 #ifdef _WIN32 || _WIN64
   // if we are on Windows search for books and settings in same directory as rodentII.exe
