@@ -233,7 +233,7 @@ void cEval::ScorePieces(POS *p, int sd) {
        att += chk_threat[N];                       // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
-    bbMinorAttacks[sd] |= bbMob;
+    bbEvAttacks[sd]  |= bbMob;
 
     // Knight attacks on enemy king zone
 
@@ -278,7 +278,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       att += chk_threat[B];                            // check threat bonus
 
     bbAllAttacks[sd] |= bbMob;
-    bbMinorAttacks[sd] |= bbMob;
+    bbEvAttacks[sd]  |= bbMob;
 
     // Bishop attacks on enemy king zone
 
@@ -347,7 +347,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     }
 
     bbAllAttacks[sd] |= bbMob;
-    bbMinorAttacks[sd] |= bbMob;
+    bbEvAttacks[sd]  |= bbMob;
 
     // Rook attacks on enemy king zone
 
@@ -368,7 +368,10 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Rook on (half) open file
 
     if (!(bbFile & p->Pawns(sd))) {
-      if (!(bbFile & p->Pawns(op))) Add(sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
+      if (!(bbFile & p->Pawns(op))) {
+		  Add(sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
+		  //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(sd, F_LINES, 4, 2); // equal
+      }
       else {
 		// score differs depending on whether half-open file is blocked by defended enemy pawn
         if ((bbFile & p->Pawns(op)) & bbPawnTakes[op])
@@ -514,7 +517,7 @@ void cEval::ScoreHanging(POS *p, int sd) {
   bbHanging &= ~p->Pawns(op);     // currently we don't evaluate threats against pawns
 
   U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
-  bbDefended &= bbMinorAttacks[sd];
+  bbDefended &= bbEvAttacks[sd];
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
   bbDefended &= ~p->Pawns(op);    // currently we don't evaluate threats against pawns
 
@@ -684,7 +687,7 @@ int cEval::Return(POS *p, int use_hash) {
   bbTwoPawnsTake[BC] = BB.GetDoubleBPControl(p->Pawns(BC));
   bbAllAttacks[WC] = bbPawnTakes[WC] | BB.KingAttacks(p->king_sq[WC]);
   bbAllAttacks[BC] = bbPawnTakes[BC] | BB.KingAttacks(p->king_sq[BC]);
-  bbMinorAttacks[WC] = bbMinorAttacks[BC] = 0ULL;
+  bbEvAttacks[WC] = bbEvAttacks[BC] = 0ULL;
   bbPawnCanTake[WC] = BB.FillNorth(bbPawnTakes[WC]);
   bbPawnCanTake[BC] = BB.FillSouth(bbPawnTakes[BC]);
 

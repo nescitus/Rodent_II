@@ -505,7 +505,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !move
   && !was_null
   && !(p->Pawns(p->side) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-  &&  depth <= 3) {
+  && depth <= 3) {
     int threshold = beta - razor_margin[depth];
     int eval = Eval.Return(p, 1);
 
@@ -513,8 +513,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       score = QuiesceChecks(p, ply, alpha, beta, pv);
       if (score < threshold) return score;
     }
-  } 
-  
+  }
+
   // end of razoring code 
 
   // Init moves and variables before entering main loop

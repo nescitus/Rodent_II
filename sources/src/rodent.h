@@ -329,7 +329,7 @@ extern cMask Mask;
 typedef class {
 private:
   U64 bbAllAttacks[2];
-  U64 bbMinorAttacks[2];
+  U64 bbEvAttacks[2];
   U64 bbPawnTakes[2];
   U64 bbTwoPawnsTake[2];
   U64 bbPawnCanTake[2];
@@ -371,7 +371,7 @@ public:
   int phalanx_data[2][64];
   int defended_data[2][64];
   void Init(void);
-};
+}; 
 
 extern cParam Param;
 
