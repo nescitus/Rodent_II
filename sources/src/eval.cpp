@@ -270,7 +270,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
        Add(sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
 
-    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
+    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op] &~p->Pawns(sd));
     
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
@@ -517,7 +517,7 @@ void cEval::ScoreHanging(POS *p, int sd) {
   bbHanging &= ~p->Pawns(op);     // currently we don't evaluate threats against pawns
 
   U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
-  bbDefended &= bbEvAttacks[sd];
+  bbDefended &= bbEvAttacks[sd];  // N, B, R attacks (pieces attacked by pawns are scored as hanging)
   bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
   bbDefended &= ~p->Pawns(op);    // currently we don't evaluate threats against pawns
 

@@ -618,7 +618,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     new_depth -= reduction;
   }
 
-  // a place to come back if reduction looks suspect
+  // a place to come back if reduction scores above alpha
 
   re_search:
    
