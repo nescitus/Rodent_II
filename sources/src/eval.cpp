@@ -328,7 +328,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-    if (((bbMob &~bbPawnTakes[op]) & bbStr8Chk)          // check threat bonus
+    if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)          // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
 
@@ -423,7 +423,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     cnt = BB.PopCnt(bbMob);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
-    if ((bbMob &~bbPawnTakes[op]) & bbQueenChk) {  // check threat bonus
+    if ((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
       att += chk_threat[Q];
 
     // Queen contact checks
