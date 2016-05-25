@@ -326,7 +326,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Rook mobility
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
-    cnt = BB.PopCnt(bbMob);
+    cnt = BB.PopCnt(bbMob &~p->Pawns(sd));
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)          // check threat bonus
     && p->cnt[sd][Q]) {
@@ -420,7 +420,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Queen mobility
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
-    cnt = BB.PopCnt(bbMob);
+    cnt = BB.PopCnt(bbMob &~p->Pawns(sd));
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
