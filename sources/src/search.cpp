@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "timer.h"
 #include "book.h"
 
+#define PV_NODE   0
+#define CUT_NODE  1
+#define ALL_NODE -1
+#define NEW_NODE(type)     (-(type))
+
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
 int fut_margin[7] = { 0, 100, 150, 200, 250, 300, 350 };
@@ -268,11 +273,11 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // PVS
 
   if (best == -INF)
-    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, NEW_NODE(PV_NODE), new_pv);
   else {
-    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, new_pv);
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, CUT_NODE, new_pv);
     if (!abort_search && score > alpha && score < beta)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, PV_NODE, new_pv);
   }
 
   // Reduced move scored above alpha - we need to re-search it
@@ -356,11 +361,11 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   return best;
 }
 
-int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int *pv) {
+int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int node_type, int *pv) {
 
   int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
-  int is_pv = (beta > alpha + 1);
+  int is_pv = (node_type == PV_NODE);
   int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
 
   int mv_played[MAX_MOVES];
@@ -437,7 +442,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // INTERNAL ITERATIVE DEEPENING - we try to get a hash move to improve move ordering
 
   if (!move && is_pv && depth >= 6 && !fl_check) {
-    Search(p, ply, alpha, beta, depth - 2, 0, 0, -1, new_pv);
+    Search(p, ply, alpha, beta, depth - 2, 0, 0, -1, PV_NODE, new_pv);
+    if (abort_search) return 0;
+    TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
+  }
+
+  if (!move && node_type == CUT_NODE && depth >= 6 && !fl_check) {
+    Search(p, ply, alpha, beta, depth - 4, 0, 0, -1, CUT_NODE, new_pv);
     if (abort_search) return 0;
     TransRetrieve(p->hash_key, &move, &score, alpha, beta, depth, ply);
   }
@@ -480,14 +491,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       }
 
       p->DoNull(u);
-      if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, -1, new_pv);
+      if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, -1, NEW_NODE(node_type), new_pv);
       else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
       p->UndoNull(u);
 
       // Verification search (nb. immediate null move within it is prohibited)
 
       if (new_depth > 6 && score >= beta && use_null_verification)
-         score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, -1, new_pv);
+         score = Search(p, ply, alpha, beta, new_depth - 5, 1, move, -1, CUT_NODE, new_pv);
 
       if (abort_search ) return 0;
       if (score >= beta) return score;
@@ -625,11 +636,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // PVS
 
   if (best == -INF)
-    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
+    score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, NEW_NODE(node_type), new_pv);
   else {
-    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, new_pv);
+    score = -Search(p, ply + 1, -alpha - 1, -alpha, new_depth, 0, move, last_capt, CUT_NODE, new_pv);
     if (!abort_search && score > alpha && score < beta)
-      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, new_pv);
+      score = -Search(p, ply + 1, -beta, -alpha, new_depth, 0, move, last_capt, PV_NODE, new_pv);
   }
 
   // Reduced move scored above alpha - we need to re-search it
@@ -638,6 +649,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && score > alpha) {
     new_depth += reduction;
     reduction = 0;
+	if (node_type == ALL_NODE) node_type = CUT_NODE;
     goto re_search;
   }
 
