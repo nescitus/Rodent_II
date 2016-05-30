@@ -55,7 +55,7 @@ install:
 	mkdir -p $(DATADIR)
 	cp $(EXENAME) $(BINDIR)
 	cp $(CONFIGFILE) $(DATADIR)
-	cp ../books/* $(DATADIR)
+	cp -r ../books/*/* $(DATADIR)
 	cp -r ../personalities/*/*.ini $(DATADIR)
 	chmod 755 $(BINDIR)/$(EXENAME)
 	chmod 644 $(DATADIR)/*
