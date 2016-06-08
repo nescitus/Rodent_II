@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 876.870
-// bench 12: 6.303.863 9,5 s 1.853
-// bench 15: 32.673.859 35.8 2.506
+// bench: 890.527
+// bench 12: 6.263.032 9,5 s 1.853
+// bench 15: 32.578.091 35.8 2.506
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5624 lines of code
 // 0.9.31: 56,5% vs 0.8.7
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.37"
+#define PROG_NAME "Rodent II 0.9.38"
 
 //#define LEAF_PST
 
@@ -382,6 +382,7 @@ typedef struct {
   int ref_move;
   int killer1;
   int killer2;
+  int ref_sq;
   int *next;
   int *last;
   int move[MAX_MOVES];
@@ -426,7 +427,7 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply);
 void Init(void);
 void InitSearch(void);
 void InitCaptures(POS *p, MOVES *m);
-void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply);
+void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ref_sq, int ply);
 void InitWeights(void);
 int InputAvailable(void);
 U64 InitHashKey(POS * p);

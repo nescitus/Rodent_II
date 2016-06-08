@@ -224,8 +224,8 @@ void cEval::ScorePieces(POS *p, int sd) {
     
     // Knight mobility
 
-    bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];
-    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);
+    bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
+    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);      // better to have it mobile than defending stuff
     
     Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
