@@ -170,4 +170,13 @@ void cEval::ScorePatterns(POS * p) {
   if (IsOnSq(p, BC, K, G8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7) && IsOnSq(p, BC, P, F7) )
      Add(BC, F_OTHERS, -15, -15);
 
+  // castling rights
+
+  if (IsOnSq(p, WC, K, E1)) {
+	  if ((p->castle_flags & W_KS) || (p->castle_flags & W_QS)) Add(WC, F_OTHERS, 10, 0);
+  }
+
+  if (IsOnSq(p, BC, K, E8)) {
+	  if ((p->castle_flags & B_KS) || (p->castle_flags & B_QS)) Add(BC, F_OTHERS, 10, 0);
+  }
 }
