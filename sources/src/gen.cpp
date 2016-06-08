@@ -215,13 +215,13 @@ int *GenerateQuiet(POS *p, int *list) {
 
     // White short castle
 
-    if ((p->castle_flags & 1) && !(OccBb(p) & (U64)0x0000000000000060))
+    if ((p->castle_flags & W_KS) && !(OccBb(p) & (U64)0x0000000000000060))
       if (!Attacked(p, E1, BC) && !Attacked(p, F1, BC))
         *list++ = (CASTLE << 12) | (G1 << 6) | E1;
 
   // White long castle
 
-    if ((p->castle_flags & 2) && !(OccBb(p) & (U64)0x000000000000000E))
+    if ((p->castle_flags & W_QS) && !(OccBb(p) & (U64)0x000000000000000E))
       if (!Attacked(p, E1, BC) && !Attacked(p, D1, BC))
         *list++ = (CASTLE << 12) | (C1 << 6) | E1;
 
@@ -244,13 +244,13 @@ int *GenerateQuiet(POS *p, int *list) {
 
     // Black short castle
 
-    if ((p->castle_flags & 4) && !(OccBb(p) & (U64)0x6000000000000000))
+    if ((p->castle_flags & B_KS) && !(OccBb(p) & (U64)0x6000000000000000))
       if (!Attacked(p, E8, WC) && !Attacked(p, F8, WC))
         *list++ = (CASTLE << 12) | (G8 << 6) | E8;
 
   // Black long castle
 
-    if ((p->castle_flags & 8) && !(OccBb(p) & (U64)0x0E00000000000000))
+    if ((p->castle_flags & B_QS) && !(OccBb(p) & (U64)0x0E00000000000000))
       if (!Attacked(p, E8, WC) && !Attacked(p, D8, WC))
         *list++ = (CASTLE << 12) | (C8 << 6) | E8;
 
