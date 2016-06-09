@@ -184,7 +184,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
 
-  fl_check = InCheck(p);
+  fl_check = InCheck(p); // TODO: here we are always in check
 
   // Init moves and variables before entering main loop
 

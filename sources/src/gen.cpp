@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
+#include <stdio.h>
 
 int *GenerateCaptures(POS *p, int *list) {
 
@@ -248,13 +249,13 @@ int *GenerateQuiet(POS *p, int *list) {
       if (!Attacked(p, E8, WC) && !Attacked(p, F8, WC))
         *list++ = (CASTLE << 12) | (G8 << 6) | E8;
 
-  // Black long castle
+    // Black long castle
 
     if ((p->castle_flags & B_QS) && !(OccBb(p) & (U64)0x0E00000000000000))
       if (!Attacked(p, E8, WC) && !Attacked(p, D8, WC))
         *list++ = (CASTLE << 12) | (C8 << 6) | E8;
 
-  // Black double pawn moves
+    // Black double pawn moves
 
     bbMoves = ((((p->Pawns(BC) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
     while (bbMoves) {
@@ -262,7 +263,7 @@ int *GenerateQuiet(POS *p, int *list) {
       *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
     }
 
-  // Black single pawn moves
+    // Black single pawn moves
 
     bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
     while (bbMoves) {
@@ -343,52 +344,69 @@ int *GenerateQuietChecks(POS *p, int *list)
   int side, from, to;
 
   side = p->side;
+  int op = Opp(side);
 
   if (side == WC) {
 
-	  // White double pawn checks
+    // White pawn checks by a double move
 
-	  bbMoves = ((((p->Pawns(WC) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
-	  bbMoves &= bbPawnChk;
-	  while (bbMoves) {
-		  to = BB.PopFirstBit(&bbMoves);
-		  *list++ = (EP_SET << 12) | (to << 6) | (to - 16);
-	  }
+    bbMoves = ((((p->Pawns(WC) & RANK_2_BB) << 8) & UnoccBb(p)) << 8) & UnoccBb(p);
+    bbMoves &= bbPawnChk;
+    while (bbMoves) {
+      to = BB.PopFirstBit(&bbMoves);
+      *list++ = (EP_SET << 12) | (to << 6) | (to - 16);
+    }
 
-	  // White normal pawn checks
+    // White pawn checks by a single move
 
-	  bbMoves = ((p->Pawns(WC) & ~RANK_7_BB) << 8) & UnoccBb(p);
-	  bbMoves &= bbPawnChk;
-	  while (bbMoves) {
-		  to = BB.PopFirstBit(&bbMoves);
-		  *list++ = (to << 6) | (to - 8);
-	  }
-  }
-  else {
+    bbMoves = ((p->Pawns(WC) & ~RANK_7_BB) << 8) & UnoccBb(p);
+    bbMoves &= bbPawnChk;
+    while (bbMoves) {
+      to = BB.PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | (to - 8);
+    }
 
-	  // Black double pawn checks
+  } else {
 
-	  bbMoves = ((((p->Pawns(BC) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
-	  bbMoves &= bbPawnChk;
-	  while (bbMoves) {
-		  to = BB.PopFirstBit(&bbMoves);
-		  *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
-	  }
+    // Black pawn checks by a double move
 
-	  // Black single pawn checks
+    bbMoves = ((((p->Pawns(BC) & RANK_7_BB) >> 8) & UnoccBb(p)) >> 8) & UnoccBb(p);
+    bbMoves &= bbPawnChk;
+    while (bbMoves) {
+      to = BB.PopFirstBit(&bbMoves);
+      *list++ = (EP_SET << 12) | (to << 6) | (to + 16);
+    }
 
-      bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
-	  bbMoves &= bbPawnChk;
-	  while (bbMoves) {
-        to = BB.PopFirstBit(&bbMoves);
-        *list++ = (to << 6) | (to + 8);
-	  }
+    // Black pawn checks by a single move
+
+    bbMoves = ((p->Pawns(BC) & ~RANK_2_BB) >> 8) & UnoccBb(p);
+    bbMoves &= bbPawnChk;
+    while (bbMoves) {
+      to = BB.PopFirstBit(&bbMoves);
+      *list++ = (to << 6) | (to + 8);
+    }
   }
 
   bbPieces = p->Knights(side);
   while (bbPieces) {
     from = BB.PopFirstBit(&bbPieces);
-    bbMoves = (BB.KnightAttacks(from) & UnoccBb(p)) & bbKnightChk;
+	int knight_discovers = 0;
+
+	U64 bbCheckers = p->Queens(op) | p->Rooks(op) | p->Bishops(op);
+	while (bbCheckers) {
+		int checker = BB.PopFirstBit(&bbCheckers);
+		U64 bbRay = BB.bbBetween[checker][p->king_sq[op]];
+
+		if (SqBb(from) & bbRay) {
+			if (BB.PopCnt(bbRay & OccBb(p)) == 1) {
+				knight_discovers = 1;
+				break;
+			}
+		}
+	}
+
+	bbMoves = (BB.KnightAttacks(from) & UnoccBb(p));
+	if (!knight_discovers) bbMoves &= bbKnightChk;
     while (bbMoves) {
       to = BB.PopFirstBit(&bbMoves);
       *list++ = (to << 6) | from;
