@@ -162,6 +162,30 @@ void cParam::Init(void) {
   }
 }
 
+void cEval::ScoreMaterial(POS * p, int sd) {
+
+	int op = Opp(sd);
+
+	// Piece configurations
+
+	int tmp = np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
+		    - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
+
+	if (p->cnt[sd][N] > 1) tmp -= 10;                         // Knight pair
+	if (p->cnt[sd][R] > 1) tmp -= 5;                          // Rook pair
+
+	if (p->cnt[sd][B] > 1)                                    // Bishop pair
+		Add(sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
+
+	// "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
+
+	if (p->cnt[sd][Q])
+		tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
+
+	Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
+
+}
+
 void cEval::ScorePieces(POS *p, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
@@ -189,24 +213,6 @@ void cEval::ScorePieces(POS *p, int sd) {
   U64 bbStr8Chk = BB.RookAttacks(OccBb(p), ksq);
   U64 bbDiagChk = BB.BishAttacks(OccBb(p), ksq);
   U64 bbQueenChk = bbStr8Chk | bbDiagChk;
-
-  // Piece configurations
-
-  tmp = np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
-      - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
-
-  if (p->cnt[sd][N] > 1) tmp -= 10;                     // Knight pair
-  if (p->cnt[sd][R] > 1) tmp -= 5;                      // Rook pair
-
-  if (p->cnt[sd][B] > 1)                                // Bishop pair
-	  Add(sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
-
-  // "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
-
-  if (p->cnt[sd][Q]) 
-    tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
-
-  Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
   
   // Knight
 
@@ -697,6 +703,8 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Evaluate pieces and pawns
 
+  ScoreMaterial(p, WC);
+  ScoreMaterial(p, BC);
   ScorePieces(p, WC);
   ScorePieces(p, BC);
   FullPawnEval(p, use_hash);

@@ -337,6 +337,7 @@ private:
   int eg[2][N_OF_FACTORS];
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
+  void ScoreMaterial(POS * p, int sd);
   void ScorePassers(POS * p, int sd);
   void ScorePieces(POS * p, int sd);
   void ScoreHanging(POS *p, int sd);
