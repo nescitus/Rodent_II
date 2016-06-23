@@ -163,7 +163,7 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
     Param.Init();
   } else if (strcmp(name, "PiecePlacement") == 0) {
-    pst_perc = atoi(value);
+    pst_perc = (80 * atoi(value)) / 100; // scaling takes into account internal weight
     ResetEngine();
     Param.Init();
   } else if (strcmp(name, "PawnValue") == 0) {

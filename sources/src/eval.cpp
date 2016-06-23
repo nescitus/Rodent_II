@@ -101,7 +101,7 @@ void InitWeights(void) {
 
   weights[F_TROPISM] = 20;
   mat_perc = 100;
-  pst_perc = 100;
+  pst_perc = 80;
 
   // weights for asymmetric factors
 
@@ -126,13 +126,13 @@ void cParam::Init(void) {
       mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
       eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
       mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
-      eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
-      mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
-      eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
-      mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
-      eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
-      mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-      eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
+	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
+	  eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
+	  mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
+	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
+	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
+	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 
       phalanx_data[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
       defended_data[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
@@ -395,15 +395,6 @@ void cEval::ScorePieces(POS *p, int sd) {
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
         Add(sd, F_LINES, rookOnSeventhMg, rookOnSeventhEg);
         r_on_7th++;
-      }
-    }
-
-	// Rook on the 6th rank attacking pawns or cutting off enemy king
-
-	if (SqBb(sq) & bbRelRank[sd][RANK_6]) {
-      if ( (p->Pawns(op) & bbRelRank[sd][RANK_6] &~bbPawnTakes[op])
-      ||   (p->Kings(op) & (bbRelRank[sd][RANK_8] | bbRelRank[sd][RANK_7])) ) {
-        Add(sd, F_LINES, 4, 8);
       }
     }
 
