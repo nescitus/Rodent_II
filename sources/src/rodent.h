@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.41: 55,8% vs 0.9.33
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.41"
+#define PROG_NAME "Rodent II 0.9.42"
 
 //#define LEAF_PST
 
@@ -308,6 +308,7 @@ public:
   U64 Kings(int sd);
   U64 StraightMovers(int sd);
   U64 DiagMovers(int sd);
+  int PawnEndgame(void);
 
   void DoMove(int move, UNDO * u);
   void DoNull(UNDO * u);

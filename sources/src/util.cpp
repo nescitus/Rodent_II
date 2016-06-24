@@ -9,35 +9,39 @@
 #include "rodent.h"
 
 U64 POS::Pawns(int sd) {
-  return (cl_bb[sd] & tp_bb[P]);
+   return (cl_bb[sd] & tp_bb[P]);
 }
 
 U64 POS::Knights(int sd) {
-	return (cl_bb[sd] & tp_bb[N]);
+   return (cl_bb[sd] & tp_bb[N]);
 }
 
 U64 POS::Bishops(int sd) {
-	return (cl_bb[sd] & tp_bb[B]);
+   return (cl_bb[sd] & tp_bb[B]);
 }
 
 U64 POS::Rooks(int sd) {
-	return (cl_bb[sd] & tp_bb[R]);
+   return (cl_bb[sd] & tp_bb[R]);
 }
 
 U64 POS::Queens(int sd) {
-	return (cl_bb[sd] & tp_bb[Q]);
+   return (cl_bb[sd] & tp_bb[Q]);
 }
 
 U64 POS::Kings(int sd) {
-	return (cl_bb[sd] & tp_bb[K]);
+   return (cl_bb[sd] & tp_bb[K]);
 }
 
 U64 POS::StraightMovers(int sd) {
-	return (cl_bb[sd] & (tp_bb[R] | tp_bb[Q]));
+   return (cl_bb[sd] & (tp_bb[R] | tp_bb[Q]));
 }
 
 U64 POS::DiagMovers(int sd) {
-	return (cl_bb[sd] & (tp_bb[B] | tp_bb[Q]));
+   return (cl_bb[sd] & (tp_bb[B] | tp_bb[Q]));
+}
+
+int POS::PawnEndgame(void) {
+   return (phase == 0);
 }
 
 int InputAvailable(void) {

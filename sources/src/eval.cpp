@@ -594,7 +594,7 @@ void cEval::ScoreUnstoppable(POS * p) {
   // Function loses Elo if it is used in endgames with pieces.
   // Is it a speed issue or a problem with logic?
 
-  if (!PcMatNone(p, WC) || !PcMatNone(p, BC)) return;
+  if (!p->PawnEndgame()) return;
 
   // White unstoppable passers
 

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Piece/square tables are taken from Toga Log User Manual 
-// (http://members.aon.at/josefd/Toga%20LOG.html)
-// and modified slightly.
+// Piece/square tables are loosely based on those of Hakkapeliitta
+// chess engine (https://github.com/mAarnos/Hakkapeliitta), made
+// symmetric and tweaked.
 
 #pragma once
 
