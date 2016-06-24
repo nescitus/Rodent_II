@@ -120,7 +120,7 @@ void cEval::ScorePawns(POS *p, int sd) {
     // Doubled pawn
 
     if (bbSpan & bbOwnPawns)
-      Add(sd, F_PAWNS, -12, -24);
+      Add(sd, F_PAWNS, doubled_malus_mg, doubled_malus_eg);
 
     // Supported pawn
 
@@ -131,9 +131,9 @@ void cEval::ScorePawns(POS *p, int sd) {
 
     if (fl_weak) {
       if (!(Mask.adjacent[File(sq)] & bbOwnPawns)) 
-        Add(sd, F_PAWNS, -10 - 10 * fl_unopposed, -20);                     // isolated pawn
+        Add(sd, F_PAWNS, isolated_malus_mg + isolated_open_malus * fl_unopposed, isolated_malus_eg);           // isolated pawn
       else 
-        Add(sd, F_PAWNS, -8 - file_bonus[File(sq)] - 8 * fl_unopposed, -8); // backward pawn
+        Add(sd, F_PAWNS, backward_malus_mg[File(sq)] + backward_open_malus * fl_unopposed, backward_malus_eg); // backward pawn
     }
   }
 }
@@ -223,7 +223,7 @@ int cEval::ScoreChains(POS *p, int sd)
         // storm of a "g" pawn in the King's Indian
       if (OPP_PAWN(G5)) {
             mgResult -= 4; 
-            if (OPP_PAWN(H4)) return 0; // this is not how you handle pawn chains
+            if (OPP_PAWN(H4)) return 10; // opponent did us a favour!
       }
         if (OPP_PAWN(G4)) mgResult -= 12;
 

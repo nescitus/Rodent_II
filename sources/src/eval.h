@@ -267,7 +267,14 @@ extern int eg[2][N_OF_FACTORS];
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
-static const int file_bonus[8] = { -3,  -1,   1,   3,   3,   1,  -1,  -3 };
+static const int isolated_malus_mg = -10;
+static const int isolated_malus_eg = -20;
+static const int isolated_open_malus = -10;
+static const int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 };
+static const int backward_malus_eg = -8;
+static const int backward_open_malus = -8;
+static const int doubled_malus_mg = -12;
+static const int doubled_malus_eg = -24;
 
 // mobility parameters [130]
 // (could be decreased to 16)
