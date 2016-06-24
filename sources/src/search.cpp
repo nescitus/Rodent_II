@@ -736,14 +736,11 @@ int IsDraw(POS *p) {
 
     // Trivially drawn KPK endgames
 
-    if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] == 0) {
+    if (p->PawnEndgame() ) {
       if (p->cnt[WC][P] + p->cnt[BC][P] == 1) {
 
-        if (p->cnt[WC][P] == 1 && p->cnt[BC][P] == 0)
-          return KPKdraw(p, WC); // exactly one white pawn
-
-        if (p->cnt[BC][P] == 1 && p->cnt[WC][P] == 0)
-          return KPKdraw(p, BC); // exactly one black pawn
+        if (p->cnt[WC][P] == 1 ) return KPKdraw(p, WC); // exactly one white pawn
+        if (p->cnt[BC][P] == 1 ) return KPKdraw(p, BC); // exactly one black pawn
       }
     } // pawns only
   }
