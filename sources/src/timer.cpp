@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "timer.h"
+#include <math.h>
 #include "rodent.h"
 
 
@@ -9,6 +10,16 @@
 #  include <unistd.h>
 #  include <sys/time.h>
 #endif
+
+void sTimer::SetSpeed(int elo) {
+   nps_limit = 0;
+   eval_blur = 0;
+
+   if (Param.weakening) {
+      nps_limit = 0.66 * pow(2, elo / 130);
+      if (elo < 2000) eval_blur = (2000 - elo) / 10;
+   }
+}
 
 void sTimer::Clear(void) {
 

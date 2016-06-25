@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.41: 55,8% vs 0.9.33
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.42"
+#define PROG_NAME "Rodent II 0.9.44"
 
 //#define LEAF_PST
 
@@ -364,6 +364,8 @@ extern cEval Eval;
 
 typedef class cParam {
 public:
+  int elo;
+  int weakening;
   int mg_pst_data[2][6][64];
   int eg_pst_data[2][6][64];
   int sp_pst_data[2][6][64];
@@ -518,6 +520,7 @@ extern int hist_limit;
 extern int hist_perc;
 extern int fl_reading_personality;
 extern int fl_separate_books;
+extern int fl_elo_slider;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);

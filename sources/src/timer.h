@@ -51,6 +51,7 @@ public:
   int GetData(int slot);
   void SetData(int slot, int val);
   void SetSideData(int side);
+  void SetSpeed(int elo);
 };
 
 extern sTimer Timer;

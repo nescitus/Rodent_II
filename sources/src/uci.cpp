@@ -41,6 +41,8 @@ void UciLoop(void) {
     // UseBook remains for backward compatibly
     if ((strstr(command, "setoption name OwnBook value")) || (strstr(command, "setoption name UseBook value")))
       use_book = (strstr(command, "value true") != 0);
+	if (strstr(command, "setoption name UCI_LimitStrength value"))
+		Param.weakening = (strstr(command, "value true") != 0);
 
 	if (strcmp(token, "uci") == 0) {
 	  printf("id name %s\n", PROG_NAME);
@@ -72,8 +74,15 @@ void UciLoop(void) {
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-        printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-        printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+
+		if (fl_elo_slider == 0) {
+			printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+			printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+		} else {
+			printf("option name UCI_LimitStrength type check default false\n");
+			printf("option name UCI_Elo type spin default %d min 800 max 2800\n", Param.elo);
+		}
+
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
 		printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
 		printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
@@ -242,6 +251,9 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "SlowMover") == 0) {
 	time_percentage = atoi(value);
+  } else if (strcmp(name, "UCI_Elo") == 0) {
+	  Param.elo = atoi(value);
+	  Timer.SetSpeed(Param.elo);
   } else if (strcmp(name, "Selectivity") == 0) {
 	hist_perc = atoi(value);
 	hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
@@ -408,6 +420,8 @@ void ReadPersonality(char *fileName)
     if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
     if (strstr(line, "PERSONALITY_BOOKS")) fl_separate_books = 0;
     if (strstr(line, "GENERAL_BOOKS")) fl_separate_books = 1;
+	if (strstr(line, "ELO_SLIDER")) fl_elo_slider = 1;
+	if (strstr(line, "NPS_BLUR")) fl_elo_slider = 0;
 
     if (strcmp(token, "setoption") == 0)
       ParseSetoption(ptr);
