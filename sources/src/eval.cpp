@@ -558,7 +558,7 @@ void cEval::ScorePassers(POS * p, int sd)
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
       eg_tmp = passed_bonus_eg[sd][Rank(sq)] 
 		     - ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[op]]) / 30);
-		     //+ ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[sd]]) / 60);// equal, find better value
+
       mul = 100;
 
       // blocked passers score less
@@ -570,12 +570,7 @@ void cEval::ScorePassers(POS * p, int sd)
       else if ( (bbStop & bbAllAttacks[sd]) 
       &&   (bbStop & ~bbAllAttacks[op]) ) mul += 10;
 
-	  // rook behind passer
-	  /*
-	  U64 bbRookSpan = BB.RookAttacks(OccBb(p), sq) | GetFrontSpan(SqBb(sq), op);
-	  if (bbRookSpan & PcBb(p, sd, R)) mul += 5;
-	  else if (bbRookSpan & PcBb(p, op, R)) mul -= 10;
-	  */
+	  // add final score
 	  
       Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
