@@ -184,7 +184,7 @@ void cEval::ScoreMaterial(POS * p, int sd) {
 	if (p->cnt[sd][Q])
 		tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
 
-	Add(sd, F_OTHERS, SCALE(tmp, mat_perc), SCALE(tmp, mat_perc));
+	Add(sd, F_OTHERS, SCALE(tmp, mat_perc));
 
 }
 
@@ -310,10 +310,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       opp_pawn_cnt = BB.PopCnt(bbBlackSq & p->Pawns(op)) - 4;
     }
 
-    Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt, 
-                      -3 * own_pawn_cnt - opp_pawn_cnt);
-
-    // TODO: bishop blocked by defended enemy pawns
+    Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt);
 
   } // end of bishop eval
 
@@ -335,8 +332,8 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~p->Pawns(sd));
-    Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);        // mobility bonus
-    if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)          // check threat bonus
+    Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
+    if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
 
@@ -475,8 +472,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   if (wood > 1 && p->cnt[sd][Q]) {
     if (att > 399) att = 399;
-    tmp = Param.danger[att];
-    Add(sd, F_ATT, tmp, tmp);
+    Add(sd, F_ATT, Param.danger[att]);
   }
 
 }
@@ -493,7 +489,7 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
     tmp *= mul;
     tmp /= 2;
 
-    Add(sd, F_OUTPOST, tmp, tmp);
+    Add(sd, F_OUTPOST, tmp);
   }
 
   // Pawn in front of a minor
@@ -501,7 +497,7 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
   if (SqBb(sq) & bbHomeZone[sd]) {
     U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
     if (bbStop & PcBb(p, sd, P))
-      Add(sd, F_OUTPOST, minorBehindPawn, minorBehindPawn);
+      Add(sd, F_OUTPOST, minorBehindPawn);
   }
 }
 
@@ -795,6 +791,12 @@ void cEval::Add(int sd, int factor, int mg_bonus, int eg_bonus) {
 
   mg[sd][factor] += mg_bonus;
   eg[sd][factor] += eg_bonus;
+}
+
+void cEval::Add(int sd, int factor, int bonus) {
+
+	mg[sd][factor] += bonus;
+	eg[sd][factor] += bonus;
 }
 
 void cEval::Print(POS * p) {

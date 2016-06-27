@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.41: 55,8% vs 0.9.33
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.44"
+#define PROG_NAME "Rodent II 0.9.45"
 
 //#define LEAF_PST
 
@@ -338,6 +338,7 @@ private:
   int eg[2][N_OF_FACTORS];
 
   void Add(int sd, int factor, int mg_bonus, int eg_bonus);
+  void Add(int sd, int factor, int bonus);
   void ScoreMaterial(POS * p, int sd);
   void ScorePassers(POS * p, int sd);
   void ScorePieces(POS * p, int sd);
