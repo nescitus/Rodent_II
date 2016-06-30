@@ -730,7 +730,7 @@ int IsDraw(POS *p) {
 
     if (!Illegal(p)) {
       if (p->cnt[WC][P] + p->cnt[BC][P] == 0) {
-        if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 0; // KmK
+        if (p->cnt[WC][N] + p->cnt[BC][N] + p->cnt[WC][B] + p->cnt[BC][B] <= 1) return 1; // KmK
       }
     }
 
