@@ -434,14 +434,14 @@ void ReadPersonality(char *fileName)
 int Perft(POS *p, int ply, int depth) {
 
 	int move = 0;
-	int mv_type;
+	int fl_mv_type;
 	MOVES m[1];
 	UNDO u[1];
 	int mv_cnt = 0;
 
 	InitMoves(p, m, 0, 0, -1, ply);
 
-	while (move = NextMove(m, &mv_type)) {
+	while (move = NextMove(m, &fl_mv_type)) {
 
 		p->DoMove(move, u);
 

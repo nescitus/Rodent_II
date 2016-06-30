@@ -169,7 +169,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
 int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
   int best, score, move, new_depth, new_pv[MAX_PLY];
-  int fl_check, fl_prunable_move, mv_type, reduction;
+  int fl_check, fl_prunable_move, fl_mv_type, reduction;
   int mv_tried = 0, quiet_tried = 0;
   int mv_played[MAX_MOVES];
   int mv_hist_score;
@@ -219,7 +219,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   
   // Main loop
   
-  while ((move = NextMove(m, &mv_type))) {
+  while ((move = NextMove(m, &fl_mv_type))) {
 
     mv_hist_score = history[p->pc[Fsq(move)]][Tsq(move)];
 	victim = TpOnSq(p, Tsq(move));
@@ -235,8 +235,8 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
     mv_tried++;
     if (mv_tried > 1) fl_has_choice = 1; // we have a choice between at least two root moves
     if (depth > 16 && verbose) DisplayCurrmove(move, mv_tried);
-    if (mv_type == MV_NORMAL) quiet_tried++;
-    fl_prunable_move = !InCheck(p) && (mv_type == MV_NORMAL);
+    if (fl_mv_type == MV_NORMAL) quiet_tried++;
+    fl_prunable_move = !InCheck(p) && (fl_mv_type == MV_NORMAL);
 
     // Set new search depth
 
@@ -364,7 +364,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int node_type, int *pv) {
 
   int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
-  int fl_check, fl_prunable_node, fl_prunable_move, mv_type, reduction;
+  int fl_check, fl_prunable_node, fl_prunable_move, fl_mv_type, reduction;
   int is_pv = (node_type == PV_NODE);
   int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
   int null_refutation = -1, ref_sq = -1;
@@ -540,7 +540,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   
   // Main loop
   
-  while ((move = NextMove(m, &mv_type))) {
+  while ((move = NextMove(m, &fl_mv_type))) {
 
     // Gather data about the move
 
@@ -551,7 +551,8 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
     // Set futility pruning flag before the first applicable move is tried
 
-    if (mv_type == MV_NORMAL && quiet_tried == 0) {
+    if (fl_mv_type == MV_NORMAL 
+    && quiet_tried == 0) {
       if (use_futility
       && fl_prunable_node
       && depth <= 6) {
@@ -567,14 +568,14 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   mv_played[mv_tried] = move;
   mv_tried++;
-  if (mv_type == MV_NORMAL) quiet_tried++;
+  if (fl_mv_type == MV_NORMAL) quiet_tried++;
 
   // Can we prune this move?
 
   fl_prunable_move = !InCheck(p)
-                  && (mv_type == MV_NORMAL)
+                  && (fl_mv_type == MV_NORMAL)
                   && (mv_hist_score < hist_limit);
-
+  
   // Set new search depth
 
   new_depth = depth - 1;
@@ -709,8 +710,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 }
 
 int IsDraw(POS *p) {
-
-	static const U64 bbRim = { FILE_A_BB | FILE_H_BB | RANK_1_BB | RANK_8_BB };
 
   // Draw by 50 move rule
 

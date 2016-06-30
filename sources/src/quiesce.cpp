@@ -152,7 +152,7 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
 int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
   int best, score, move, new_pv[MAX_PLY];
-  int fl_check, mv_type;
+  int fl_check, fl_mv_type;
   int is_pv = (beta > alpha + 1);
 
   MOVES m[1];
@@ -193,7 +193,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
   // Main loop
 
-  while ((move = NextMove(m, &mv_type))) {
+  while ((move = NextMove(m, &fl_mv_type))) {
     p->DoMove(move, u);
     if (Illegal(p)) { p->UndoMove(move, u); continue; }
     
