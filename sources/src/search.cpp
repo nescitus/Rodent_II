@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 double lmr_size[2][MAX_PLY][MAX_MOVES];
 int lmp_limit[6] = { 0, 4, 8, 12, 36, 48 };
 int fut_margin[7] = { 0, 100, 150, 200, 250, 300, 350 };
-int razor_margin[4] = { 0, 300, 360, 420 };
+int razor_margin[5] = { 0, 300, 360, 420, 480 };
 int root_side;
 int fl_has_choice;
 
@@ -521,7 +521,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !move
   && !was_null
   && !(p->Pawns(p->side) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
-  && depth <= 3) {
+  && depth <= 4) {
     int threshold = beta - razor_margin[depth];
     int eval = Eval.Return(p, 1);
 
@@ -580,11 +580,11 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   new_depth = depth - 1;
 
-  // Check extension (pv node or low depth)
+  // Extensions (applied at pv node or at relatively low depth)
 
   if (is_pv || depth < 9) {
-	  new_depth += InCheck(p);
-	  if (is_pv && Tsq(move) == last_capt_sq) new_depth += 1;
+	  new_depth += InCheck(p);                                // check extension
+	  if (is_pv && Tsq(move) == last_capt_sq) new_depth += 1; // recapture extension
   }
 
   // Futility pruning

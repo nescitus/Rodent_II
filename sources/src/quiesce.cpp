@@ -9,9 +9,11 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   UNDO u[1];
   int op = Opp(p->side);
 
-  // Statistics and attempt at quick exit
+  // Use dedicated quiescence search function when in check
 
   if (InCheck(p)) return QuiesceFlee(p, ply, alpha, beta, pv);
+
+  // Statistics and attempt at quick exit
 
   nodes++;
   CheckTimeout();

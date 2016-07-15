@@ -29,6 +29,7 @@ static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | S
 };
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
+static const U64 bbEdgeFile    = FILE_A_BB | FILE_H_BB;
 
 #define SQ(sq) RelSqBb(sq,sd)
 #define opPawns p->Pawns(op)

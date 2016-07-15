@@ -155,9 +155,6 @@ static const int pstQueenEg[64] = {
 
 static const int pstKingMg[64] = {
 //A1                                H1
-	//17, 45, 6, -54, -12, -35, 17, 9, 56, 22, 0, -20, -22, -10, 17, 1, -15, 41, 12, -44, -16, -29, -24, -48, -34, 7, 6, -16, -13, -29, -38, -79, -28, -4, -4, -43, -13, -3, 7, -45, -55, 29, 12, -43, -35, 15, 28, -10, -3, 16, 4, -20, -17, 4, 19, -20, -11, -6, -18, -11, -34, 7, 9, -47
-
-	/**/
  13,  31, -14, -33, -33, -14,  31,  13,
  28,  19,  -5, -21, -21,  -5,  19,  28,
 -31,   8,  -8, -30, -30,  -8,   8, -31,
@@ -166,7 +163,7 @@ static const int pstKingMg[64] = {
 -32,  28,  13, -39, -39,  13,  28, -32, // strange positive scores, retune manually
 -11,  17,   4, -18, -18,   4,  17, -11,
 -29,   1,  -5, -22, -22,  -5,   1, -29
-/**/
+
 //A8                                H8
 };
 
@@ -239,8 +236,8 @@ static const int passed_bonus_mg[2][8] = {
 };
 
 static const int passed_bonus_eg[2][8] = {
-	{ 0, 24, 24, 60, 100, 160, 260, 0 },
-	{ 0, 260, 160, 100, 60, 24, 24, 0 }
+  { 0, 24, 24, 60, 100, 160, 260, 0 },
+  { 0, 260, 160, 100, 60, 24, 24, 0 }
 };
 
 static const int phalanx_bonus[2][8] = {
@@ -336,19 +333,19 @@ static const int tropism_eg[7] = { 0,  3,  1,  1,  4,  0,  0 };
 
 extern U64 bbPawnTakes[2];
 
-const int minorBehindPawn = 6;
+const int minorBehindPawn = 5;
 const int minorVsQueen = 5;
-const int bishConfinedMg = -5;      // -10 is worse
-const int bishConfinedEg = -5;      // -10 is worse
+const int bishConfinedMg = -5;
+const int bishConfinedEg = -5;
 
 const int rookOnQueenMg = 5;
 const int rookOnQueenEg = 5;
-const int rookOnOpenMg = 12;        // 10 is worse
-const int rookOnOpenEg = 12;        // 10 is worse
-const int rookOnBadHalfOpenMg = 5;  // 4 is worse
-const int rookOnBadHalfOpenEg = 5;  // 4 is worse
-const int rookOnGoodHalfOpenMg = 7; // 6 is worse
-const int rookOnGoodHalfOpenEg = 7; // 6 is worse
+const int rookOnOpenMg = 14;
+const int rookOnOpenEg = 10;
+const int rookOnBadHalfOpenMg = 6;
+const int rookOnBadHalfOpenEg = 4;
+const int rookOnGoodHalfOpenMg = 8;
+const int rookOnGoodHalfOpenEg = 6;
 const int rookOnSeventhMg = 16;
 const int rookOnSeventhEg = 32;
 const int twoRooksOn7thMg = 8;
