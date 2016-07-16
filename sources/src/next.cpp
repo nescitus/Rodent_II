@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include <assert.h>
 
-void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ref_sq, int ply) {
+void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply) {
 
   m->p = p;
   m->phase = 0;
@@ -28,7 +28,6 @@ void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ref_sq, int p
   m->ref_move = ref_move;
   m->killer1 = killer[ply][0];
   m->killer2 = killer[ply][1];
-  m->ref_sq = ref_sq;
 }
 
 int NextMove(MOVES *m, int *flag) {
@@ -205,7 +204,7 @@ void ScoreQuiet(MOVES *m) {
 		move_score += Param.mg_pst_data[m->p->side][TpOnSq(m->p,Fsq(*movep))][Tsq(*movep)]
 		            - Param.mg_pst_data[m->p->side][TpOnSq(m->p, Fsq(*movep))][Fsq(*movep)];
 
-	if (Fsq(*movep) == m->ref_sq) move_score += 2048;
+	//if (Fsq(*movep) == m->ref_sq && m->ref_sq != -1) move_score += 2048;
     
     *valuep++ = move_score;
   }

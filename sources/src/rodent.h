@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 798.801
-// bench 12: 7.175.293
-// bench 15: 35.869.621 34.6 2.399
+// bench: 852.631
+// bench 12: 8.339.546
+// bench 15: 38.550.262 33.8 2.645
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5624 lines of code
+// 5715 lines of code
 // 0.9.41: 55,8% vs 0.9.33
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.47"
+#define PROG_NAME "Rodent II 0.9.48"
 
 //#define LEAF_PST
 
@@ -363,7 +363,7 @@ public:
 
 extern cEval Eval;
 
-typedef class cParam {
+typedef class {
 public:
   int elo;
   int weakening;
@@ -376,7 +376,7 @@ public:
   int phalanx_data[2][64];
   int defended_data[2][64];
   void Init(void);
-}; 
+} cParam; 
 
 extern cParam Param;
 
@@ -387,7 +387,6 @@ typedef struct {
   int ref_move;
   int killer1;
   int killer2;
-  int ref_sq;
   int *next;
   int *last;
   int move[MAX_MOVES];
@@ -432,7 +431,7 @@ void UpdateHistory(POS *p, int last_move, int move, int depth, int ply);
 void Init(void);
 void InitSearch(void);
 void InitCaptures(POS *p, MOVES *m);
-void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ref_sq, int ply);
+void InitMoves(POS *p, MOVES *m, int trans_move, int ref_move, int ply);
 void InitWeights(void);
 int InputAvailable(void);
 U64 InitHashKey(POS * p);

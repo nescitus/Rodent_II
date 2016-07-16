@@ -215,7 +215,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
   // Init moves and variables before entering main loop
   
   best = -INF;
-  InitMoves(p, m, move, Refutation(-1), -1, ply);
+  InitMoves(p, m, move, Refutation(-1), ply);
   
   // Main loop
   
@@ -367,7 +367,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   int fl_check, fl_prunable_node, fl_prunable_move, fl_mv_type, reduction;
   int is_pv = (node_type == PV_NODE);
   int mv_tried = 0, quiet_tried = 0, fl_futility = 0;
-  int null_refutation = -1, ref_sq = -1;
 
   int mv_played[MAX_MOVES];
   int mv_hist_score;
@@ -494,10 +493,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       p->DoNull(u);
       if (new_depth > 0) score = -Search(p, ply + 1, -beta, -beta + 1, new_depth, 1, 0, -1, NEW_NODE(node_type), new_pv);
       else               score = -QuiesceChecks(p, ply + 1, -beta, -beta + 1, new_pv);
-
-	  TransRetrieve(p->hash_key, &null_refutation, &null_score, alpha, beta, depth, ply);
-	  if (null_refutation > 0) ref_sq = Tsq(null_refutation);
-
       p->UndoNull(u);
 
       // Verification search (nb. immediate null move within it is prohibited)
@@ -536,7 +531,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Init moves and variables before entering main loop
   
   best = -INF;
-  InitMoves(p, m, move, Refutation(last_move), ref_sq, ply);
+  InitMoves(p, m, move, Refutation(last_move), ply);
   
   // Main loop
   
