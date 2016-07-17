@@ -203,6 +203,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
+  U64 bbExcluded = p->Pawns(sd) | p->Kings(sd);
 
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
@@ -278,7 +279,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
        Add(sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
 
-    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op] &~p->Pawns(sd));
+    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op] &~bbExcluded);
     
     Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
@@ -331,7 +332,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Rook mobility
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
-    cnt = BB.PopCnt(bbMob &~p->Pawns(sd));
+    cnt = BB.PopCnt(bbMob &~bbExcluded);
     Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
@@ -416,7 +417,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     // Queen mobility
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
-    cnt = BB.PopCnt(bbMob &~p->Pawns(sd));
+    cnt = BB.PopCnt(bbMob &~bbExcluded);
     Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
