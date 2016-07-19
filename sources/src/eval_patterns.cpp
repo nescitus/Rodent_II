@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "eval.h"
 
-void cEval::ScorePatterns(POS * p) {
+void cEval::ScorePatterns(POS * p, eData *e) {
 
   U64 king_mask, rook_mask;
 
@@ -39,32 +39,32 @@ void cEval::ScorePatterns(POS * p) {
     // Blockage of a central pawn on its initial square
 
     if (IsOnSq(p, WC, P, D2) && IsOnSq(p, WC, B, C1)
-    && OccBb(p) & SqBb(D3)) Add(WC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(D3)) Add(e, WC, F_OTHERS, -50, 0);
 
     if (IsOnSq(p, WC, P, E2) && IsOnSq(p, WC, B, F1)
-    && OccBb(p) & SqBb(E3)) Add(WC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(E3)) Add(e, WC, F_OTHERS, -50, 0);
 
     // Trapped bishop
 
-    if (IsOnSq(p, WC, B, A7) && IsOnSq(p, BC, P, B6)) Add(WC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, WC, B, B8) && IsOnSq(p, BC, P, C7)) Add(WC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, WC, B, H7) && IsOnSq(p, BC, P, G6)) Add(WC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, WC, B, G8) && IsOnSq(p, BC, P, F7)) Add(WC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, WC, B, A6) && IsOnSq(p, BC, P, B5)) Add(WC, F_OTHERS, -50, -50);
-    if (IsOnSq(p, WC, B, H6) && IsOnSq(p, BC, P, G5)) Add(WC, F_OTHERS, -50, -50);
+    if (IsOnSq(p, WC, B, A7) && IsOnSq(p, BC, P, B6)) Add(e, WC, F_OTHERS, -150);
+    if (IsOnSq(p, WC, B, B8) && IsOnSq(p, BC, P, C7)) Add(e, WC, F_OTHERS, -150);
+    if (IsOnSq(p, WC, B, H7) && IsOnSq(p, BC, P, G6)) Add(e, WC, F_OTHERS, -150);
+    if (IsOnSq(p, WC, B, G8) && IsOnSq(p, BC, P, F7)) Add(e, WC, F_OTHERS, -150);
+    if (IsOnSq(p, WC, B, A6) && IsOnSq(p, BC, P, B5)) Add(e, WC, F_OTHERS, -50);
+    if (IsOnSq(p, WC, B, H6) && IsOnSq(p, BC, P, G5)) Add(e, WC, F_OTHERS, -50);
 
     // Fianchettoed bishop
 
     if (IsOnSq(p, WC, B, B2)) {
-      if (IsOnSq(p, WC, P, C3)) Add(WC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, WC, P, B3) && (IsOnSq(p, WC, P, A2) || IsOnSq(p, WC, P, C2))) Add(WC, F_OTHERS,  4,  4);
-      if (IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5))) Add(WC, F_OTHERS, -20, -20);
+      if (IsOnSq(p, WC, P, C3)) Add(e, WC, F_OTHERS, -10, -20);
+      if (IsOnSq(p, WC, P, B3) && (IsOnSq(p, WC, P, A2) || IsOnSq(p, WC, P, C2))) Add(e, WC, F_OTHERS,  4);
+      if (IsOnSq(p, BC, P, D4) && (IsOnSq(p, BC, P, E5) || IsOnSq(p, BC, P, C5))) Add(e, WC, F_OTHERS, -20);
     }
 
     if (IsOnSq(p, WC, B, G2)) {
-      if (IsOnSq(p, WC, P, F3)) Add(WC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, WC, P, G3) && (IsOnSq(p, WC, P, H2) || IsOnSq(p, WC, P, F2))) Add(WC, F_OTHERS,  4,  4);
-      if (IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5))) Add(WC, F_OTHERS, -20, -20);
+      if (IsOnSq(p, WC, P, F3)) Add(e, WC, F_OTHERS, -10, -20);
+      if (IsOnSq(p, WC, P, G3) && (IsOnSq(p, WC, P, H2) || IsOnSq(p, WC, P, F2))) Add(e, WC, F_OTHERS,  4);
+      if (IsOnSq(p, BC, P, E4) && (IsOnSq(p, BC, P, D5) || IsOnSq(p, BC, P, F5))) Add(e, WC, F_OTHERS, -20);
     }
   }
 
@@ -75,31 +75,31 @@ void cEval::ScorePatterns(POS * p) {
     // Blockage of a central pawn on its initial square
 
     if (IsOnSq(p, BC, P, D7) && IsOnSq(p, BC, B, C8)
-    && OccBb(p) & SqBb(D6)) Add(BC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(D6)) Add(e, BC, F_OTHERS, -50, 0);
 
     if (IsOnSq(p, BC, P, E7) && IsOnSq(p, BC, B, F8)
-    && OccBb(p) & SqBb(E6)) Add(BC, F_OTHERS, -50, 0);
+    && OccBb(p) & SqBb(E6)) Add(e, BC, F_OTHERS, -50, 0);
 
     // Trapped bishop
 
-    if (IsOnSq(p, BC, B, A2) && IsOnSq(p, WC, P, B3)) Add(BC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, BC, B, B1) && IsOnSq(p, WC, P, C2)) Add(BC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, BC, B, H2) && IsOnSq(p, WC, P, G3)) Add(BC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(BC, F_OTHERS, -150, -150);
-    if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(BC, F_OTHERS, -50, -50);
-    if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(BC, F_OTHERS, -50, -50);
+    if (IsOnSq(p, BC, B, A2) && IsOnSq(p, WC, P, B3)) Add(e, BC, F_OTHERS, -150);
+    if (IsOnSq(p, BC, B, B1) && IsOnSq(p, WC, P, C2)) Add(e, BC, F_OTHERS, -150);
+    if (IsOnSq(p, BC, B, H2) && IsOnSq(p, WC, P, G3)) Add(e, BC, F_OTHERS, -150);
+    if (IsOnSq(p, BC, B, G1) && IsOnSq(p, WC, P, F2)) Add(e, BC, F_OTHERS, -150);
+    if (IsOnSq(p, BC, B, A3) && IsOnSq(p, WC, P, B4)) Add(e, BC, F_OTHERS, -50);
+    if (IsOnSq(p, BC, B, H3) && IsOnSq(p, WC, P, G4)) Add(e, BC, F_OTHERS, -50);
 
     // Fianchettoed bishop
 
     if (IsOnSq(p, BC, B, B7)) { 
-      if (IsOnSq(p, BC, P, C6)) Add(BC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, BC, P, B6) && (IsOnSq(p, BC, P, A7) || IsOnSq(p, BC, P, C7))) Add(BC, F_OTHERS,  4,  4);
-      if (IsOnSq(p, WC, P, D5) && (IsOnSq(p, WC, P, E4) || IsOnSq(p, WC, P, C4))) Add(BC, F_OTHERS, -20, -20); 
+      if (IsOnSq(p, BC, P, C6)) Add(e, BC, F_OTHERS, -10, -20);
+      if (IsOnSq(p, BC, P, B6) && (IsOnSq(p, BC, P, A7) || IsOnSq(p, BC, P, C7))) Add(e, BC, F_OTHERS,  4);
+      if (IsOnSq(p, WC, P, D5) && (IsOnSq(p, WC, P, E4) || IsOnSq(p, WC, P, C4))) Add(e, BC, F_OTHERS, -20); 
     }
     if (IsOnSq(p, BC, B, G7)) {
-      if (IsOnSq(p, BC, P, F6)) Add(BC, F_OTHERS, -10, -20);
-      if (IsOnSq(p, BC, P, G6) && (IsOnSq(p, BC, P, H7) || IsOnSq(p, BC, P, G6))) Add(BC, F_OTHERS,  4,  4);
-      if (IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4))) Add(BC, F_OTHERS, -20, -20);
+      if (IsOnSq(p, BC, P, F6)) Add(e, BC, F_OTHERS, -10, -20);
+      if (IsOnSq(p, BC, P, G6) && (IsOnSq(p, BC, P, H7) || IsOnSq(p, BC, P, G6))) Add(e, BC, F_OTHERS,  4);
+      if (IsOnSq(p, WC, P, E5) && (IsOnSq(p, WC, P, D4) || IsOnSq(p, WC, P, F4))) Add(e, BC, F_OTHERS, -20);
     }
 
   }
@@ -108,25 +108,25 @@ void cEval::ScorePatterns(POS * p) {
 
   if (p->Knights(WC) & wn_mask) {
     if (IsOnSq(p, WC, N, A7)) {
-      if (IsOnSq(p, BC, P, A6)) Add(WC, F_OTHERS, -75, -75);
-      if (IsOnSq(p, BC, P, B7)) Add(WC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, BC, P, A6)) Add(e, WC, F_OTHERS, -75);
+      if (IsOnSq(p, BC, P, B7)) Add(e, WC, F_OTHERS, -75);
     }
 
     if (IsOnSq(p, WC, N, H7)) {
-      if (IsOnSq(p, BC, P, H6)) Add(WC, F_OTHERS, -75, -75);
-      if (IsOnSq(p, BC, P, G7)) Add(WC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, BC, P, H6)) Add(e, WC, F_OTHERS, -75);
+      if (IsOnSq(p, BC, P, G7)) Add(e, WC, F_OTHERS, -75);
     }
   }
 
   if (p->Knights(BC) & bn_mask) {
     if (IsOnSq(p, BC, N, A2)) {
-      if (IsOnSq(p, WC, P, A3)) Add(BC, F_OTHERS, -75, -75);
-      if (IsOnSq(p, WC, P, B2)) Add(BC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, WC, P, A3)) Add(e, BC, F_OTHERS, -75);
+      if (IsOnSq(p, WC, P, B2)) Add(e, BC, F_OTHERS, -75);
     }
 
     if (IsOnSq(p, BC, N, H2)) {
-      if (IsOnSq(p, WC, P, H3)) Add(BC, F_OTHERS, -75, -75);
-      if (IsOnSq(p, WC, P, G2)) Add(BC, F_OTHERS, -75, -75);
+      if (IsOnSq(p, WC, P, H3)) Add(e, BC, F_OTHERS, -75);
+      if (IsOnSq(p, WC, P, G2)) Add(e, BC, F_OTHERS, -75);
     }
   }
   
@@ -136,47 +136,47 @@ void cEval::ScorePatterns(POS * p) {
   rook_mask = SqBb(G1) | SqBb(H1) | SqBb(H2);
 
   if ((p->Kings(WC) & king_mask)
-  &&  (p->Rooks(WC) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  &&  (p->Rooks(WC) & rook_mask)) Add(e, WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(B1) | SqBb(C1);
   rook_mask = SqBb(A1) | SqBb(B1) | SqBb(A2);
 
   if ((p->Kings(WC) & king_mask)
-  &&  (p->Rooks(WC) & rook_mask)) Add(WC, F_OTHERS, -50, 0);
+  &&  (p->Rooks(WC) & rook_mask)) Add(e, WC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(F8) | SqBb(G8);
   rook_mask = SqBb(G8) | SqBb(H8) | SqBb(H7);
 
   if ((p->Kings(BC) & king_mask)
-  &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  &&  (p->Rooks(BC) & rook_mask)) Add(e, BC, F_OTHERS, -50, 0);
 
   king_mask = SqBb(B8) | SqBb(C8);
   rook_mask = SqBb(C8) | SqBb(B8) | SqBb(B7);
 
   if ((p->Kings(BC) & king_mask)
-  &&  (p->Rooks(BC) & rook_mask)) Add(BC, F_OTHERS, -50, 0);
+  &&  (p->Rooks(BC) & rook_mask)) Add(e, BC, F_OTHERS, -50, 0);
 
   // penalty for a castled king that cannot escape upwards
   
   if (IsOnSq(p, WC, K, H1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2))
-     Add(WC, F_OTHERS, -15, -15);
+     Add(e, WC, F_OTHERS, -15);
 
   if (IsOnSq(p, WC, K, G1) && IsOnSq(p, WC, P, H2) && IsOnSq(p, WC, P, G2) && IsOnSq(p, WC, P, F2))
-     Add(WC, F_OTHERS, -15, -15);
+     Add(e, WC, F_OTHERS, -15);
 
   if (IsOnSq(p, BC, K, H8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7))
-     Add(BC, F_OTHERS, -15, -15);
+     Add(e, BC, F_OTHERS, -15);
 
   if (IsOnSq(p, BC, K, G8) && IsOnSq(p, BC, P, H7) && IsOnSq(p, BC, P, G7) && IsOnSq(p, BC, P, F7) )
-     Add(BC, F_OTHERS, -15, -15);
+     Add(e, BC, F_OTHERS, -15);
 
   // castling rights
 
   if (IsOnSq(p, WC, K, E1)) {
-	  if ((p->castle_flags & W_KS) || (p->castle_flags & W_QS)) Add(WC, F_OTHERS, 10, 0);
+	  if ((p->castle_flags & W_KS) || (p->castle_flags & W_QS)) Add(e, WC, F_OTHERS, 10, 0);
   }
 
   if (IsOnSq(p, BC, K, E8)) {
-	  if ((p->castle_flags & B_KS) || (p->castle_flags & B_QS)) Add(BC, F_OTHERS, 10, 0);
+	  if ((p->castle_flags & B_KS) || (p->castle_flags & B_QS)) Add(e, BC, F_OTHERS, 10, 0);
   }
 }

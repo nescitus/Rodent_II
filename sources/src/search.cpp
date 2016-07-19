@@ -363,6 +363,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
 
 int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int last_move, int last_capt_sq, int node_type, int *pv) {
 
+  eData e;
   int best, score, null_score, move, new_depth, new_pv[MAX_PLY];
   int fl_check, fl_prunable_node, fl_prunable_move, fl_mv_type, reduction;
   int is_pv = (node_type == PV_NODE);
@@ -432,7 +433,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Safeguard against exceeding ply limit
   
   if (ply >= MAX_PLY - 1)
-    return Eval.Return(p, 1);
+    return Eval.Return(p, &e, 1);
 
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
@@ -466,7 +467,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && fl_prunable_node
   && depth <= 3
   && !was_null) {
-    int sc = Eval.Return(p, 1) - 120 * depth; // TODO: Tune me!
+    int sc = Eval.Return(p, &e, 1) - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
   }
 
@@ -478,7 +479,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !was_null
   && MayNull(p)
   ) {
-    int eval = Eval.Return(p, 1);
+    int eval = Eval.Return(p, &e, 1);
     if (eval > beta) {
 
       new_depth = depth - ((823 + 67 * depth) / 256); // simplified Stockfish formula
@@ -518,7 +519,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !(p->Pawns(p->side) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
   && depth <= 4) {
     int threshold = beta - razor_margin[depth];
-    int eval = Eval.Return(p, 1);
+    int eval = Eval.Return(p, &e, 1);
 
     if (eval < threshold) {
       score = QuiesceChecks(p, ply, alpha, beta, pv);
@@ -551,7 +552,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       if (use_futility
       && fl_prunable_node
       && depth <= 6) {
-        if (Eval.Return(p, 1) + fut_margin[depth] < beta) fl_futility = 1;
+        if (Eval.Return(p, &e, 1) + fut_margin[depth] < beta) fl_futility = 1;
       }
     }
 

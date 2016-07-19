@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 771.562
-// bench 12: 7.582.892
-// bench 15: 32.404.027 32.1 2.782
+// bench: 852.631
+// bench 12: 8.339.546
+// bench 15: 38.550.262 33.0 2.708
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5715 lines of code
-// 0.9.41: 55,8% vs 0.9.33
+// 0.9.49: 54,8% vs 0.9.33 
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.49"
+#define PROG_NAME "Rodent II 0.9.50"
 
 //#define LEAF_PST
 
@@ -327,6 +327,11 @@ public:
 
 extern cMask Mask;
 
+typedef struct {
+	int mg[2][N_OF_FACTORS];
+	int eg[2][N_OF_FACTORS];
+} eData;
+
 typedef class {
 private:
   U64 bbAllAttacks[2];
@@ -334,30 +339,28 @@ private:
   U64 bbPawnTakes[2];
   U64 bbTwoPawnsTake[2];
   U64 bbPawnCanTake[2];
-  int mg[2][N_OF_FACTORS];
-  int eg[2][N_OF_FACTORS];
 
-  void Add(int sd, int factor, int mg_bonus, int eg_bonus);
-  void Add(int sd, int factor, int bonus);
-  void ScoreMaterial(POS * p, int sd);
-  void ScorePassers(POS * p, int sd);
-  void ScorePieces(POS * p, int sd);
-  void ScoreHanging(POS *p, int sd);
-  void ScorePatterns(POS *p);
-  void ScoreKing(POS *p, int sd);
-  void ScoreUnstoppable(POS *p);
+  void Add(eData *e, int sd, int factor, int mg_bonus, int eg_bonus);
+  void Add(eData *e, int sd, int factor, int bonus);
+  void ScoreMaterial(POS * p, eData *e, int sd);
+  void ScorePassers(POS * p, eData *e, int sd);
+  void ScorePieces(POS * p, eData *e, int sd);
+  void ScoreHanging(POS *p, eData *e, int sd);
+  void ScorePatterns(POS *p, eData *e);
+  void ScoreKing(POS *p, eData *e, int sd);
+  void ScoreUnstoppable(eData *e, POS *p);
   int ScoreKingFile(POS * p, int sd, U64 bbFile);
   int ScoreFileShelter(U64 bbOwnPawns, int sd);
   int ScoreFileStorm(U64 bbOppPawns, int sd);
   int ScoreChains(POS *p, int sd);
-  void ScoreOutpost(POS * p, int sd, int pc, int sq);
-  void ScorePawns(POS * p, int sd);
-  void FullPawnEval(POS * p, int use_hash);
+  void ScoreOutpost(POS * p, eData *e, int sd, int pc, int sq);
+  void ScorePawns(POS * p, eData *e, int sd);
+  void FullPawnEval(POS * p, eData *e, int use_hash);
 
 public:
   int prog_side;
   void Init(void);
-  int Return(POS * p, int use_hash);
+  int Return(POS * p, eData * e, int use_hash);
   void Print(POS *p);
 } cEval;
 

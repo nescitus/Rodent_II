@@ -53,37 +53,37 @@ void ClearPawnHash(void) {
   }
 }
 
-void cEval::FullPawnEval(POS * p, int use_hash) {
+void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
 
   // Try to retrieve score from pawn hashtable
 
   int addr = p->pawn_key % PAWN_HASH_SIZE;
 
   if (PawnTT[addr].key == p->pawn_key && use_hash) {
-    mg[WC][F_PAWNS]   = PawnTT[addr].mg_pawns;
-    eg[WC][F_PAWNS]   = PawnTT[addr].eg_pawns;
+    e->mg[WC][F_PAWNS]   = PawnTT[addr].mg_pawns;
+    e->eg[WC][F_PAWNS]   = PawnTT[addr].eg_pawns;
     return;
   }
 
   // Single pawn eval
 
-  ScorePawns(p, WC);
-  ScorePawns(p, BC);
+  ScorePawns(p, e, WC);
+  ScorePawns(p, e, BC);
 
   // King's pawn shield and pawn storm on enemy king,
   // including pawn chains
 
-  ScoreKing(p, WC);
-  ScoreKing(p, BC);
+  ScoreKing(p, e, WC);
+  ScoreKing(p, e, BC);
 
   // Save stuff in pawn hashtable
 
   PawnTT[addr].key = p->pawn_key;
-  PawnTT[addr].mg_pawns = mg[WC][F_PAWNS] - mg[BC][F_PAWNS];
-  PawnTT[addr].eg_pawns = eg[WC][F_PAWNS] - eg[BC][F_PAWNS];
+  PawnTT[addr].mg_pawns = e->mg[WC][F_PAWNS] - e->mg[BC][F_PAWNS];
+  PawnTT[addr].eg_pawns = e->eg[WC][F_PAWNS] - e->eg[BC][F_PAWNS];
 }
 
-void cEval::ScorePawns(POS *p, int sd) {
+void cEval::ScorePawns(POS *p, eData *e, int sd) {
 
   U64 bbPieces, bbSpan, fl_phalanx;
   int sq, fl_unopposed, fl_weak, fl_defended; 
@@ -114,32 +114,32 @@ void cEval::ScorePawns(POS *p, int sd) {
     if (fl_unopposed) {
       if (fl_phalanx) {
       if (BB.PopCnt((Mask.passed[sd][sq] & bbOppPawns)) == 1)
-        Add(sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
+        Add(e, sd, F_PAWNS, passed_bonus_mg[sd][Rank(sq)] / 3, passed_bonus_eg[sd][Rank(sq)] / 3);
       }
     }
 
     // Doubled pawn
 
     if (bbSpan & bbOwnPawns)
-      Add(sd, F_PAWNS, doubled_malus_mg, doubled_malus_eg);
+      Add(e, sd, F_PAWNS, doubled_malus_mg, doubled_malus_eg);
 
     // Supported pawn
 
-    if (fl_phalanx)       Add(sd, F_PAWNS, Param.phalanx_data[sd][sq] , 2);
-    else if (fl_defended) Add(sd, F_PAWNS, Param.defended_data[sd][sq], 1);
+    if (fl_phalanx)       Add(e, sd, F_PAWNS, Param.phalanx_data[sd][sq] , 2);
+    else if (fl_defended) Add(e, sd, F_PAWNS, Param.defended_data[sd][sq], 1);
 
     // Weak pawn (two flavours)
 
     if (fl_weak) {
       if (!(Mask.adjacent[File(sq)] & bbOwnPawns)) 
-        Add(sd, F_PAWNS, isolated_malus_mg + isolated_open_malus * fl_unopposed, isolated_malus_eg);           // isolated pawn
+        Add(e, sd, F_PAWNS, isolated_malus_mg + isolated_open_malus * fl_unopposed, isolated_malus_eg);           // isolated pawn
       else 
-        Add(sd, F_PAWNS, backward_malus_mg[File(sq)] + backward_open_malus * fl_unopposed, backward_malus_eg); // backward pawn
+        Add(e, sd, F_PAWNS, backward_malus_mg[File(sq)] + backward_open_malus * fl_unopposed, backward_malus_eg); // backward pawn
     }
   }
 }
 
-void cEval::ScoreKing(POS *p, int sd) {
+void cEval::ScoreKing(POS *p, eData *e, int sd) {
 
   const int startSq[2] = { E1, E8 };
   const int qCastle[2] = { B1, B8 };
@@ -166,8 +166,8 @@ void cEval::ScoreKing(POS *p, int sd) {
   bbNextFile = ShiftWest(bbKingFile);
   if (bbNextFile) result += ScoreKingFile(p, sd, bbNextFile);
 
-  mg[sd][F_PAWNS] += result;
-  mg[sd][F_PAWNS] += ScoreChains(p, sd);
+  e->mg[sd][F_PAWNS] += result;
+  e->mg[sd][F_PAWNS] += ScoreChains(p, sd);
 }
 
 int cEval::ScoreKingFile(POS * p, int sd, U64 bbFile) {

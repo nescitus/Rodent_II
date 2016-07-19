@@ -164,7 +164,7 @@ void cParam::Init(void) {
   }
 }
 
-void cEval::ScoreMaterial(POS * p, int sd) {
+void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 
 	int op = Opp(sd);
 
@@ -177,18 +177,18 @@ void cEval::ScoreMaterial(POS * p, int sd) {
 	if (p->cnt[sd][R] > 1) tmp -= 5;                          // Rook pair
 
 	if (p->cnt[sd][B] > 1)                                    // Bishop pair
-		Add(sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
+		Add(e, sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
 
 	// "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
 
 	if (p->cnt[sd][Q])
 		tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
 
-	Add(sd, F_OTHERS, SCALE(tmp, mat_perc));
+	Add(e, sd, F_OTHERS, SCALE(tmp, mat_perc));
 
 }
 
-void cEval::ScorePieces(POS *p, int sd) {
+void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
   U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
   int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
@@ -203,7 +203,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   op = Opp(sd);
   ksq = KingSq(p, op);
-  U64 bbExcluded = p->Pawns(sd) | p->Kings(sd);
+  U64 bbExcluded = p->Pawns(sd) /*| p->Kings(sd)*/;
 
   // Init enemy king zone for attack evaluation. We mark squares where the king
   // can move plus two or three more squares facing enemy position.
@@ -229,14 +229,14 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[N] * Param.dist[sq][ksq], tropism_eg[N] * Param.dist[sq][ksq]);
+    Add(e, sd, F_TROPISM, tropism_mg[N] * Param.dist[sq][ksq], tropism_eg[N] * Param.dist[sq][ksq]);
     
     // Knight mobility
 
     bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);      // better to have it mobile than defending stuff
     
-    Add(sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
+    Add(e, sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) 
        att += chk_threat[N];                       // check threat bonus
@@ -254,7 +254,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Knight outpost
 
-	ScoreOutpost(p, sd, N, sq);
+	ScoreOutpost(p, e, sd, N, sq);
 
   } // end of knight eval
 
@@ -270,18 +270,18 @@ void cEval::ScorePieces(POS *p, int sd) {
 
   // Bishop tropism to enemy king
 
-  Add(sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
+  Add(e, sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
 
     // Bishop mobility
 
     bbMob = BB.BishAttacks(OccBb(p), sq);
 
     if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
-       Add(sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
+       Add(e, sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
 
     cnt = BB.PopCnt(bbMob &~bbPawnTakes[op] &~bbExcluded);
     
-    Add(sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
+    Add(e, sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) 
       att += chk_threat[B];                            // check threat bonus
@@ -289,7 +289,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbAllAttacks[sd] |= bbMob;
     bbEvAttacks[sd]  |= bbMob;
 
-    // Bishop attacks on enemy king zone
+    // Bishop attacks on enemy king zone (including attacks through a queen)
 
     bbAtt = BB.BishAttacks(OccBb(p) ^ p->Queens(sd) , sq);
     if (bbAtt & bbZone) {
@@ -299,7 +299,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Bishop outpost
 
-    ScoreOutpost(p, sd, B, sq);
+    ScoreOutpost(p, e, sd, B, sq);
 
     // Pawns on the same square color as our bishop
   
@@ -311,7 +311,7 @@ void cEval::ScorePieces(POS *p, int sd) {
       opp_pawn_cnt = BB.PopCnt(bbBlackSq & p->Pawns(op)) - 4;
     }
 
-    Add(sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt);
+    Add(e, sd, F_OTHERS, -3 * own_pawn_cnt - opp_pawn_cnt);
 
   } // end of bishop eval
 
@@ -327,13 +327,13 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Rook tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[R] * Param.dist[sq][ksq], tropism_eg[R] * Param.dist[sq][ksq]);
+    Add(e, sd, F_TROPISM, tropism_mg[R] * Param.dist[sq][ksq], tropism_eg[R] * Param.dist[sq][ksq]);
   
     // Rook mobility
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
-    Add(sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
+    Add(e, sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
     if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
@@ -355,7 +355,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     bbAllAttacks[sd] |= bbMob;
     bbEvAttacks[sd]  |= bbMob;
 
-    // Rook attacks on enemy king zone
+    // Rook attacks on enemy king zone (also through a rook or through a queen)
 
     bbAtt = BB.RookAttacks(OccBb(p) ^ p->StraightMovers(sd), sq);
     if (bbAtt & bbZone) {
@@ -369,21 +369,21 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen on rook's file (which might be closed)
 
-    if (bbFile & p->Queens(op)) Add(sd, F_LINES, rookOnQueenMg, rookOnQueenEg);
+    if (bbFile & p->Queens(op)) Add(e, sd, F_LINES, rookOnQueenMg, rookOnQueenEg);
 
     // Rook on (half) open file
 
     if (!(bbFile & p->Pawns(sd))) {
       if (!(bbFile & p->Pawns(op))) {
-		  Add(sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
-		  //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(sd, F_LINES, 4, 2); // equal
+		  Add(e, sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
+		  //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(e, sd, F_LINES, 4, 2); // equal
       }
       else {
 		// score differs depending on whether half-open file is blocked by defended enemy pawn
         if ((bbFile & p->Pawns(op)) & bbPawnTakes[op])
-          Add(sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
+          Add(e, sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
         else {
-          Add(sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
+          Add(e, sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
 		}
       }
     }
@@ -393,7 +393,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(sd, F_LINES, rookOnSeventhMg, rookOnSeventhEg);
+        Add(e, sd, F_LINES, rookOnSeventhMg, rookOnSeventhEg);
         r_on_7th++;
       }
     }
@@ -408,7 +408,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     // Queen tropism to enemy king
 
-    Add(sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
+    Add(e, sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
 #ifdef LEAF_PST
 	Add(sd, F_PST, Param.mg_pst_data[sd][Q][sq], Param.eg_pst_data[sd][Q][sq]);
@@ -418,7 +418,7 @@ void cEval::ScorePieces(POS *p, int sd) {
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
-    Add(sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
+    Add(e, sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
       att += chk_threat[Q];
@@ -454,7 +454,7 @@ void cEval::ScorePieces(POS *p, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       || p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(sd, F_LINES, queenOnSeventhMg, queenOnSeventhEg);
+        Add(e, sd, F_LINES, queenOnSeventhMg, queenOnSeventhEg);
       }
     }
 
@@ -467,18 +467,18 @@ void cEval::ScorePieces(POS *p, int sd) {
   // Score terms using information gathered during piece eval
 
   if (r_on_7th == 2)          // two rooks on 7th rank
-    Add(sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg);
+    Add(e, sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
   if (wood > 1 && p->cnt[sd][Q]) {
     if (att > 399) att = 399;
-    Add(sd, F_ATT, Param.danger[att]);
+    Add(e, sd, F_ATT, Param.danger[att]);
   }
 
 }
 
-void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
+void cEval::ScoreOutpost(POS * p, eData * e, int sd, int pc, int sq) {
 
   int mul = 0;
   int tmp = Param.sp_pst_data[sd][pc][sq];
@@ -490,7 +490,7 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
     tmp *= mul;
     tmp /= 2;
 
-    Add(sd, F_OUTPOST, tmp);
+    Add(e, sd, F_OUTPOST, tmp);
   }
 
   // Pawn in front of a minor
@@ -498,11 +498,11 @@ void cEval::ScoreOutpost(POS * p, int sd, int pc, int sq) {
   if (SqBb(sq) & bbHomeZone[sd]) {
     U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
     if (bbStop & PcBb(p, sd, P))
-      Add(sd, F_OUTPOST, minorBehindPawn);
+      Add(e, sd, F_OUTPOST, minorBehindPawn);
   }
 }
 
-void cEval::ScoreHanging(POS *p, int sd) {
+void cEval::ScoreHanging(POS *p, eData *e, int sd) {
 
   int pc, sq, sc;
   int op = Opp(sd);
@@ -523,7 +523,7 @@ void cEval::ScoreHanging(POS *p, int sd) {
     sq = BB.PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
     sc = tp_value[pc] / 64;
-    Add(sd, F_PRESSURE, 10 + sc, 18 + sc);
+    Add(e, sd, F_PRESSURE, 10 + sc, 18 + sc);
   }
 
   // defended pieces under attack
@@ -532,11 +532,11 @@ void cEval::ScoreHanging(POS *p, int sd) {
     sq = BB.PopFirstBit(&bbDefended);
     pc = TpOnSq(p, sq);
     sc = tp_value[pc] / 96;
-    Add(sd, F_PRESSURE, 5 + sc, 9 + sc);
+    Add(e, sd, F_PRESSURE, 5 + sc, 9 + sc);
   }
 }
 
-void cEval::ScorePassers(POS * p, int sd) 
+void cEval::ScorePassers(POS * p, eData *e, int sd) 
 {
   U64 bbPieces = p->Pawns(sd);
   int sq, mul, mg_tmp, eg_tmp;
@@ -570,15 +570,15 @@ void cEval::ScorePassers(POS * p, int sd)
     
       else if ( (bbStop & bbAllAttacks[sd]) 
       &&   (bbStop & ~bbAllAttacks[op]) ) mul += 10;
-
+		  
 	  // add final score
 	  
-      Add(sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
+      Add(e, sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
   }
 }
 
-void cEval::ScoreUnstoppable(POS * p) {
+void cEval::ScoreUnstoppable(eData *e, POS * p) {
 
   U64 bbPieces, bbSpan, bbProm;
   int w_dist = 8;
@@ -631,11 +631,11 @@ void cEval::ScoreUnstoppable(POS * p) {
   // current function is too stupid to evaluate pawn races properly,
   // so we add a bonus only if only one side has an unstoppable passer.
 
-  if (w_dist < b_dist && b_dist == 8) Add(WC, F_PASSERS, 0, 500);
-  if (b_dist < w_dist && w_dist == 8) Add(BC, F_PASSERS, 0, 500);
+  if (w_dist < b_dist && b_dist == 8) Add(e, WC, F_PASSERS, 0, 500);
+  if (b_dist < w_dist && w_dist == 8) Add(e, BC, F_PASSERS, 0, 500);
 }
 
-int cEval::Return(POS *p, int use_hash) {
+int cEval::Return(POS *p, eData * e, int use_hash) {
 
   assert(prog_side == WC || prog_side == BC);
 
@@ -656,18 +656,18 @@ int cEval::Return(POS *p, int use_hash) {
 
   for (int sd = 0; sd < 2; sd++) {
     for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-      mg[sd][fc] = 0;
-      eg[sd][fc] = 0;
+      e->mg[sd][fc] = 0;
+      e->eg[sd][fc] = 0;
     }
   }
 
   // Init eval with incrementally updated stuff
 
 #ifndef LEAF_PST
-  mg[WC][F_PST] = p->mg_pst[WC];
-  mg[BC][F_PST] = p->mg_pst[BC];
-  eg[WC][F_PST] = p->eg_pst[WC];
-  eg[BC][F_PST] = p->eg_pst[BC];
+  e->mg[WC][F_PST] = p->mg_pst[WC];
+  e->mg[BC][F_PST] = p->mg_pst[BC];
+  e->eg[WC][F_PST] = p->eg_pst[WC];
+  e->eg[BC][F_PST] = p->eg_pst[BC];
 #endif
 
   // Calculate variables used during evaluation
@@ -684,50 +684,50 @@ int cEval::Return(POS *p, int use_hash) {
 
   // Tempo bonus
 
-  Add(p->side, F_OTHERS, 10, 5);
+  Add(e, p->side, F_OTHERS, 10, 5);
 
   // Evaluate pieces and pawns
 
-  ScoreMaterial(p, WC);
-  ScoreMaterial(p, BC);
-  ScorePieces(p, WC);
-  ScorePieces(p, BC);
-  FullPawnEval(p, use_hash);
-  ScoreHanging(p, WC);
-  ScoreHanging(p, BC);
-  ScorePatterns(p);
-  ScorePassers(p, WC);
-  ScorePassers(p, BC);
-  ScoreUnstoppable(p);
+  ScoreMaterial(p, e, WC);
+  ScoreMaterial(p, e, BC);
+  ScorePieces(p, e, WC);
+  ScorePieces(p, e, BC);
+  FullPawnEval(p, e, use_hash);
+  ScoreHanging(p, e, WC);
+  ScoreHanging(p, e, BC);
+  ScorePatterns(p, e);
+  ScorePassers(p, e, WC);
+  ScorePassers(p, e, BC);
+  ScoreUnstoppable(e, p);
 
   // Add stylistic asymmetric stuff
 
-  mg[prog_side][F_OTHERS] += keep_pc[Q]  * p->cnt[prog_side][Q];
-  mg[prog_side][F_OTHERS] += keep_pc[R]   * p->cnt[prog_side][R];
-  mg[prog_side][F_OTHERS] += keep_pc[B] * p->cnt[prog_side][B];
-  mg[prog_side][F_OTHERS] += keep_pc[N] * p->cnt[prog_side][N];
-  mg[prog_side][F_OTHERS] += keep_pc[P]   * p->cnt[prog_side][P];
+  e->mg[prog_side][F_OTHERS] += keep_pc[Q]  * p->cnt[prog_side][Q];
+  e->mg[prog_side][F_OTHERS] += keep_pc[R]   * p->cnt[prog_side][R];
+  e->mg[prog_side][F_OTHERS] += keep_pc[B] * p->cnt[prog_side][B];
+  e->mg[prog_side][F_OTHERS] += keep_pc[N] * p->cnt[prog_side][N];
+  e->mg[prog_side][F_OTHERS] += keep_pc[P]   * p->cnt[prog_side][P];
 
   // Sum all the symmetric eval factors
   // (we start from 2 so that we won't touch king attacks 
   // and mobility, both of which are asymmetric)
 
   for (int fc = 2; fc < N_OF_FACTORS; fc++) {
-    mg_score += (mg[WC][fc] - mg[BC][fc]) * weights[fc] / 100;
-    eg_score += (eg[WC][fc] - eg[BC][fc]) * weights[fc] / 100;
+    mg_score += (e->mg[WC][fc] - e->mg[BC][fc]) * weights[fc] / 100;
+    eg_score += (e->eg[WC][fc] - e->eg[BC][fc]) * weights[fc] / 100;
   }
 
   // Add asymmetric eval factors
 
-  mg_score += mg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
-  mg_score -= mg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
-  eg_score += eg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
-  eg_score -= eg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
+  mg_score += e->mg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
+  mg_score -= e->mg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
+  eg_score += e->eg[WC][F_ATT] * curr_weights[WC][SD_ATT] / 100;
+  eg_score -= e->eg[BC][F_ATT] * curr_weights[BC][SD_ATT] / 100;
 
-  mg_score += mg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
-  mg_score -= mg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
-  eg_score += eg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
-  eg_score -= eg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
+  mg_score += e->mg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
+  mg_score -= e->mg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
+  eg_score += e->eg[WC][F_MOB] * curr_weights[WC][SD_MOB] / 100;
+  eg_score -= e->eg[BC][F_MOB] * curr_weights[BC][SD_MOB] / 100;
 
   // Merge mg/eg scores
 
@@ -783,20 +783,21 @@ int cEval::Return(POS *p, int use_hash) {
   return p->side == WC ? score : -score;
 }
 
-void cEval::Add(int sd, int factor, int mg_bonus, int eg_bonus) {
+void cEval::Add(eData *e, int sd, int factor, int mg_bonus, int eg_bonus) {
 
-  mg[sd][factor] += mg_bonus;
-  eg[sd][factor] += eg_bonus;
+  e->mg[sd][factor] += mg_bonus;
+  e->eg[sd][factor] += eg_bonus;
 }
 
-void cEval::Add(int sd, int factor, int bonus) {
+void cEval::Add(eData *e, int sd, int factor, int bonus) {
 
-	mg[sd][factor] += bonus;
-	eg[sd][factor] += bonus;
+  e->mg[sd][factor] += bonus;
+  e->eg[sd][factor] += bonus;
 }
 
 void cEval::Print(POS * p) {
 
+  eData e;
   int mg_score, eg_score, total;
   int mg_phase = Min(max_phase, p->phase);
   int eg_phase = max_phase - mg_phase;
@@ -804,17 +805,17 @@ void cEval::Print(POS * p) {
   // BUG: eval asymmetry not shown
   // TODO: fix me!
 
-  printf("Total score: %d\n", Return(p, 0));
+  printf("Total score: %d\n", Return(p, &e, 0));
   printf("-----------------------------------------------------------------\n");
   printf("Factor     | Val (perc) |   Mg (  WC,   BC) |   Eg (  WC,   BC) |\n");
   printf("-----------------------------------------------------------------\n");
   for (int fc = 0; fc < N_OF_FACTORS; fc++) {
-  mg_score = ((mg[WC][fc] - mg[BC][fc]) * weights[fc]) / 100;
-  eg_score = ((eg[WC][fc] - eg[BC][fc]) * weights[fc]) / 100;
+  mg_score = ((e.mg[WC][fc] - e.mg[BC][fc]) * weights[fc]) / 100;
+  eg_score = ((e.eg[WC][fc] - e.eg[BC][fc]) * weights[fc]) / 100;
   total = (((mg_score * mg_phase) + (eg_score * eg_phase)) / max_phase);
 
     printf(factor_name[fc]);
-    printf(" | %4d (%3d) | %4d (%4d, %4d) | %4d (%4d, %4d) |\n", total, weights[fc], mg_score, mg[WC][fc], mg[BC][fc], eg_score, eg[WC][fc], eg[BC][fc]);
+    printf(" | %4d (%3d) | %4d (%4d, %4d) | %4d (%4d, %4d) |\n", total, weights[fc], mg_score, e.mg[WC][fc], e.mg[BC][fc], eg_score, e.eg[WC][fc], e.eg[BC][fc]);
   }
   printf("-----------------------------------------------------------------\n");
 }

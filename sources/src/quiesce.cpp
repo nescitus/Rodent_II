@@ -4,6 +4,7 @@
 
 int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
+  eData e;
   int best, score, move, new_pv[MAX_PLY];
   MOVES m[1];
   UNDO u[1];
@@ -20,12 +21,12 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (abort_search) return 0;
   *pv = 0;
   if (IsDraw(p)) return DrawScore(p);
-  if (ply >= MAX_PLY - 1) return Eval.Return(p, 1);
+  if (ply >= MAX_PLY - 1) return Eval.Return(p, &e, 1);
 
   // Get a stand-pat score and adjust bounds
   // (exiting if eval exceeds beta)
 
-  best = Eval.Return(p, 1);
+  best = Eval.Return(p, &e, 1);
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
@@ -94,6 +95,7 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
 
 int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
 {
+  eData e;
   int stand_pat, best, score, move, new_pv[MAX_PLY];
   int is_pv = (beta > alpha + 1);
   MOVES m[1];
@@ -109,9 +111,9 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
   if (IsDraw(p)) return DrawScore(p);
 
   if (ply >= MAX_PLY - 1)
-    return Eval.Return(p, 1);
+    return Eval.Return(p, &e, 1);
 
-  best = stand_pat = Eval.Return(p, 1);
+  best = stand_pat = Eval.Return(p, &e, 1);
 
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
@@ -153,6 +155,7 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
 
 int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
+  eData e;
   int best, score, move, new_pv[MAX_PLY];
   int fl_check, fl_mv_type;
   int is_pv = (beta > alpha + 1);
@@ -181,7 +184,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Safeguard against exceeding ply limit
 
   if (ply >= MAX_PLY - 1)
-    return Eval.Return(p, 1);
+    return Eval.Return(p, &e, 1);
 
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
