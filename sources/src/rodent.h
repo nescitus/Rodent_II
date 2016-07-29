@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bench 15: 38.550.262 33.0 2.708
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5715 lines of code
-// 0.9.49: 54,8% vs 0.9.33 
+// 0.9.50: 56,3% vs 0.9.33 
 
 #pragma once
 #define PROG_NAME "Rodent II 0.9.50"
@@ -330,16 +330,15 @@ extern cMask Mask;
 typedef struct {
 	int mg[2][N_OF_FACTORS];
 	int eg[2][N_OF_FACTORS];
+	U64 bbAllAttacks[2];
+	U64 bbEvAttacks[2];
+	U64 bbPawnTakes[2];
+	U64 bbTwoPawnsTake[2];
+	U64 bbPawnCanTake[2];
 } eData;
 
 typedef class {
 private:
-  U64 bbAllAttacks[2];
-  U64 bbEvAttacks[2];
-  U64 bbPawnTakes[2];
-  U64 bbTwoPawnsTake[2];
-  U64 bbPawnCanTake[2];
-
   void Add(eData *e, int sd, int factor, int mg_bonus, int eg_bonus);
   void Add(eData *e, int sd, int factor, int bonus);
   void ScoreMaterial(POS * p, eData *e, int sd);

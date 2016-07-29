@@ -328,8 +328,6 @@ static const int r_contact_check = 24; // [16.. <24> ..?]
 static const int tropism_mg[7] = { 0,  3,  2,  2,  2,  0,  0 };
 static const int tropism_eg[7] = { 0,  3,  1,  1,  4,  0,  0 };
 
-extern U64 bbPawnTakes[2];
-
 const int minorBehindPawn = 5;
 const int minorVsQueen = 5;
 const int bishConfinedMg = -5;

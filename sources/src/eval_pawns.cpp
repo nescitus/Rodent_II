@@ -104,7 +104,7 @@ void cEval::ScorePawns(POS *p, eData *e, int sd) {
     // Get some information about the pawn we are evaluating
 
     bbSpan = BB.GetFrontSpan(SqBb(sq), sd);
-    fl_defended  = ((SqBb(sq) & bbPawnTakes[sd]) != 0);
+    fl_defended  = ((SqBb(sq) & e->bbPawnTakes[sd]) != 0);
     fl_unopposed = ((bbSpan & bbOppPawns) == 0);
     fl_weak      = ((Mask.supported[sd][sq] & bbOwnPawns) == 0);
     fl_phalanx   = (BB.ShiftSideways(SqBb(sq)) & bbOwnPawns);

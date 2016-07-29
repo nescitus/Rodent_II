@@ -234,15 +234,15 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Knight mobility
 
     bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
-    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op]);      // better to have it mobile than defending stuff
+    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op]);      // better to have it mobile than defending stuff
     
     Add(e, sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
-    if ((bbMob &~bbPawnTakes[op]) & bbKnightChk) 
-       att += chk_threat[N];                       // check threat bonus
+    if ((bbMob &~e->bbPawnTakes[op]) & bbKnightChk) 
+       att += chk_threat[N];                          // check threat bonus
 
-    bbAllAttacks[sd] |= bbMob;
-    bbEvAttacks[sd]  |= bbMob;
+    e->bbAllAttacks[sd] |= bbMob;
+    e->bbEvAttacks[sd]  |= bbMob;
 
     // Knight attacks on enemy king zone
 
@@ -279,15 +279,15 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
        Add(e, sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
 
-    cnt = BB.PopCnt(bbMob &~bbPawnTakes[op] &~bbExcluded);
+    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op] &~bbExcluded);
     
     Add(e, sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
 
-    if ((bbMob &~bbPawnTakes[op]) & bbDiagChk) 
+    if ((bbMob &~e->bbPawnTakes[op]) & bbDiagChk) 
       att += chk_threat[B];                            // check threat bonus
 
-    bbAllAttacks[sd] |= bbMob;
-    bbEvAttacks[sd]  |= bbMob;
+    e->bbAllAttacks[sd] |= bbMob;
+    e->bbEvAttacks[sd]  |= bbMob;
 
     // Bishop attacks on enemy king zone (including attacks through a queen)
 
@@ -334,7 +334,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
     Add(e, sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
-    if (((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
+    if (((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
 
@@ -352,8 +352,8 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
       }
     }
 
-    bbAllAttacks[sd] |= bbMob;
-    bbEvAttacks[sd]  |= bbMob;
+    e->bbAllAttacks[sd] |= bbMob;
+    e->bbEvAttacks[sd]  |= bbMob;
 
     // Rook attacks on enemy king zone (also through a rook or through a queen)
 
@@ -380,7 +380,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
       }
       else {
 		// score differs depending on whether half-open file is blocked by defended enemy pawn
-        if ((bbFile & p->Pawns(op)) & bbPawnTakes[op])
+        if ((bbFile & p->Pawns(op)) & e->bbPawnTakes[op])
           Add(e, sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
         else {
           Add(e, sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
@@ -420,7 +420,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     cnt = BB.PopCnt(bbMob &~bbExcluded);
     Add(e, sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
 
-    if ((bbMob &~bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
+    if ((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
       att += chk_threat[Q];
 
     // Queen contact checks
@@ -438,7 +438,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
       }
     }
 
-    bbAllAttacks[sd] |= bbMob;
+    e->bbAllAttacks[sd] |= bbMob;
 
     // Queen attacks on enemy king zone
    
@@ -483,9 +483,9 @@ void cEval::ScoreOutpost(POS * p, eData * e, int sd, int pc, int sq) {
   int mul = 0;
   int tmp = Param.sp_pst_data[sd][pc][sq];
   if (tmp) {
-    if (SqBb(sq) & ~bbPawnCanTake[Opp(sd)]) mul += 2;  // in the hole of enemy pawn structure
-    if (SqBb(sq) & bbPawnTakes[sd]) mul += 1;          // defended by own pawn
-    if (SqBb(sq) & bbTwoPawnsTake[sd]) mul += 1;       // defended by two pawns
+    if (SqBb(sq) & ~e->bbPawnCanTake[Opp(sd)]) mul += 2;  // in the hole of enemy pawn structure
+    if (SqBb(sq) & e->bbPawnTakes[sd]) mul += 1;          // defended by own pawn
+    if (SqBb(sq) & e->bbTwoPawnsTake[sd]) mul += 1;       // defended by two pawns
 
     tmp *= mul;
     tmp /= 2;
@@ -506,15 +506,15 @@ void cEval::ScoreHanging(POS *p, eData *e, int sd) {
 
   int pc, sq, sc;
   int op = Opp(sd);
-  U64 bbHanging = p->cl_bb[op]    & ~bbPawnTakes[op];
-  U64 bbThreatened = p->cl_bb[op] & bbPawnTakes[sd];
+  U64 bbHanging = p->cl_bb[op]    & ~e->bbPawnTakes[op];
+  U64 bbThreatened = p->cl_bb[op] & e->bbPawnTakes[sd];
   bbHanging |= bbThreatened;      // piece attacked by our pawn isn't well defended
-  bbHanging &= bbAllAttacks[sd];  // hanging piece has to be attacked
+  bbHanging &= e->bbAllAttacks[sd];  // hanging piece has to be attacked
   bbHanging &= ~p->Pawns(op);     // currently we don't evaluate threats against pawns
 
-  U64 bbDefended = p->cl_bb[op] & bbAllAttacks[op];
-  bbDefended &= bbEvAttacks[sd];  // N, B, R attacks (pieces attacked by pawns are scored as hanging)
-  bbDefended &= ~bbPawnTakes[sd]; // no defense against pawn attack
+  U64 bbDefended = p->cl_bb[op] & e->bbAllAttacks[op];
+  bbDefended &= e->bbEvAttacks[sd];  // N, B, R attacks (pieces attacked by pawns are scored as hanging)
+  bbDefended &= ~e->bbPawnTakes[sd]; // no defense against pawn attack
   bbDefended &= ~p->Pawns(op);    // currently we don't evaluate threats against pawns
 
   // hanging pieces (attacked and undefended)
@@ -568,8 +568,8 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
 
       // our control of stop square
     
-      else if ( (bbStop & bbAllAttacks[sd]) 
-      &&   (bbStop & ~bbAllAttacks[op]) ) mul += 10;
+      else if ( (bbStop & e->bbAllAttacks[sd]) 
+      &&   (bbStop & ~e->bbAllAttacks[op]) ) mul += 10;
 		  
 	  // add final score
 	  
@@ -672,15 +672,15 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
 
   // Calculate variables used during evaluation
 
-  bbPawnTakes[WC] = BB.GetWPControl(p->Pawns(WC));
-  bbPawnTakes[BC] = BB.GetBPControl(p->Pawns(BC));
-  bbTwoPawnsTake[WC] = BB.GetDoubleWPControl(p->Pawns(WC));
-  bbTwoPawnsTake[BC] = BB.GetDoubleBPControl(p->Pawns(BC));
-  bbAllAttacks[WC] = bbPawnTakes[WC] | BB.KingAttacks(p->king_sq[WC]);
-  bbAllAttacks[BC] = bbPawnTakes[BC] | BB.KingAttacks(p->king_sq[BC]);
-  bbEvAttacks[WC] = bbEvAttacks[BC] = 0ULL;
-  bbPawnCanTake[WC] = BB.FillNorth(bbPawnTakes[WC]);
-  bbPawnCanTake[BC] = BB.FillSouth(bbPawnTakes[BC]);
+  e->bbPawnTakes[WC] = BB.GetWPControl(p->Pawns(WC));
+  e->bbPawnTakes[BC] = BB.GetBPControl(p->Pawns(BC));
+  e->bbTwoPawnsTake[WC] = BB.GetDoubleWPControl(p->Pawns(WC));
+  e->bbTwoPawnsTake[BC] = BB.GetDoubleBPControl(p->Pawns(BC));
+  e->bbAllAttacks[WC] = e->bbPawnTakes[WC] | BB.KingAttacks(p->king_sq[WC]);
+  e->bbAllAttacks[BC] = e->bbPawnTakes[BC] | BB.KingAttacks(p->king_sq[BC]);
+  e->bbEvAttacks[WC] = e->bbEvAttacks[BC] = 0ULL;
+  e->bbPawnCanTake[WC] = BB.FillNorth(e->bbPawnTakes[WC]);
+  e->bbPawnCanTake[BC] = BB.FillSouth(e->bbPawnTakes[BC]);
 
   // Tempo bonus
 
