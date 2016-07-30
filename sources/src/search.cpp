@@ -862,7 +862,7 @@ void CheckTimeout(void) {
     }
   }
 
-  // Process commands that might terminatethe search
+  // Process commands that might terminate the search
 
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));

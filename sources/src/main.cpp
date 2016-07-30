@@ -33,9 +33,15 @@ POS p;
 // Macros required for setting paths with compiler option -D
 #define XSTR(x1) #x1
 #define STR(x1) XSTR(x1)
+#include <math.h>
 
+int EloToSpeed(int elo) {
+	int result = 300 + pow(2, (elo - 799) / 85);
+	return result * 0.23;
+}
 
 int main() {
+
   fl_reading_personality = 0;
   fl_separate_books = 0; // opening book files can be defined in a personality description
   fl_elo_slider = 0;

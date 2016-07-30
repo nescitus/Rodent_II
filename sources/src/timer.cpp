@@ -16,8 +16,9 @@ void sTimer::SetSpeed(int elo) {
    eval_blur = 0;
 
    if (Param.weakening) {
-      nps_limit = 0.50 * pow(2, elo / 130);
-      if (elo < 2000) eval_blur = (2000 - elo) / 10;
+      nps_limit = EloToSpeed(elo);
+
+      if (elo < 2000) eval_blur = (2000 - elo) / 5;
    }
 }
 

@@ -700,13 +700,13 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
   ScorePassers(p, e, BC);
   ScoreUnstoppable(e, p);
 
-  // Add stylistic asymmetric stuff
+  // Add asymmetric bonus for keeping certain type of pieces
 
-  e->mg[prog_side][F_OTHERS] += keep_pc[Q]  * p->cnt[prog_side][Q];
-  e->mg[prog_side][F_OTHERS] += keep_pc[R]   * p->cnt[prog_side][R];
+  e->mg[prog_side][F_OTHERS] += keep_pc[Q] * p->cnt[prog_side][Q];
+  e->mg[prog_side][F_OTHERS] += keep_pc[R] * p->cnt[prog_side][R];
   e->mg[prog_side][F_OTHERS] += keep_pc[B] * p->cnt[prog_side][B];
   e->mg[prog_side][F_OTHERS] += keep_pc[N] * p->cnt[prog_side][N];
-  e->mg[prog_side][F_OTHERS] += keep_pc[P]   * p->cnt[prog_side][P];
+  e->mg[prog_side][F_OTHERS] += keep_pc[P] * p->cnt[prog_side][P];
 
   // Sum all the symmetric eval factors
   // (we start from 2 so that we won't touch king attacks 

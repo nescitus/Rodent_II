@@ -22,10 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bench 15: 38.550.262 33.0 2.708
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5715 lines of code
-// 0.9.50: 56,3% vs 0.9.33 
+// 0.9.50: 56,3% vs 0.9.33
+// 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.50"
+#define PROG_NAME "Rodent II 0.9.51"
 
 //#define LEAF_PST
 
@@ -424,6 +425,7 @@ void DisplayCurrmove(int move, int tried);
 void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);
 int DrawScore(POS * p);
+int EloToSpeed(int elo);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int *GenerateQuietChecks(POS *p, int *list);
