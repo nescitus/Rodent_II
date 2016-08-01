@@ -867,6 +867,8 @@ void CheckTimeout(void) {
   if (InputAvailable()) {
     ReadLine(command, sizeof(command));
 
+	if (strcmp(command, "isready") == 0)
+	   printf("readyok");
     if (strcmp(command, "stop") == 0)
       abort_search = 1;
     else if (strcmp(command, "ponderhit") == 0)
