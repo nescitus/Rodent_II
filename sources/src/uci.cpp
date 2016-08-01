@@ -41,11 +41,11 @@ void UciLoop(void) {
     // UseBook remains for backward compatibly
     if ((strstr(command, "setoption name OwnBook value")) || (strstr(command, "setoption name UseBook value")))
       use_book = (strstr(command, "value true") != 0);
-	if (strstr(command, "setoption name UCI_LimitStrength value"))
-		Param.weakening = (strstr(command, "value true") != 0);
+    if (strstr(command, "setoption name UCI_LimitStrength value"))
+      Param.weakening = (strstr(command, "value true") != 0);
 
-	if (strcmp(token, "uci") == 0) {
-	  printf("id name %s\n", PROG_NAME);
+    if (strcmp(token, "uci") == 0) {
+      printf("id name %s\n", PROG_NAME);
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
@@ -55,13 +55,13 @@ void UciLoop(void) {
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
-		printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
-		printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
-		printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
-		printf("option name KeepRook type spin default %d min -200 max 200\n", keep_pc[R]);
-		printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_pc[Q]);
+        printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
+        printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
+        printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
+        printf("option name KeepRook type spin default %d min -200 max 200\n", keep_pc[R]);
+        printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_pc[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-		printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
+        printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
         printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
@@ -75,30 +75,34 @@ void UciLoop(void) {
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
 
-		if (fl_elo_slider == 0) {
-			printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-			printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
-		} else {
-			printf("option name UCI_LimitStrength type check default false\n");
-			printf("option name UCI_Elo type spin default %d min 800 max 2800\n", Param.elo);
-		}
+        // Strength settings - we use either Elo slider with an approximate formula
+		// or separate options for nodes per second reduction and eval blur
+
+        if (fl_elo_slider == 0) {
+          printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
+          printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+        } else {
+          printf("option name UCI_LimitStrength type check default false\n");
+          printf("option name UCI_Elo type spin default %d min 800 max 2800\n", Param.elo);
+        }
 
         printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
-		printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
-		printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
+        printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
+        printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
         printf("option name OwnBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
         printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
      }
-	 if (panel_style == 1) {
+
+     if (panel_style == 1) {
         printf("option name PersonalityFile type string default rodent.txt\n");
-		printf("option name OwnBook type check default true\n");
+        printf("option name OwnBook type check default true\n");
         if (fl_separate_books) {
           printf("option name GuideBookFile type string default guide.bin\n");
           printf("option name MainBookFile type string default rodent.bin\n");
         }
-	 }
+     }
 
       printf("uciok\n");
     } else if (strcmp(token, "isready") == 0) {
