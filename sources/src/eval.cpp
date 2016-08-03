@@ -234,7 +234,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Knight mobility
 
     bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
-    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op]);      // better to have it mobile than defending stuff
+    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op]);   // better to have it mobile than defending stuff
     
     Add(e, sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
 
@@ -300,6 +300,13 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Bishop outpost
 
     ScoreOutpost(p, e, sd, B, sq);
+
+	// Bishops side by side
+
+	if (ShiftNorth(SqBb(sq)) & p->Bishops(sd) )
+	   Add(e, sd, F_OTHERS, 4);
+	if (ShiftEast(SqBb(sq)) & p->Bishops(sd))
+		Add(e, sd, F_OTHERS, 4);
 
     // Pawns on the same square color as our bishop
   
