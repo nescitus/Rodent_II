@@ -123,21 +123,21 @@ void cParam::Init(void) {
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-      mg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[sq], pst_perc);
-      eg_pst_data[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[sq], pst_perc);
-      mg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
-      eg_pst_data[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
-      mg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
-	  eg_pst_data[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
-	  mg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
-	  eg_pst_data[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
-	  mg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
-	  eg_pst_data[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
-	  mg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-	  eg_pst_data[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+      mg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[sq], pst_perc);
+      eg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[sq], pst_perc);
+      mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
+      eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
+      mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
+	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
+	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
+	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
+	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
+	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
+	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
+	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
 
-      phalanx_data[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
-      defended_data[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
+      phalanx[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
+      defended[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
 
       sp_pst_data[sd][N][REL_SQ(sq, sd)] = pstKnightOutpost[sq];
       sp_pst_data[sd][B][REL_SQ(sq, sd)] = pstBishopOutpost[sq];
@@ -224,7 +224,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, Param.mg_pst_data[sd][N][sq], Param.eg_pst_data[sd][N][sq]);
+	Add(e, sd, F_PST, Param.mg_pst[sd][N][sq], Param.eg_pst[sd][N][sq]);
 #endif
 
     // Knight tropism to enemy king
@@ -265,7 +265,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, Param.mg_pst_data[sd][B][sq], Param.eg_pst_data[sd][B][sq]);
+	Add(e, sd, F_PST, Param.mg_pst[sd][B][sq], Param.eg_pst[sd][B][sq]);
 #endif
 
   // Bishop tropism to enemy king
@@ -322,7 +322,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, Param.mg_pst_data[sd][R][sq], Param.eg_pst_data[sd][R][sq]);
+	Add(e, sd, F_PST, Param.mg_pst[sd][R][sq], Param.eg_pst[sd][R][sq]);
 #endif
 
     // Rook tropism to enemy king
@@ -411,7 +411,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     Add(e, sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, Param.mg_pst_data[sd][Q][sq], Param.eg_pst_data[sd][Q][sq]);
+	Add(e, sd, F_PST, Param.mg_pst[sd][Q][sq], Param.eg_pst[sd][Q][sq]);
 #endif
 
     // Queen mobility
@@ -461,7 +461,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   } // end of queen eval
 
 #ifdef LEAF_PST
-  Add(sd, F_PST, Param.mg_pst_data[sd][K][KingSq(p,sd)], Param.eg_pst_data[sd][K][KingSq(p,sd)]);
+  Add(e, sd, F_PST, Param.mg_pst[sd][K][KingSq(p,sd)], Param.eg_pst[sd][K][KingSq(p,sd)]);
 #endif
 
   // Score terms using information gathered during piece eval
@@ -548,7 +548,7 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(sd, F_PST, Param.mg_pst_data[sd][P][sq], Param.eg_pst_data[sd][P][sq]);
+	Add(e, sd, F_PST, Param.mg_pst[sd][P][sq], Param.eg_pst[sd][P][sq]);
 #endif
 
     // Passed pawn
@@ -664,10 +664,10 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
   // Init eval with incrementally updated stuff
 
 #ifndef LEAF_PST
-  e->mg[WC][F_PST] = p->mg_pst[WC];
-  e->mg[BC][F_PST] = p->mg_pst[BC];
-  e->eg[WC][F_PST] = p->eg_pst[WC];
-  e->eg[BC][F_PST] = p->eg_pst[BC];
+  e->mg[WC][F_PST] = p->mg_sc[WC];
+  e->mg[BC][F_PST] = p->mg_sc[BC];
+  e->eg[WC][F_PST] = p->eg_sc[WC];
+  e->eg[BC][F_PST] = p->eg_sc[BC];
 #endif
 
   // Calculate variables used during evaluation

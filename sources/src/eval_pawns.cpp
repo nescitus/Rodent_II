@@ -125,8 +125,8 @@ void cEval::ScorePawns(POS *p, eData *e, int sd) {
 
     // Supported pawn
 
-    if (fl_phalanx)       Add(e, sd, F_PAWNS, Param.phalanx_data[sd][sq] , 2);
-    else if (fl_defended) Add(e, sd, F_PAWNS, Param.defended_data[sd][sq], 1);
+    if (fl_phalanx)       Add(e, sd, F_PAWNS, Param.phalanx[sd][sq] , 2);
+    else if (fl_defended) Add(e, sd, F_PAWNS, Param.defended[sd][sq], 1);
 
     // Weak pawn (two flavours)
 

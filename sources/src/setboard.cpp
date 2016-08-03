@@ -27,8 +27,8 @@ void SetPosition(POS *p, char *epd) {
   for (int sd = 0; sd < 2; sd++) {
     p->cl_bb[sd] = 0ULL;
 #ifndef LEAF_PST
-    p->mg_pst[sd] = 0;
-    p->eg_pst[sd] = 0;
+    p->mg_sc[sd] = 0;
+    p->eg_sc[sd] = 0;
 #endif
   }
 
@@ -64,8 +64,8 @@ void SetPosition(POS *p, char *epd) {
 
         p->phase += phase_value[Tp(pc)];
 #ifndef LEAF_PST
-        p->mg_pst[Cl(pc)] += Param.mg_pst_data[Cl(pc)][Tp(pc)][i + j];
-        p->eg_pst[Cl(pc)] += Param.eg_pst_data[Cl(pc)][Tp(pc)][i + j];
+        p->mg_sc[Cl(pc)] += Param.mg_pst[Cl(pc)][Tp(pc)][i + j];
+        p->eg_sc[Cl(pc)] += Param.eg_pst[Cl(pc)][Tp(pc)][i + j];
 #endif
         p->cnt[Cl(pc)][Tp(pc)]++;
         j++;

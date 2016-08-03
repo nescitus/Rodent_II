@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.51"
+#define PROG_NAME "Rodent II 0.9.52"
 
 //#define LEAF_PST
 
@@ -287,8 +287,8 @@ public:
   int pc[64];
   int king_sq[2];
 #ifndef LEAF_PST
-  int mg_pst[2];
-  int eg_pst[2];
+  int mg_sc[2];
+  int eg_sc[2];
 #endif
   int cnt[2][6];
   int phase;
@@ -370,14 +370,14 @@ typedef class {
 public:
   int elo;
   int weakening;
-  int mg_pst_data[2][6][64];
-  int eg_pst_data[2][6][64];
+  int mg_pst[2][6][64];
+  int eg_pst[2][6][64];
   int sp_pst_data[2][6][64];
   int danger[512];   // table for evaluating king safety
   int dist[64][64];  // table for evaluating king tropism
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
-  int phalanx_data[2][64];
-  int defended_data[2][64];
+  int phalanx[2][64];
+  int defended[2][64];
   void Init(void);
 } cParam; 
 
