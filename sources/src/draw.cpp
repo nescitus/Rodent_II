@@ -226,7 +226,6 @@ int CheckmateHelper(POS *p)
     return result;
 }
 
-
 int PcMatNone(POS * p, int sd) {
   return (p->cnt[sd][B] + p->cnt[sd][N] + p->cnt[sd][Q] + p->cnt[sd][R] == 0);
 }

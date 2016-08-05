@@ -4,6 +4,7 @@
 #include "rodent.h"
 #include "timer.h"
 #include "book.h"
+#include "eval.h"
 
 void ReadLine(char *str, int n) {
   char *ptr;
@@ -74,6 +75,7 @@ void UciLoop(void) {
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
+		printf("option name PstStyle type spin default %d min 0 max 2\n", pst_style);
 
         // Strength settings - we use either Elo slider with an approximate formula
 		// or separate options for nodes per second reduction and eval blur
@@ -176,7 +178,7 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
     Param.Init();
   } else if (strcmp(name, "PiecePlacement") == 0) {
-    pst_perc = (80 * atoi(value)) / 100; // scaling takes into account internal weight
+    pst_perc = (pst_default_perc[pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
     ResetEngine();
     Param.Init();
   } else if (strcmp(name, "PawnValue") == 0) {
@@ -244,6 +246,10 @@ void ParseSetoption(char *ptr) {
    SetWeight(F_LINES, atoi(value));
   } else if (strcmp(name, "Outposts") == 0) {
     SetWeight(F_OUTPOST, atoi(value));
+  } else if (strcmp(name, "PstStyle") == 0) {
+    pst_style = atoi(value);
+    ResetEngine();
+    Param.Init();
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();

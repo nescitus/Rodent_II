@@ -43,6 +43,7 @@ U64 zob_ep[8];
 int pondering;
 int root_depth;
 int fl_elo_slider;
+int pst_style;
 int eval_blur;
 int draw_score;
 int time_percentage;

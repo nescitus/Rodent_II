@@ -101,7 +101,7 @@ void InitWeights(void) {
 
   weights[F_TROPISM] = 20;
   mat_perc = 100;
-  pst_perc = 80;
+  pst_perc = pst_default_perc[pst_style];
 
   // weights for asymmetric factors
 
@@ -120,21 +120,23 @@ void cParam::Init(void) {
 
   // Init piece/square values together with material value of the pieces.
 
+  int type = pst_style;
+
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-      mg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[sq], pst_perc);
-      eg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[sq], pst_perc);
-      mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[sq], pst_perc);
-      eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[sq], pst_perc);
-      mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[sq], pst_perc);
-	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[sq], pst_perc);
-	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[sq], pst_perc);
-	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[sq], pst_perc);
-	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[sq], pst_perc);
-	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[sq], pst_perc);
-	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[sq];
-	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[sq];
+      mg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[type][sq], pst_perc);
+      eg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[type][sq], pst_perc);
+      mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[type][sq], pst_perc);
+      eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[type][sq], pst_perc);
+      mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[type][sq], pst_perc);
+	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[type][sq], pst_perc);
+	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[type][sq], pst_perc);
+	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[type][sq], pst_perc);
+	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[type][sq], pst_perc);
+	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[type][sq], pst_perc);
+	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[type][sq];
+	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[type][sq];
 
       phalanx[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
       defended[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
