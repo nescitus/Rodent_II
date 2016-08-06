@@ -56,6 +56,7 @@ void UciLoop(void) {
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
+		printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
         printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
         printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
         printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
@@ -176,31 +177,34 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Material") == 0) {
     mat_perc = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "PiecePlacement") == 0) {
     pst_perc = (pst_default_perc[pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "PawnValue") == 0) {
     pc_value[P] = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "KnightValue") == 0) {
     pc_value[N] = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "BishopValue") == 0) {
     pc_value[B] = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "RookValue") == 0) {
     pc_value[R] = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "QueenValue") == 0) {
     pc_value[Q] = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
+  } else if (strcmp(name, "BishopPair") == 0) {
+    Param.bish_pair = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "KeepQueen") == 0) {
     keep_pc[Q] = atoi(value);
     ResetEngine();
@@ -249,7 +253,7 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "PstStyle") == 0) {
     pst_style = atoi(value);
     ResetEngine();
-    Param.Init();
+    Param.DynamicInit();
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();

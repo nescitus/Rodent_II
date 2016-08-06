@@ -111,32 +111,47 @@ void InitWeights(void) {
   dyn_weights[DF_OPP_MOB] = 110;
 }
 
-void cParam::Init(void) {
+void cParam::Default(void) {
 
   int r_delta, f_delta;
-  Eval.prog_side = NO_CL;
-  elo = 2850;
+
   fl_weakening = 0;
+  elo = 2850;
+  bish_pair = 50;
+
+  // Init distance tables (for evaluating king tropism and unstoppable passers)
+
+  for (int sq1 = 0; sq1 < 64; ++sq1) {
+    for (int sq2 = 0; sq2 < 64; ++sq2) {
+      r_delta = Abs(Rank(sq1) - Rank(sq2));
+      f_delta = Abs(File(sq1) - File(sq2));
+      dist[sq1][sq2] = 14 - (r_delta + f_delta);
+      chebyshev_dist[sq1][sq2] = Max(r_delta, f_delta);
+    }
+  }
+}
+
+void cParam::DynamicInit(void) {
+
+  Eval.prog_side = NO_CL;
 
   // Init piece/square values together with material value of the pieces.
-
-  int type = pst_style;
 
   for (int sq = 0; sq < 64; sq++) {
     for (int sd = 0; sd < 2; sd++) {
  
-      mg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[type][sq], pst_perc);
-      eg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[type][sq], pst_perc);
-      mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[type][sq], pst_perc);
-      eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[type][sq], pst_perc);
-      mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[type][sq], pst_perc);
-	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[type][sq], pst_perc);
-	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[type][sq], pst_perc);
-	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[type][sq], pst_perc);
-	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[type][sq], pst_perc);
-	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[type][sq], pst_perc);
-	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[type][sq];
-	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[type][sq];
+      mg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnMg[pst_style][sq], pst_perc);
+      eg_pst[sd][P][REL_SQ(sq, sd)] = SCALE(pc_value[P], mat_perc) + SCALE(pstPawnEg[pst_style][sq], pst_perc);
+      mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[pst_style][sq], pst_perc);
+      eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[pst_style][sq], pst_perc);
+      mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[pst_style][sq], pst_perc);
+	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[pst_style][sq], pst_perc);
+	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[pst_style][sq], pst_perc);
+	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[pst_style][sq], pst_perc);
+	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[pst_style][sq], pst_perc);
+	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[pst_style][sq], pst_perc);
+	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[pst_style][sq];
+	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[pst_style][sq];
 
       phalanx[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
       defended[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
@@ -153,17 +168,6 @@ void cParam::Init(void) {
     danger[i] = (t * 100) / 256; // rescale to centipawns
     // TODO: init separately for Black and White in SetAsymmetricEval() to gain some speed
   }
-
-  // Init distance tables (for evaluating king tropism and unstoppable passers)
-
-  for (int sq1 = 0; sq1 < 64; ++sq1) {
-    for (int sq2 = 0; sq2 < 64; ++sq2) {
-      r_delta = Abs(Rank(sq1) - Rank(sq2));
-	  f_delta = Abs(File(sq1) - File(sq2));
-      dist[sq1][sq2] = 14 - (r_delta + f_delta);
-	  chebyshev_dist[sq1][sq2] = Max(r_delta, f_delta);
-    }
-  }
 }
 
 void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
@@ -179,7 +183,7 @@ void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 	if (p->cnt[sd][R] > 1) tmp -= 5;                          // Rook pair
 
 	if (p->cnt[sd][B] > 1)                                    // Bishop pair
-		Add(e, sd, F_OTHERS, SCALE(50, mat_perc), SCALE(60, mat_perc));
+		Add(e, sd, F_OTHERS, SCALE(Param.bish_pair, mat_perc), SCALE((Param.bish_pair+10), mat_perc));
 
 	// "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
 

@@ -38,7 +38,14 @@ POS p;
 int EloToSpeed(int elo) {
   int result = 300 + pow(2, (elo - 799) / 85);
   result *= 0.23;
-  // TODO: speed reduction for elo < 1400
+
+  if (elo < 1400) result *= 0.95;
+  if (elo < 1300) result *= 0.95;
+  if (elo < 1200) result *= 0.95;
+  if (elo < 1100) result *= 0.95;
+  if (elo < 1000) result *= 0.95;
+  if (elo <  900) result *= 0.95;
+
   return result;
 }
 
@@ -73,7 +80,8 @@ int main() {
   Mask.Init();
   Init();
   InitWeights();
-  Param.Init();
+  Param.Default();
+  Param.DynamicInit();
   InitSearch();
 #ifdef _WIN32 || _WIN64
   // if we are on Windows search for books and settings in same directory as rodentII.exe

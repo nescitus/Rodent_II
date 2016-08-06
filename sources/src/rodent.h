@@ -378,7 +378,9 @@ public:
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
-  void Init(void);
+  int bish_pair;
+  void DynamicInit(void);
+  void Default(void);
 } cParam; 
 
 extern cParam Param;
