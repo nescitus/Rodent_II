@@ -176,31 +176,24 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "Material") == 0) {
     mat_perc = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "PiecePlacement") == 0) {
     pst_perc = (pst_default_perc[pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "PawnValue") == 0) {
     pc_value[P] = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "KnightValue") == 0) {
     pc_value[N] = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "BishopValue") == 0) {
     pc_value[B] = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "RookValue") == 0) {
     pc_value[R] = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "QueenValue") == 0) {
     pc_value[Q] = atoi(value);
-    ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "BishopPair") == 0) {
     Param.bish_pair = atoi(value);

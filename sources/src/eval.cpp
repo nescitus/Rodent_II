@@ -134,6 +134,7 @@ void cParam::Default(void) {
 void cParam::DynamicInit(void) {
 
   Eval.prog_side = NO_CL;
+  ResetEngine();
 
   // Init piece/square values together with material value of the pieces.
 
