@@ -116,7 +116,7 @@ void cParam::Init(void) {
   int r_delta, f_delta;
   Eval.prog_side = NO_CL;
   elo = 2850;
-  weakening = 1;
+  fl_weakening = 0;
 
   // Init piece/square values together with material value of the pieces.
 

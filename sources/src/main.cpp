@@ -36,8 +36,15 @@ POS p;
 #include <math.h>
 
 int EloToSpeed(int elo) {
-	int result = 300 + pow(2, (elo - 799) / 85);
-	return result * 0.23;
+  int result = 300 + pow(2, (elo - 799) / 85);
+  result *= 0.23;
+  // TODO: speed reduction for elo < 1400
+  return result;
+}
+
+int EloToBlur(int elo) {
+  if (elo < 2000) return (2000 - elo) / 5;
+  return 0;
 }
 
 int main() {

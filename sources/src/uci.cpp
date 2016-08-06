@@ -43,7 +43,7 @@ void UciLoop(void) {
     if ((strstr(command, "setoption name OwnBook value")) || (strstr(command, "setoption name UseBook value")))
       use_book = (strstr(command, "value true") != 0);
     if (strstr(command, "setoption name UCI_LimitStrength value"))
-      Param.weakening = (strstr(command, "value true") != 0);
+      Param.fl_weakening = (strstr(command, "value true") != 0);
 
     if (strcmp(token, "uci") == 0) {
       printf("id name %s\n", PROG_NAME);
@@ -253,9 +253,11 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();
+	if (Timer.nps_limit != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "EvalBlur") == 0) {
     eval_blur = atoi(value);
     ResetEngine();
+	if (eval_blur != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "Contempt") == 0) {
     draw_score = atoi(value);
     ResetEngine();

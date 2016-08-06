@@ -369,12 +369,12 @@ extern cEval Eval;
 typedef class {
 public:
   int elo;
-  int weakening;
-  int mg_pst[2][6][64];
-  int eg_pst[2][6][64];
-  int sp_pst_data[2][6][64];
-  int danger[512];   // table for evaluating king safety
-  int dist[64][64];  // table for evaluating king tropism
+  int fl_weakening;
+  int mg_pst[2][6][64];       // midgame piece-square tables
+  int eg_pst[2][6][64];       // endgame piece-square tables
+  int sp_pst_data[2][6][64];  // special piece/square tables (outposts etc.)
+  int danger[512];            // table for evaluating king safety
+  int dist[64][64];           // table for evaluating king tropism
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
@@ -426,6 +426,7 @@ void DisplayPv(int score, int *pv);
 void DisplaySpeed(void);
 int DrawScore(POS * p);
 int EloToSpeed(int elo);
+int EloToBlur(int elo);
 int *GenerateCaptures(POS *p, int *list);
 int *GenerateQuiet(POS *p, int *list);
 int *GenerateQuietChecks(POS *p, int *list);
