@@ -162,6 +162,8 @@ void cParam::DynamicInit(void) {
     }
   }
 
+  // TODO: init imbalance table, so that we can expose option for exchange delta
+
   // Init king attack table
 
   for (int t = 0, i = 1; i < 512; ++i) {

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdio.h>
 #include <assert.h>
 #include "rodent.h"
 #include "eval.h"
@@ -53,6 +54,9 @@ void ClearPawnHash(void) {
   }
 }
 
+static const U64 bbKS = FILE_F_BB | FILE_G_BB | FILE_H_BB;
+static const U64 bbQS = FILE_A_BB | FILE_B_BB | FILE_C_BB;
+
 void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
 
   // Try to retrieve score from pawn hashtable
@@ -75,6 +79,23 @@ void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
 
   ScoreKing(p, e, WC);
   ScoreKing(p, e, BC);
+
+  // King on a wing without pawns
+
+  U64 bbAllPawns = p->Pawns(WC) | p->Pawns(BC);
+
+  if (bbAllPawns) {
+
+  if (!(bbAllPawns & bbKS)) {
+	  Add(e, WC, F_PAWNS, empty_ks[p->king_sq[WC]]);
+	  Add(e, BC, F_PAWNS, empty_ks[p->king_sq[BC]]);
+  }
+
+  if (!(bbAllPawns & bbQS)) {
+	  Add(e, WC, F_PAWNS, empty_qs[p->king_sq[WC]]);
+	  Add(e, BC, F_PAWNS, empty_qs[p->king_sq[BC]]);
+  }
+  }
 
   // Save stuff in pawn hashtable
 
