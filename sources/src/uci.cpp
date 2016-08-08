@@ -50,13 +50,12 @@ void UciLoop(void) {
       printf("id author Pawel Koziol (based on Sungorus 1.4 by Pablo Vazquez)\n");
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
-      if (panel_style == 0) {
+      if (panel_style > 0) {
         printf("option name PawnValue type spin default %d min 0 max 1200\n", pc_value[P]);
         printf("option name KnightValue type spin default %d min 0 max 1200\n", pc_value[N]);
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
-		printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
         printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
         printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
         printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
@@ -64,8 +63,8 @@ void UciLoop(void) {
         printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_pc[Q]);
         printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
         printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
-        printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", np_bonus);
-        printf("option name RookLikesOpen type spin default %d min 0 max 10\n", rp_malus);
+        printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", Param.np_bonus);
+        printf("option name RookLikesOpen type spin default %d min 0 max 10\n", Param.rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
         printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
         printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
@@ -77,6 +76,14 @@ void UciLoop(void) {
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
 		printf("option name PstStyle type spin default %d min 0 max 2\n", pst_style);
+
+        if (panel_style == 2) {
+          printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
+          printf("option name DoubledPawnMg type spin default %d min -100 max 0\n", Param.doubled_malus_mg);
+          printf("option name DoubledPawnEg type spin default %d min -100 max 0\n", Param.doubled_malus_eg);
+          printf("option name PawnShield type spin default %d min 0 max 500\n", Param.shield_perc);
+          printf("option name PawnStorm type spin default %d min 0 max 500\n", Param.storm_perc);
+        }
 
         // Strength settings - we use either Elo slider with an approximate formula
 		// or separate options for nodes per second reduction and eval blur
@@ -98,7 +105,7 @@ void UciLoop(void) {
         printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
      }
 
-     if (panel_style == 1) {
+     if (panel_style == 0) {
         printf("option name PersonalityFile type string default rodent.txt\n");
         printf("option name OwnBook type check default true\n");
         if (fl_separate_books) {
@@ -195,9 +202,6 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "QueenValue") == 0) {
     pc_value[Q] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "BishopPair") == 0) {
-    Param.bish_pair = atoi(value);
-    ResetEngine();
   } else if (strcmp(name, "KeepQueen") == 0) {
     keep_pc[Q] = atoi(value);
     ResetEngine();
@@ -214,11 +218,11 @@ void ParseSetoption(char *ptr) {
     keep_pc[P] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KnightLikedClosed") == 0) {
-    np_bonus = atoi(value);
-    ResetEngine();
+    Param.np_bonus = atoi(value);
+    Param.DynamicInit();
   } else if (strcmp(name, "RookLikesOpen") == 0) {
-    rp_malus = atoi(value);
-    ResetEngine();
+    Param.rp_malus = atoi(value);
+    Param.DynamicInit();
   } else if (strcmp(name, "OwnAttack") == 0) {
     dyn_weights[DF_OWN_ATT] = atoi(value);
     ResetEngine();
@@ -247,6 +251,21 @@ void ParseSetoption(char *ptr) {
     pst_style = atoi(value);
     ResetEngine();
     Param.DynamicInit();
+  } else if (strcmp(name, "BishopPair") == 0) {
+    Param.bish_pair = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "DoubledPawnMg") == 0) {
+    Param.doubled_malus_mg = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "DoubledPawnEg") == 0) {
+    Param.doubled_malus_eg = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "PawnShield") == 0) {
+    Param.shield_perc = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "PawnStorm") == 0) {
+    Param.storm_perc = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();
@@ -425,10 +444,13 @@ void ReadPersonality(char *fileName)
   while (fgets(line, 256, personalityFile)) {
     ptr = ParseToken(line, token);
 
-    if (strstr(line, "HIDE_OPTIONS")) panel_style = 1;
-    if (strstr(line, "SHOW_OPTIONS")) panel_style = 0;
+    if (strstr(line, "HIDE_OPTIONS")) panel_style = 0;
+    if (strstr(line, "SHOW_OPTIONS")) panel_style = 1;
+	if (strstr(line, "FULL_OPTIONS")) panel_style = 2;
+
     if (strstr(line, "PERSONALITY_BOOKS")) fl_separate_books = 0;
     if (strstr(line, "GENERAL_BOOKS")) fl_separate_books = 1;
+
 	if (strstr(line, "ELO_SLIDER")) fl_elo_slider = 1;
 	if (strstr(line, "NPS_BLUR")) fl_elo_slider = 0;
 

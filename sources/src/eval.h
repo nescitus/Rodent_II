@@ -556,8 +556,6 @@ static const int isolated_open_malus = -10;
 static const int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 };
 static const int backward_malus_eg = -8;
 static const int backward_open_malus = -8;
-static const int doubled_malus_mg = -12;
-static const int doubled_malus_eg = -24;
 
 // mobility parameters [130]
 // (could be decreased to 16)

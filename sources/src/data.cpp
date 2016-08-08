@@ -63,8 +63,6 @@ int curr_weights[2][2];
 int mat_perc;
 int pst_perc;
 int keep_pc[7];
-int np_bonus;
-int rp_malus;
 int hist_limit;
 int hist_perc;
 int panel_style;

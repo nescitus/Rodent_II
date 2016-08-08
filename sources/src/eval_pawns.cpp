@@ -30,7 +30,8 @@ static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | S
 };
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
-static const U64 bbEdgeFile    = FILE_A_BB | FILE_H_BB;
+static const U64 bbKingSide    = FILE_F_BB | FILE_G_BB | FILE_H_BB;
+static const U64 bbQueenSide   = FILE_A_BB | FILE_B_BB | FILE_C_BB;
 
 #define SQ(sq) RelSqBb(sq,sd)
 #define opPawns p->Pawns(op)
@@ -53,9 +54,6 @@ void ClearPawnHash(void) {
     PawnTT[e].eg_pawns = 0;
   }
 }
-
-static const U64 bbKS = FILE_F_BB | FILE_G_BB | FILE_H_BB;
-static const U64 bbQS = FILE_A_BB | FILE_B_BB | FILE_C_BB;
 
 void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
 
@@ -85,16 +83,15 @@ void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
   U64 bbAllPawns = p->Pawns(WC) | p->Pawns(BC);
 
   if (bbAllPawns) {
+    if (!(bbAllPawns & bbKingSide)) {
+      Add(e, WC, F_PAWNS, empty_ks[p->king_sq[WC]]);
+      Add(e, BC, F_PAWNS, empty_ks[p->king_sq[BC]]);
+    }
 
-  if (!(bbAllPawns & bbKS)) {
-	  Add(e, WC, F_PAWNS, empty_ks[p->king_sq[WC]]);
-	  Add(e, BC, F_PAWNS, empty_ks[p->king_sq[BC]]);
-  }
-
-  if (!(bbAllPawns & bbQS)) {
-	  Add(e, WC, F_PAWNS, empty_qs[p->king_sq[WC]]);
-	  Add(e, BC, F_PAWNS, empty_qs[p->king_sq[BC]]);
-  }
+    if (!(bbAllPawns & bbQueenSide)) {
+      Add(e, WC, F_PAWNS, empty_qs[p->king_sq[WC]]);
+      Add(e, BC, F_PAWNS, empty_qs[p->king_sq[BC]]);
+    }
   }
 
   // Save stuff in pawn hashtable
@@ -142,7 +139,7 @@ void cEval::ScorePawns(POS *p, eData *e, int sd) {
     // Doubled pawn
 
     if (bbSpan & bbOwnPawns)
-      Add(e, sd, F_PAWNS, doubled_malus_mg, doubled_malus_eg);
+      Add(e, sd, F_PAWNS, Param.doubled_malus_mg, Param.doubled_malus_eg);
 
     // Supported pawn
 
@@ -167,6 +164,8 @@ void cEval::ScoreKing(POS *p, eData *e, int sd) {
   const int kCastle[2] = { G1, G8 };
 
   U64 bbKingFile, bbNextFile;
+  int shield = 0;
+  int storm = 0;
   int result = 0;
   int sq = KingSq(p, sd);
 
@@ -179,24 +178,26 @@ void cEval::ScoreKing(POS *p, eData *e, int sd) {
   // Evaluate shielding and storming pawns on each file.
 
   bbKingFile = BB.FillNorthSq(sq) | BB.FillSouthSq(sq);
-  result += ScoreKingFile(p, sd, bbKingFile);
+  ScoreKingFile(p, sd, bbKingFile, &shield, &storm);
 
   bbNextFile = ShiftEast(bbKingFile);
-  if (bbNextFile) result += ScoreKingFile(p, sd, bbNextFile);
+  if (bbNextFile) ScoreKingFile(p, sd, bbNextFile, &shield, &storm);
 
   bbNextFile = ShiftWest(bbKingFile);
-  if (bbNextFile) result += ScoreKingFile(p, sd, bbNextFile);
+  if (bbNextFile) ScoreKingFile(p, sd, bbNextFile, &shield, &storm);
+
+  result = SCALE(shield, Param.shield_perc) + SCALE(storm, Param.storm_perc);
 
   e->mg[sd][F_PAWNS] += result;
   e->mg[sd][F_PAWNS] += ScoreChains(p, sd);
 }
 
-int cEval::ScoreKingFile(POS * p, int sd, U64 bbFile) {
+void cEval::ScoreKingFile(POS * p, int sd, U64 bbFile, int *shield, int *storm) {
 
   int shelter = ScoreFileShelter(bbFile & p->Pawns(sd), sd);
-  int storm = ScoreFileStorm(bbFile & p->Pawns(Opp(sd)), sd);
-  if (bbFile & bbCentralFile) return (shelter / 2) + storm;
-  else return shelter + storm;
+  if (bbFile & bbCentralFile) shelter /= 2;
+  *shield += shelter;
+  *storm += ScoreFileStorm(bbFile & p->Pawns(Opp(sd)), sd);
 }
 
 int cEval::ScoreFileShelter(U64 bbOwnPawns, int sd) {

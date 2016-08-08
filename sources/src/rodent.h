@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // bench: 805.250
 // bench 12: 7.773.589
-// bench 15: 35.297.048 31.7 2.602
+// bench 15: 35.297.048 31.7 2.645
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5715 lines of code
 // 0.9.50: 56,3% vs 0.9.33
 // 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.54"
+#define PROG_NAME "Rodent II 0.9.55"
 
 //#define LEAF_PST
 
@@ -101,6 +101,8 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 
 #define bbNotA          (U64)0xfefefefefefefefe // ~FILE_A_BB
 #define bbNotH          (U64)0x7f7f7f7f7f7f7f7f // ~FILE_H_BB
+
+#define SCALE(x,y) ((x*y)/100)
 
 #define ShiftNorth(x)   (x<<8)
 #define ShiftSouth(x)   (x>>8)
@@ -349,7 +351,7 @@ private:
   void ScorePatterns(POS *p, eData *e);
   void ScoreKing(POS *p, eData *e, int sd);
   void ScoreUnstoppable(eData *e, POS *p);
-  int ScoreKingFile(POS * p, int sd, U64 bbFile);
+  void ScoreKingFile(POS * p, int sd, U64 bbFile, int *shelter, int *storm);
   int ScoreFileShelter(U64 bbOwnPawns, int sd);
   int ScoreFileStorm(U64 bbOppPawns, int sd);
   int ScoreChains(POS *p, int sd);
@@ -378,7 +380,15 @@ public:
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
+  int shield_perc;
+  int storm_perc;
   int bish_pair;
+  int doubled_malus_mg;
+  int doubled_malus_eg;
+  int np_bonus;
+  int rp_malus;
+  int np_table[9];
+  int rp_table[9];
   void DynamicInit(void);
   void Default(void);
 } cParam; 
@@ -521,8 +531,6 @@ extern int draw_score;
 extern int time_percentage;
 extern int use_book;
 extern int book_filter;
-extern int np_bonus;
-extern int rp_malus;
 extern int hist_limit;
 extern int hist_perc;
 extern int fl_reading_personality;

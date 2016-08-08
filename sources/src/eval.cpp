@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "eval.h"
 
-#define SCALE(x,y) ((x*y)/100)
-
 // parameters for defining game phase [6]
 
 static const int max_phase = 24;
@@ -117,7 +115,13 @@ void cParam::Default(void) {
 
   fl_weakening = 0;
   elo = 2850;
+  shield_perc = 100;
+  storm_perc = 100;
   bish_pair = 50;
+  np_bonus  = 6;
+  rp_malus  = 3;
+  doubled_malus_mg = -12;
+  doubled_malus_eg = -24;
 
   // Init distance tables (for evaluating king tropism and unstoppable passers)
 
@@ -162,6 +166,14 @@ void cParam::DynamicInit(void) {
     }
   }
 
+  // Init tables for adjusting piece values 
+  // according to the number of own pawns
+
+  for (int i = 0; i < 9; i++) {
+	  np_table[i] = adj[i] * np_bonus;
+	  rp_table[i] = adj[i] * rp_malus;
+  }
+
   // TODO: init imbalance table, so that we can expose option for exchange delta
 
   // Init king attack table
@@ -179,8 +191,8 @@ void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 
 	// Piece configurations
 
-	int tmp = np_bonus * adj[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
-		    - rp_malus * adj[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
+	int tmp = Param.np_table[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
+		    - Param.rp_table[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
 	if (p->cnt[sd][N] > 1) tmp -= 10;                         // Knight pair
 	if (p->cnt[sd][R] > 1) tmp -= 5;                          // Rook pair
