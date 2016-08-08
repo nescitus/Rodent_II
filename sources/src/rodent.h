@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 805.250
-// bench 12: 7.773.589
-// bench 15: 35.297.048 31.7 2.645
+// bench: 814.757
+// bench 12: 7.187.063
+// bench 15: 34.210.285 31.7 2.645
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5715 lines of code
 // 0.9.50: 56,3% vs 0.9.33

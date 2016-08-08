@@ -115,7 +115,7 @@ void cParam::Default(void) {
 
   fl_weakening = 0;
   elo = 2850;
-  shield_perc = 100;
+  shield_perc = 120; // WAS 100, testing
   storm_perc = 100;
   bish_pair = 50;
   np_bonus  = 6;
