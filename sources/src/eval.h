@@ -557,6 +557,8 @@ static const int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 
 static const int backward_malus_eg = -8;
 static const int backward_open_malus = -8;
 
+static const int islands[9] = { 0,  0, -10, -20, -30, -40, -50, -60 };
+
 // mobility parameters [130]
 // (could be decreased to 16)
 
@@ -615,23 +617,9 @@ static const int r_contact_check = 24; // [16.. <24> ..?]
 static const int tropism_mg[7] = { 0,  3,  2,  2,  2,  0,  0 };
 static const int tropism_eg[7] = { 0,  3,  1,  1,  4,  0,  0 };
 
-const int minorBehindPawn = 5;
-const int minorVsQueen = 5;
-const int bishConfinedMg = -5;
-const int bishConfinedEg = -5;
-
-const int rookOnQueenMg = 5;
-const int rookOnQueenEg = 5;
-const int rookOnOpenMg = 14;
-const int rookOnOpenEg = 10;
-const int rookOnBadHalfOpenMg = 6;
-const int rookOnBadHalfOpenEg = 4;
-const int rookOnGoodHalfOpenMg = 8;
-const int rookOnGoodHalfOpenEg = 6;
-const int rookOnSeventhMg = 16;
-const int rookOnSeventhEg = 32;
-const int twoRooksOn7thMg = 8;
-const int twoRooksOn7thEg = 16;
-
-const int queenOnSeventhMg = 4;
-const int queenOnSeventhEg = 8;
+static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
+                                   SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
+};
+static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | SqBb(G2) | SqBb(H2),
+                                   SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
+};

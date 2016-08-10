@@ -11,13 +11,13 @@
 #  include <sys/time.h>
 #endif
 
-void sTimer::SetSpeed(int elo) {
+void sTimer::SetSpeed(int elo) { // TODO: should belong to cParam
    nps_limit = 0;
-   eval_blur = 0;
+   Param.eval_blur = 0;
 
    if (Param.fl_weakening) {
       nps_limit = EloToSpeed(elo);
-	  eval_blur = EloToBlur(elo);
+	  Param.eval_blur = EloToBlur(elo);
    }
 }
 

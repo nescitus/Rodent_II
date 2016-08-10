@@ -22,13 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "eval.h"
 
-static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
-                                   SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
-};
-static const U64 bbKSCastle[2] = { SqBb(F1) | SqBb(G1) | SqBb(H1) | SqBb(F2) | SqBb(G2) | SqBb(H2),
-                                   SqBb(F8) | SqBb(G8) | SqBb(H8) | SqBb(F7) | SqBb(G7) | SqBb(H7)
-};
-
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 static const U64 bbKingSide    = FILE_F_BB | FILE_G_BB | FILE_H_BB;
 static const U64 bbQueenSide   = FILE_A_BB | FILE_B_BB | FILE_C_BB;
@@ -93,6 +86,19 @@ void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
       Add(e, BC, F_PAWNS, empty_qs[p->king_sq[BC]]);
     }
   }
+
+  // Pawn islands
+  /*
+  U64 wPawns = p->Pawns(WC);
+  U64 wFiles = BB.FillSouth(wPawns) & 0xff;
+  int wIslands = BB.PopCnt(((~wFiles) >> 1) & wFiles);
+  Add(e, WC, F_PAWNS, islands[wIslands]);
+
+  U64 bPawns = p->Pawns(BC);
+  U64 bFiles = BB.FillSouth(bPawns) & 0xff;
+  int bIslands = BB.PopCnt(((~bFiles) >> 1) & bFiles);
+  Add(e, BC, F_PAWNS, islands[bIslands]);
+  */
 
   // Save stuff in pawn hashtable
 

@@ -56,13 +56,13 @@ void UciLoop(void) {
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
-        printf("option name KeepPawn type spin default %d min -200 max 200\n", keep_pc[P]);
-        printf("option name KeepKnight type spin default %d min -200 max 200\n", keep_pc[N]);
-        printf("option name KeepBishop type spin default %d min -200 max 200\n", keep_pc[B]);
-        printf("option name KeepRook type spin default %d min -200 max 200\n", keep_pc[R]);
-        printf("option name KeepQueen type spin default %d min -200 max 200\n", keep_pc[Q]);
-        printf("option name Material type spin default %d min 0 max 500\n", mat_perc);
-        printf("option name PiecePlacement type spin default %d min 0 max 500\n", pst_perc);
+        printf("option name KeepPawn type spin default %d min -200 max 200\n", Param.keep_pc[P]);
+        printf("option name KeepKnight type spin default %d min -200 max 200\n", Param.keep_pc[N]);
+        printf("option name KeepBishop type spin default %d min -200 max 200\n", Param.keep_pc[B]);
+        printf("option name KeepRook type spin default %d min -200 max 200\n", Param.keep_pc[R]);
+        printf("option name KeepQueen type spin default %d min -200 max 200\n", Param.keep_pc[Q]);
+        printf("option name Material type spin default %d min 0 max 500\n", Param.mat_perc);
+        printf("option name PiecePlacement type spin default %d min 0 max 500\n", Param.pst_perc);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", Param.np_bonus);
         printf("option name RookLikesOpen type spin default %d min 0 max 10\n", Param.rp_malus);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
@@ -75,7 +75,7 @@ void UciLoop(void) {
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-		printf("option name PstStyle type spin default %d min 0 max 2\n", pst_style);
+		printf("option name PstStyle type spin default %d min 0 max 2\n", Param.pst_style);
 
         if (panel_style == 2) {
           printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
@@ -90,19 +90,19 @@ void UciLoop(void) {
 
         if (fl_elo_slider == 0) {
           printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
-          printf("option name EvalBlur type spin default %d min 0 max 5000000\n", eval_blur);
+          printf("option name EvalBlur type spin default %d min 0 max 5000000\n", Param.eval_blur);
         } else {
           printf("option name UCI_LimitStrength type check default false\n");
           printf("option name UCI_Elo type spin default %d min 800 max 2800\n", Param.elo);
         }
 
-        printf("option name Contempt type spin default %d min -250 max 250\n", draw_score);
+        printf("option name Contempt type spin default %d min -250 max 250\n", Param.draw_score);
         printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
         printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
         printf("option name OwnBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
-        printf("option name BookFilter type spin default %d min 0 max 5000000\n", book_filter);
+        printf("option name BookFilter type spin default %d min 0 max 5000000\n", Param.book_filter);
      }
 
      if (panel_style == 0) {
@@ -182,10 +182,10 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Clear Hash") == 0) {
     ResetEngine();
   } else if (strcmp(name, "Material") == 0) {
-    mat_perc = atoi(value);
+    Param.mat_perc = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "PiecePlacement") == 0) {
-    pst_perc = (pst_default_perc[pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
+    Param.pst_perc = (pst_default_perc[Param.pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
     Param.DynamicInit();
   } else if (strcmp(name, "PawnValue") == 0) {
     pc_value[P] = atoi(value);
@@ -203,19 +203,19 @@ void ParseSetoption(char *ptr) {
     pc_value[Q] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "KeepQueen") == 0) {
-    keep_pc[Q] = atoi(value);
+    Param.keep_pc[Q] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepRook") == 0) {
-    keep_pc[R] = atoi(value);
+    Param.keep_pc[R] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepBishop") == 0) {
-    keep_pc[B] = atoi(value);
+    Param.keep_pc[B] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepKnight") == 0) {
-    keep_pc[N] = atoi(value);
+    Param.keep_pc[N] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KeepPawn") == 0) {
-    keep_pc[P] = atoi(value);
+    Param.keep_pc[P] = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "KnightLikedClosed") == 0) {
     Param.np_bonus = atoi(value);
@@ -248,7 +248,7 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Outposts") == 0) {
     SetWeight(F_OUTPOST, atoi(value));
   } else if (strcmp(name, "PstStyle") == 0) {
-    pst_style = atoi(value);
+    Param.pst_style = atoi(value);
     ResetEngine();
     Param.DynamicInit();
   } else if (strcmp(name, "BishopPair") == 0) {
@@ -271,11 +271,11 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
 	if (Timer.nps_limit != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "EvalBlur") == 0) {
-    eval_blur = atoi(value);
+    Param.eval_blur = atoi(value);
     ResetEngine();
-	if (eval_blur != 0) Param.fl_weakening = 1;
+	if (Param.eval_blur != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "Contempt") == 0) {
-    draw_score = atoi(value);
+    Param.draw_score = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "SlowMover") == 0) {
 	time_percentage = atoi(value);
@@ -303,7 +303,7 @@ void ParseSetoption(char *ptr) {
     printf("\n");
     ReadPersonality(value);
   } else if (strcmp(name, "BookFilter") == 0) {
-    book_filter = atoi(value);;
+    Param.book_filter = atoi(value);
   }
 }
 

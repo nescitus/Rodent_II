@@ -59,19 +59,12 @@ int main() {
   fl_reading_personality = 0;
   fl_separate_books = 0; // opening book files can be defined in a personality description
   fl_elo_slider = 0;
-  pst_style = 0;
-  eval_blur = 0;
-  draw_score = 0;
   time_percentage = 100;
-  book_filter = 20;
   use_book = 1;
   panel_style = 0;
   verbose = 1;
   hist_limit = 24576;
   hist_perc = 175;
-
-  for (int pc = 0; pc < 7; pc++)
-    keep_pc[pc] = 0;
 
   Timer.Init();
   BB.Init();

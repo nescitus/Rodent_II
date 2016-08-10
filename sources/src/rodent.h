@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // bench 12: 7.187.063
 // bench 15: 34.210.285 31.7 2.645
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 5715 lines of code
+// 5994 lines of code
 // 0.9.50: 56,3% vs 0.9.33
 // 0.9.50: 50.0% vs 0.9.50
 
@@ -370,25 +370,50 @@ extern cEval Eval;
 
 typedef class {
 public:
-  int elo;
-  int fl_weakening;
-  int mg_pst[2][6][64];       // midgame piece-square tables
-  int eg_pst[2][6][64];       // endgame piece-square tables
+  int elo = 2850;
+  int fl_weakening = 0;
+  int mg_pst[2][6][64];       // midgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
+  int eg_pst[2][6][64];       // endgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
   int sp_pst_data[2][6][64];  // special piece/square tables (outposts etc.)
   int danger[512];            // table for evaluating king safety
   int dist[64][64];           // table for evaluating king tropism
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
-  int shield_perc;
-  int storm_perc;
-  int bish_pair;
-  int doubled_malus_mg;
-  int doubled_malus_eg;
-  int np_bonus;
-  int rp_malus;
+  int pst_style = 0;
+  int mat_perc;
+  int pst_perc;
+  int shield_perc = 120;
+  int storm_perc  = 100;
+  int bish_pair = 50;
+  int knight_pair_malus = -10;
+  int rook_pair_malus = -5;
+  int doubled_malus_mg = -12;
+  int doubled_malus_eg = -24;
+  int minorBehindPawn = 5;
+  int minorVsQueen = 5;
+  int bishConfined = -5;
+  int rookOn7thMg = 16;
+  int rookOn7thEg = 32;
+  int twoRooksOn7thMg = 8;
+  int twoRooksOn7thEg = 16;
+  int rookOnQueen = 5;
+  int rookOnOpenMg = 14;
+  int rookOnOpenEg = 10;
+  int rookOnBadHalfOpenMg = 6;
+  int rookOnBadHalfOpenEg = 4;
+  int rookOnGoodHalfOpenMg = 8;
+  int rookOnGoodHalfOpenEg = 6;
+  int queenOn7thMg = 4;
+  int queenOn7thEg = 8;
+  int np_bonus = 6;
+  int rp_malus = 3;
   int np_table[9];
   int rp_table[9];
+  int keep_pc[7] = {0, 0, 0, 0, 0, 0, 0};
+  int draw_score = 0;
+  int book_filter = 20;
+  int eval_blur = 0;
   void DynamicInit(void);
   void Default(void);
 } cParam; 
@@ -521,22 +546,15 @@ extern int tt_date;
 extern int weights[N_OF_FACTORS];
 extern int dyn_weights[5];
 extern int curr_weights[2][2];
-extern int mat_perc;
-extern int pst_perc;
 extern int panel_style;
 extern int verbose;
-extern int eval_blur;
-extern int keep_pc[7];
-extern int draw_score;
 extern int time_percentage;
 extern int use_book;
-extern int book_filter;
 extern int hist_limit;
 extern int hist_perc;
 extern int fl_reading_personality;
 extern int fl_separate_books;
 extern int fl_elo_slider;
-extern int pst_style;
 
 int DifferentBishops(POS * p);
 int NotOnBishColor(POS * p, int bishSide, int sq);

@@ -98,8 +98,8 @@ void InitWeights(void) {
     weights[fc] = 100;
 
   weights[F_TROPISM] = 20;
-  mat_perc = 100;
-  pst_perc = pst_default_perc[pst_style];
+  Param.mat_perc = 100;
+  Param.pst_perc = pst_default_perc[Param.pst_style];
 
   // weights for asymmetric factors
 
@@ -112,16 +112,6 @@ void InitWeights(void) {
 void cParam::Default(void) {
 
   int r_delta, f_delta;
-
-  fl_weakening = 0;
-  elo = 2850;
-  shield_perc = 120; // WAS 100, testing
-  storm_perc = 100;
-  bish_pair = 50;
-  np_bonus  = 6;
-  rp_malus  = 3;
-  doubled_malus_mg = -12;
-  doubled_malus_eg = -24;
 
   // Init distance tables (for evaluating king tropism and unstoppable passers)
 
@@ -194,19 +184,18 @@ void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 	int tmp = Param.np_table[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
 		    - Param.rp_table[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
-	if (p->cnt[sd][N] > 1) tmp -= 10;                         // Knight pair
-	if (p->cnt[sd][R] > 1) tmp -= 5;                          // Rook pair
+	if (p->cnt[sd][N] > 1) tmp += Param.knight_pair_malus;
+	if (p->cnt[sd][R] > 1) tmp += Param.rook_pair_malus;
 
 	if (p->cnt[sd][B] > 1)                                    // Bishop pair
-		Add(e, sd, F_OTHERS, SCALE(Param.bish_pair, mat_perc), SCALE((Param.bish_pair+10), mat_perc));
+		Add(e, sd, F_OTHERS, SCALE(Param.bish_pair, Param.mat_perc), SCALE((Param.bish_pair+10), Param.mat_perc));
 
 	// "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
 
 	if (p->cnt[sd][Q])
-		tmp -= minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
+		tmp -= Param.minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
 
-	Add(e, sd, F_OTHERS, SCALE(tmp, mat_perc));
-
+	Add(e, sd, F_OTHERS, SCALE(tmp, Param.mat_perc));
 }
 
 void cEval::ScorePieces(POS *p, eData *e, int sd) {
@@ -297,12 +286,12 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     bbMob = BB.BishAttacks(OccBb(p), sq);
 
-    if (!(bbMob & bbAwayZone[sd]))                     // penalty for bishops unable to reach enemy half of the board
-       Add(e, sd, F_MOB, bishConfinedMg, bishConfinedEg); // (idea from Andscacs)
+    if (!(bbMob & bbAwayZone[sd]))               // penalty for bishops unable to reach enemy half of the board
+       Add(e, sd, F_MOB, Param.bishConfined);    // (idea from Andscacs)
 
     cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op] &~bbExcluded);
     
-    Add(e, sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);      // mobility bonus
+    Add(e, sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);   // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & bbDiagChk) 
       att += chk_threat[B];                            // check threat bonus
@@ -397,21 +386,21 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     // Queen on rook's file (which might be closed)
 
-    if (bbFile & p->Queens(op)) Add(e, sd, F_LINES, rookOnQueenMg, rookOnQueenEg);
+    if (bbFile & p->Queens(op)) Add(e, sd, F_LINES, Param.rookOnQueen);
 
     // Rook on (half) open file
 
     if (!(bbFile & p->Pawns(sd))) {
       if (!(bbFile & p->Pawns(op))) {
-		  Add(e, sd, F_LINES, rookOnOpenMg, rookOnOpenEg);
+		  Add(e, sd, F_LINES, Param.rookOnOpenMg, Param.rookOnOpenEg);
 		  //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(e, sd, F_LINES, 4, 2); // equal
       }
       else {
 		// score differs depending on whether half-open file is blocked by defended enemy pawn
         if ((bbFile & p->Pawns(op)) & e->bbPawnTakes[op])
-          Add(e, sd, F_LINES, rookOnBadHalfOpenMg, rookOnBadHalfOpenEg);
+          Add(e, sd, F_LINES, Param.rookOnBadHalfOpenMg, Param.rookOnBadHalfOpenEg);
         else {
-          Add(e, sd, F_LINES, rookOnGoodHalfOpenMg, rookOnGoodHalfOpenEg);
+          Add(e, sd, F_LINES, Param.rookOnGoodHalfOpenMg, Param.rookOnGoodHalfOpenEg);
 		}
       }
     }
@@ -421,7 +410,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       ||  p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(e, sd, F_LINES, rookOnSeventhMg, rookOnSeventhEg);
+        Add(e, sd, F_LINES, Param.rookOn7thMg, Param.rookOn7thEg);
         r_on_7th++;
       }
     }
@@ -482,7 +471,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     if (SqBb(sq) & bbRelRank[sd][RANK_7]) {
       if (p->Pawns(op) & bbRelRank[sd][RANK_7]
       || p->Kings(op) & bbRelRank[sd][RANK_8]) {
-        Add(e, sd, F_LINES, queenOnSeventhMg, queenOnSeventhEg);
+        Add(e, sd, F_LINES, Param.queenOn7thMg, Param.queenOn7thEg);
       }
     }
 
@@ -495,7 +484,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   // Score terms using information gathered during piece eval
 
   if (r_on_7th == 2)          // two rooks on 7th rank
-    Add(e, sd, F_LINES, twoRooksOn7thMg, twoRooksOn7thEg);
+    Add(e, sd, F_LINES, Param.twoRooksOn7thMg, Param.twoRooksOn7thEg);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 
@@ -526,7 +515,7 @@ void cEval::ScoreOutpost(POS * p, eData * e, int sd, int pc, int sq) {
   if (SqBb(sq) & bbHomeZone[sd]) {
     U64 bbStop = BB.ShiftFwd(SqBb(sq), sd);
     if (bbStop & PcBb(p, sd, P))
-      Add(e, sd, F_OUTPOST, minorBehindPawn);
+      Add(e, sd, F_OUTPOST, Param.minorBehindPawn);
   }
 }
 
@@ -730,11 +719,11 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
 
   // Add asymmetric bonus for keeping certain type of pieces
 
-  e->mg[prog_side][F_OTHERS] += keep_pc[Q] * p->cnt[prog_side][Q];
-  e->mg[prog_side][F_OTHERS] += keep_pc[R] * p->cnt[prog_side][R];
-  e->mg[prog_side][F_OTHERS] += keep_pc[B] * p->cnt[prog_side][B];
-  e->mg[prog_side][F_OTHERS] += keep_pc[N] * p->cnt[prog_side][N];
-  e->mg[prog_side][F_OTHERS] += keep_pc[P] * p->cnt[prog_side][P];
+  e->mg[prog_side][F_OTHERS] += Param.keep_pc[Q] * p->cnt[prog_side][Q];
+  e->mg[prog_side][F_OTHERS] += Param.keep_pc[R] * p->cnt[prog_side][R];
+  e->mg[prog_side][F_OTHERS] += Param.keep_pc[B] * p->cnt[prog_side][B];
+  e->mg[prog_side][F_OTHERS] += Param.keep_pc[N] * p->cnt[prog_side][N];
+  e->mg[prog_side][F_OTHERS] += Param.keep_pc[P] * p->cnt[prog_side][P];
 
   // Sum all the symmetric eval factors
   // (we start from 2 so that we won't touch king attacks 
@@ -775,7 +764,7 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
   int y = Max(minorBalance + 4, 0);
   if (y > 8) y = 8;
 
-  score += SCALE(imbalance[x][y], mat_perc);
+  score += SCALE(imbalance[x][y], Param.mat_perc);
 
   score += CheckmateHelper(p);
 
@@ -796,8 +785,8 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
 
   // Weakening: add pseudo-random value to eval score
 
-  if (eval_blur) {
-    int randomMod = (eval_blur / 2) - (p->hash_key % eval_blur);
+  if (Param.eval_blur) {
+    int randomMod = (Param.eval_blur / 2) - (p->hash_key % Param.eval_blur);
     score += randomMod;
   }
 

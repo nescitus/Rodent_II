@@ -892,6 +892,6 @@ U64 GetNps(int elapsed) {
 
 int DrawScore(POS * p) {
 
-  if (p->side == root_side) return -draw_score;
-  else                      return  draw_score;
+  if (p->side == root_side) return -Param.draw_score;
+  else                      return  Param.draw_score;
 }
