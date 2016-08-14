@@ -308,7 +308,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
         else               Timer.OnOldRootMove();
       }
 
-	  // Change the best move and show the new pv
+      // Change the best move and show the new pv
 
       BuildPv(pv, new_pv, move);
       DisplayPv(score, pv);
@@ -331,7 +331,7 @@ int SearchRoot(POS *p, int ply, int alpha, int beta, int depth, int *pv) {
           else               Timer.OnOldRootMove();
         }
 
-	    // Change the best move and show the new pv
+        // Change the best move and show the new pv
 
         BuildPv(pv, new_pv, move);
         DisplayPv(score, pv);
@@ -579,8 +579,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Extensions (applied at pv node or at relatively low depth)
 
   if (is_pv || depth < 9) {
-	  new_depth += InCheck(p);                                // check extension
-	  if (is_pv && Tsq(move) == last_capt_sq) new_depth += 1; // recapture extension
+      new_depth += InCheck(p);                                // check extension, pv or low depth
+      if (is_pv && Tsq(move) == last_capt_sq) new_depth += 1; // recapture extension in pv
+      if ( is_pv && depth < 6 && TpOnSq(p,Tsq(move)) == P     // pawn to 7th extension at the tips of pv
+      && (SqBb(Tsq(move)) & (RANK_2_BB | RANK_7_BB) ) ) new_depth += 1;
   }
 
   // Futility pruning

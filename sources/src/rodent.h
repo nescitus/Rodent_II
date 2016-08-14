@@ -17,16 +17,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 814.757
-// bench 12: 7.187.063
-// bench 15: 34.210.285 31.7 2.645
+// bench: 916.079
+// bench 12: 6.644.726
+// bench 15: 34.723.927 32.2 2.500
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5994 lines of code
 // 0.9.50: 56,3% vs 0.9.33
 // 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.55"
+#define PROG_NAME "Rodent II 0.9.56"
 
 //#define LEAF_PST
 
@@ -102,8 +102,6 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 #define bbNotA          (U64)0xfefefefefefefefe // ~FILE_A_BB
 #define bbNotH          (U64)0x7f7f7f7f7f7f7f7f // ~FILE_H_BB
 
-#define SCALE(x,y) ((x*y)/100)
-
 #define ShiftNorth(x)   (x<<8)
 #define ShiftSouth(x)   (x>>8)
 #define ShiftWest(x)    ((x & bbNotA)>>1)
@@ -116,6 +114,7 @@ static const U64 bbAwayZone[2] = { RANK_8_BB | RANK_7_BB | RANK_6_BB | RANK_5_BB
 #define JustOne(bb)     (bb && !(bb & (bb-1)))
 #define MoreThanOne(bb) ( bb & (bb - 1) )
 
+#define SCALE(x,y) ((x*y)/100)
 #define SIDE_RANDOM     (~((U64)0))
 
 #define START_POS       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
@@ -390,6 +389,13 @@ public:
   int rook_pair_malus = -5;
   int doubled_malus_mg = -12;
   int doubled_malus_eg = -24;
+  int isolated_malus_mg = -10;
+  int isolated_malus_eg = -20;
+  int isolated_open_malus = -10;
+  int backward_malus_base = -8;
+  int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 };
+  int backward_malus_eg = -8;
+  int backward_open_malus = -8;
   int minorBehindPawn = 5;
   int minorVsQueen = 5;
   int bishConfined = -5;
@@ -406,8 +412,10 @@ public:
   int rookOnGoodHalfOpenEg = 6;
   int queenOn7thMg = 4;
   int queenOn7thEg = 8;
+  int exchange_imbalance = 25;
   int np_bonus = 6;
   int rp_malus = 3;
+  int imbalance[9][9];
   int np_table[9];
   int rp_table[9];
   int keep_pc[7] = {0, 0, 0, 0, 0, 0, 0};

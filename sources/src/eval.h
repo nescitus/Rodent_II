@@ -534,6 +534,10 @@ static const int phalanx_bonus[2][8] = {
   { 0, 5, 4, 3, 2, 0, 0, 0 }
 };
 
+static const int file_adj[8] = {
+  3,  1, -1, -3, -3, -1, 1, 3
+};
+
 struct sEvalHashEntry {
   U64 key;
   int score;
@@ -549,15 +553,6 @@ struct sPawnHashEntry {
 #define PAWN_HASH_SIZE 512*512
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
-
-static const int isolated_malus_mg = -10;
-static const int isolated_malus_eg = -20;
-static const int isolated_open_malus = -10;
-static const int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 };
-static const int backward_malus_eg = -8;
-static const int backward_open_malus = -8;
-
-static const int islands[9] = { 0,  0, -10, -20, -30, -40, -50, -60 };
 
 // mobility parameters [130]
 // (could be decreased to 16)
@@ -583,7 +578,7 @@ static const int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -
 
 static const int adj[9] = { -4, -3, -2, -1, 0,  1,  2,  3,  4 };
 
-static const int imbalance[9][9] = {
+static const int imbalance_data[9][9] = {
     /* n=-4  n=-3  n=-2  n=-1  n=0   n=+1  n=+2  n=+3  n=+4 */
     {  -A,   -A,   -A,   -A,  -Rk,    0,    0,    0,    0 }, // R = -4
     {  -A,   -A,   -A,   -A,  -Rk,    0,    0,    0,    0 }, // R = -3

@@ -56,37 +56,53 @@ void UciLoop(void) {
         printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
         printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
         printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
-        printf("option name KeepPawn type spin default %d min -200 max 200\n", Param.keep_pc[P]);
+        
+		printf("option name KeepPawn type spin default %d min -200 max 200\n", Param.keep_pc[P]);
         printf("option name KeepKnight type spin default %d min -200 max 200\n", Param.keep_pc[N]);
         printf("option name KeepBishop type spin default %d min -200 max 200\n", Param.keep_pc[B]);
         printf("option name KeepRook type spin default %d min -200 max 200\n", Param.keep_pc[R]);
         printf("option name KeepQueen type spin default %d min -200 max 200\n", Param.keep_pc[Q]);
-        printf("option name Material type spin default %d min 0 max 500\n", Param.mat_perc);
-        printf("option name PiecePlacement type spin default %d min 0 max 500\n", Param.pst_perc);
+
+        printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
+        if (panel_style == 2)
+           printf("option name ExchangeImbalance type spin default %d min -100 max 100\n", Param.exchange_imbalance);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", Param.np_bonus);
-        printf("option name RookLikesOpen type spin default %d min 0 max 10\n", Param.rp_malus);
+        if (panel_style == 2)
+           printf("option name RookLikesOpen type spin default %d min 0 max 10\n", Param.rp_malus);
+
+        printf("option name Material type spin default %d min 0 max 500\n", Param.mat_perc);
         printf("option name OwnAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_ATT]);
         printf("option name OppAttack type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_ATT]);
         printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
         printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
+
         printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+        printf("option name PiecePlacement type spin default %d min 0 max 500\n", Param.pst_perc);
         printf("option name PiecePressure type spin default %d min 0 max 500\n", weights[F_PRESSURE]);
         printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
+
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
         printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
-		printf("option name PstStyle type spin default %d min 0 max 2\n", Param.pst_style);
-
         if (panel_style == 2) {
-          printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
-          printf("option name DoubledPawnMg type spin default %d min -100 max 0\n", Param.doubled_malus_mg);
-          printf("option name DoubledPawnEg type spin default %d min -100 max 0\n", Param.doubled_malus_eg);
           printf("option name PawnShield type spin default %d min 0 max 500\n", Param.shield_perc);
           printf("option name PawnStorm type spin default %d min 0 max 500\n", Param.storm_perc);
         }
+        printf("option name PstStyle type spin default %d min 0 max 2\n", Param.pst_style);
+
+        if (panel_style == 2) {
+          printf("option name DoubledPawnMg type spin default %d min -100 max 0\n", Param.doubled_malus_mg);
+          printf("option name DoubledPawnEg type spin default %d min -100 max 0\n", Param.doubled_malus_eg);
+          printf("option name IsolatedPawnMg type spin default %d min -100 max 0\n", Param.isolated_malus_mg);
+          printf("option name IsolatedPawnEg type spin default %d min -100 max 0\n", Param.isolated_malus_eg);
+          printf("option name IsolatedOnOpenMg type spin default %d min -100 max 0\n", Param.isolated_open_malus);
+          printf("option name BackwardPawnMg type spin default %d min -100 max 0\n", Param.backward_malus_base);
+          printf("option name BackwardPawnEg type spin default %d min -100 max 0\n", Param.backward_malus_eg);
+          printf("option name BackwardOnOpenMg type spin default %d min -100 max 0\n", Param.backward_open_malus);
+        }
 
         // Strength settings - we use either Elo slider with an approximate formula
-		// or separate options for nodes per second reduction and eval blur
+        // or separate options for nodes per second reduction and eval blur
 
         if (fl_elo_slider == 0) {
           printf("option name NpsLimit type spin default %d min 0 max 5000000\n", Timer.nps_limit);
@@ -130,12 +146,12 @@ void UciLoop(void) {
 #if defined _WIN32 || defined _WIN64 
     printf (" perft %d : %I64d nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime() );
 #else
-	printf(" perft %d : %lld nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime());
+    printf(" perft %d : %lld nodes in %d miliseconds\n", depth, nodes, Timer.GetElapsedTime());
 #endif
     } else if (strcmp(token, "print") == 0) {
       PrintBoard(p);
     } else if (strcmp(token, "eval") == 0) {
-	  SetAsymmetricEval(p->side);
+      SetAsymmetricEval(p->side);
       Eval.Print(p);
     } else if (strcmp(token, "step") == 0) {
       ParseMoves(p, ptr);
@@ -249,7 +265,9 @@ void ParseSetoption(char *ptr) {
     SetWeight(F_OUTPOST, atoi(value));
   } else if (strcmp(name, "PstStyle") == 0) {
     Param.pst_style = atoi(value);
-    ResetEngine();
+    Param.DynamicInit();
+  } else if (strcmp(name, "ExchangeImbalance") == 0) {
+    Param.exchange_imbalance = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "BishopPair") == 0) {
     Param.bish_pair = atoi(value);
@@ -260,6 +278,24 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "DoubledPawnEg") == 0) {
     Param.doubled_malus_eg = atoi(value);
     ResetEngine();
+  } else if (strcmp(name, "IsolatedPawnMg") == 0) {
+    Param.isolated_malus_mg = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "IsolatedPawnEg") == 0) {
+    Param.isolated_malus_eg = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "IsolatedOnOpenMg") == 0) {
+    Param.isolated_open_malus = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "BackwardPawnMg") == 0) {
+    Param.backward_malus_base = atoi(value);
+    Param.DynamicInit();
+  } else if (strcmp(name, "BackwardPawnEg") == 0) {
+    Param.backward_malus_eg = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "BackwardOnOpenMg") == 0) {
+    Param.backward_open_malus = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "PawnShield") == 0) {
     Param.shield_perc = atoi(value);
     ResetEngine();
@@ -269,34 +305,34 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "NpsLimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();
-	if (Timer.nps_limit != 0) Param.fl_weakening = 1;
+    if (Timer.nps_limit != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "EvalBlur") == 0) {
     Param.eval_blur = atoi(value);
     ResetEngine();
-	if (Param.eval_blur != 0) Param.fl_weakening = 1;
+    if (Param.eval_blur != 0) Param.fl_weakening = 1;
   } else if (strcmp(name, "Contempt") == 0) {
     Param.draw_score = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "SlowMover") == 0) {
-	time_percentage = atoi(value);
+    time_percentage = atoi(value);
   } else if (strcmp(name, "UCI_Elo") == 0) {
-	  Param.elo = atoi(value);
-	  Timer.SetSpeed(Param.elo);
+    Param.elo = atoi(value);
+    Timer.SetSpeed(Param.elo);
   } else if (strcmp(name, "Selectivity") == 0) {
-	hist_perc = atoi(value);
-	hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
+    hist_perc = atoi(value);
+    hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
   } else if (strcmp(name, "GuideBookFile") == 0) {
     if (!fl_separate_books || !fl_reading_personality) {
       GuideBook.ClosePolyglot();
       GuideBook.bookName = value;
       GuideBook.OpenPolyglot();
-	}
+    }
   } else if (strcmp(name, "MainBookFile") == 0) {
     if (!fl_separate_books || !fl_reading_personality) {
       MainBook.ClosePolyglot();
       MainBook.bookName = value;
       MainBook.OpenPolyglot();
-	}
+    }
   } else if (strcmp(name, "PersonalityFile") == 0) {
     printf("info string reading ");
     printf(value);
@@ -393,7 +429,7 @@ void ParseGo(POS *p, char *ptr) {
       Timer.SetData(MOVES_TO_GO, atoi(token));
     } else if (strcmp(token, "nodes") == 0) {
       ptr = ParseToken(ptr, token);
-	  Timer.SetData(FLAG_INFINITE, 1);
+      Timer.SetData(FLAG_INFINITE, 1);
       Timer.SetData(MAX_NODES, atoi(token));
     } else if (strcmp(token, "movetime") == 0) {
       ptr = ParseToken(ptr, token);
@@ -446,13 +482,13 @@ void ReadPersonality(char *fileName)
 
     if (strstr(line, "HIDE_OPTIONS")) panel_style = 0;
     if (strstr(line, "SHOW_OPTIONS")) panel_style = 1;
-	if (strstr(line, "FULL_OPTIONS")) panel_style = 2;
+    if (strstr(line, "FULL_OPTIONS")) panel_style = 2;
 
     if (strstr(line, "PERSONALITY_BOOKS")) fl_separate_books = 0;
     if (strstr(line, "GENERAL_BOOKS")) fl_separate_books = 1;
 
-	if (strstr(line, "ELO_SLIDER")) fl_elo_slider = 1;
-	if (strstr(line, "NPS_BLUR")) fl_elo_slider = 0;
+    if (strstr(line, "ELO_SLIDER")) fl_elo_slider = 1;
+    if (strstr(line, "NPS_BLUR")) fl_elo_slider = 0;
 
     if (strcmp(token, "setoption") == 0)
       ParseSetoption(ptr);
@@ -464,85 +500,85 @@ void ReadPersonality(char *fileName)
 
 int Perft(POS *p, int ply, int depth) {
 
-	int move = 0;
-	int fl_mv_type;
-	MOVES m[1];
-	UNDO u[1];
-	int mv_cnt = 0;
+  int move = 0;
+  int fl_mv_type;
+  MOVES m[1];
+  UNDO u[1];
+  int mv_cnt = 0;
 
-	InitMoves(p, m, 0, 0, ply);
+  InitMoves(p, m, 0, 0, ply);
 
-	while (move = NextMove(m, &fl_mv_type)) {
+  while (move = NextMove(m, &fl_mv_type)) {
 
-		p->DoMove(move, u);
+  p->DoMove(move, u);
 
-		if (Illegal(p)) { p->UndoMove(move, u); continue; }
+  if (Illegal(p)) { p->UndoMove(move, u); continue; }
 
-		if (depth == 1) mv_cnt++;
-		else            mv_cnt += Perft(p, ply + 1, depth - 1);
-		p->UndoMove(move, u);
-	}
+  if (depth == 1) mv_cnt++;
+    else          mv_cnt += Perft(p, ply + 1, depth - 1);
+    p->UndoMove(move, u);
+  }
 
-	return mv_cnt;
+  return mv_cnt;
 }
 
 void PrintBoard(POS *p) {
 
-	char *piece_name[] = { "P ", "p ", "N ", "n ", "B ", "b ", "R ", "r ", "Q ", "q ", "K ", "k ", ". " };
+  char *piece_name[] = { "P ", "p ", "N ", "n ", "B ", "b ", "R ", "r ", "Q ", "q ", "K ", "k ", ". " };
 
-	printf("--------------------------------------------\n");
-	for (int sq = 0; sq < 64; sq++) {
-		printf(piece_name[p->pc[sq ^ (BC * 56)]]);
-		if ((sq + 1) % 8 == 0) printf(" %d\n", 9 - ((sq + 1) / 8));
-	}
+  printf("--------------------------------------------\n");
+  for (int sq = 0; sq < 64; sq++) {
+    printf(piece_name[p->pc[sq ^ (BC * 56)]]);
+    if ((sq + 1) % 8 == 0) printf(" %d\n", 9 - ((sq + 1) / 8));
+  }
 
-	printf("\na b c d e f g h\n\n--------------------------------------------\n");
+  printf("\na b c d e f g h\n\n--------------------------------------------\n");
 }
 
 void Bench(int depth) {
 
-	POS p[1];
-	int pv[MAX_PLY];
-	char *test[] = {
-		"r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq -",
-		"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -",
-		"8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -",
-		"4rrk1/pp1n3p/3q2pQ/2p1pb2/2PP4/2P3N1/P2B2PP/4RRK1 b - - 7 19",
-		"rq3rk1/ppp2ppp/1bnpb3/3N2B1/3NP3/7P/PPPQ1PP1/2KR3R w - - 7 14",
-		"r1bq1r1k/1pp1n1pp/1p1p4/4p2Q/4Pp2/1BNP4/PPP2PPP/3R1RK1 w - - 2 14",
-		"r3r1k1/2p2ppp/p1p1bn2/8/1q2P3/2NPQN2/PPP3PP/R4RK1 b - - 2 15",
-		"r1bbk1nr/pp3p1p/2n5/1N4p1/2Np1B2/8/PPP2PPP/2KR1B1R w kq - 0 13",
-	    "r1bq1rk1/ppp1nppp/4n3/3p3Q/3P4/1BP1B3/PP1N2PP/R4RK1 w - - 1 16",
-		"4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17",
-		"2rqkb1r/ppp2p2/2npb1p1/1N1Nn2p/2P1PP2/8/PP2B1PP/R1BQK2R b KQ - 0 11",
-		"r1bq1r1k/b1p1npp1/p2p3p/1p6/3PP3/1B2NN2/PP3PPP/R2Q1RK1 w - - 1 16",
-		"3r1rk1/p5pp/bpp1pp2/8/q1PP1P2/b3P3/P2NQRPP/1R2B1K1 b - - 6 22",
-		"r1q2rk1/2p1bppp/2Pp4/p6b/Q1PNp3/4B3/PP1R1PPP/2K4R w - - 2 18",
-		"4k2r/1pb2ppp/1p2p3/1R1p4/3P4/2r1PN2/P4PPP/1R4K1 b - - 3 22",
-		"3q2k1/pb3p1p/4pbp1/2r5/PpN2N2/1P2P2P/5PP1/Q2R2K1 b - - 4 26",
-		NULL
-	}; // test positions taken from DiscoCheck by Lucas Braesch
+  POS p[1];
+  int pv[MAX_PLY];
+  char *test[] = {
+    "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq -",
+    "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -",
+    "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -",
+    "4rrk1/pp1n3p/3q2pQ/2p1pb2/2PP4/2P3N1/P2B2PP/4RRK1 b - - 7 19",
+    "rq3rk1/ppp2ppp/1bnpb3/3N2B1/3NP3/7P/PPPQ1PP1/2KR3R w - - 7 14",
+    "r1bq1r1k/1pp1n1pp/1p1p4/4p2Q/4Pp2/1BNP4/PPP2PPP/3R1RK1 w - - 2 14",
+    "r3r1k1/2p2ppp/p1p1bn2/8/1q2P3/2NPQN2/PPP3PP/R4RK1 b - - 2 15",
+    "r1bbk1nr/pp3p1p/2n5/1N4p1/2Np1B2/8/PPP2PPP/2KR1B1R w kq - 0 13",
+    "r1bq1rk1/ppp1nppp/4n3/3p3Q/3P4/1BP1B3/PP1N2PP/R4RK1 w - - 1 16",
+    "4r1k1/r1q2ppp/ppp2n2/4P3/5Rb1/1N1BQ3/PPP3PP/R5K1 w - - 1 17",
+    "2rqkb1r/ppp2p2/2npb1p1/1N1Nn2p/2P1PP2/8/PP2B1PP/R1BQK2R b KQ - 0 11",
+    "r1bq1r1k/b1p1npp1/p2p3p/1p6/3PP3/1B2NN2/PP3PPP/R2Q1RK1 w - - 1 16",
+    "3r1rk1/p5pp/bpp1pp2/8/q1PP1P2/b3P3/P2NQRPP/1R2B1K1 b - - 6 22",
+    "r1q2rk1/2p1bppp/2Pp4/p6b/Q1PNp3/4B3/PP1R1PPP/2K4R w - - 2 18",
+    "4k2r/1pb2ppp/1p2p3/1R1p4/3P4/2r1PN2/P4PPP/1R4K1 b - - 3 22",
+    "3q2k1/pb3p1p/4pbp1/2r5/PpN2N2/1P2P2P/5PP1/Q2R2K1 b - - 4 26",
+    NULL
+  }; // test positions taken from DiscoCheck by Lucas Braesch
 
-	if (depth == 0) depth = 8; // so that you can call bench without parameters
+  if (depth == 0) depth = 8; // so that you can call bench without parameters
 
-	printf("Bench test started (depth %d): \n", depth);
+  printf("Bench test started (depth %d): \n", depth);
 
-	ResetEngine();
-	nodes = 0;
-	verbose = 0;
-	Timer.SetData(MAX_DEPTH, depth);
-	Timer.SetData(FLAG_INFINITE, 1);
-	Timer.SetStartTime();
+  ResetEngine();
+  nodes = 0;
+  verbose = 0;
+  Timer.SetData(MAX_DEPTH, depth);
+  Timer.SetData(FLAG_INFINITE, 1);
+  Timer.SetStartTime();
 
-	for (int i = 0; test[i]; ++i) {
-		printf(test[i]);
-		SetPosition(p, test[i]);
-		printf("\n");
-		Iterate(p, pv);
-	}
+  for (int i = 0; test[i]; ++i) {
+    printf(test[i]);
+    SetPosition(p, test[i]);
+    printf("\n");
+    Iterate(p, pv);
+  }
 
-	int end_time = Timer.GetElapsedTime();
-	int nps = (nodes * 1000) / (end_time + 1);
+  int end_time = Timer.GetElapsedTime();
+  int nps = (nodes * 1000) / (end_time + 1);
 
-	printf("%llu nodes searched in %d, speed %u nps (Score: %.3f)\n", nodes, end_time, nps, (float)nps / 430914.0);
+  printf("%llu nodes searched in %d, speed %u nps (Score: %.3f)\n", nodes, end_time, nps, (float)nps / 430914.0);
 }

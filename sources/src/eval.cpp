@@ -125,6 +125,9 @@ void cParam::Default(void) {
   }
 }
 
+// @DynamicInit() - here we initialize stuff that might be changed 
+// when user fiddles with UCI options.
+
 void cParam::DynamicInit(void) {
 
   Eval.prog_side = NO_CL;
@@ -164,7 +167,25 @@ void cParam::DynamicInit(void) {
 	  rp_table[i] = adj[i] * rp_malus;
   }
 
-  // TODO: init imbalance table, so that we can expose option for exchange delta
+  // Init backward pawns table, adding file offset to base value
+
+  for (int i = 0; i < 8; i++) {
+	  backward_malus_mg[i] = backward_malus_base + file_adj[i];
+  }
+
+  // Init imbalance table, so that we can expose option for exchange delta
+
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+
+      // insert original values
+      imbalance[i][j] = imbalance_data[i][j];
+
+	  // insert value defined by the user
+	  if (imbalance[i][j] == Ex) imbalance[i][j] = exchange_imbalance;
+	  if (imbalance[i][j] == -Ex) imbalance[i][j] = -exchange_imbalance;
+    }
+  }
 
   // Init king attack table
 
@@ -764,7 +785,7 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
   int y = Max(minorBalance + 4, 0);
   if (y > 8) y = 8;
 
-  score += SCALE(imbalance[x][y], Param.mat_perc);
+  score += SCALE(Param.imbalance[x][y], Param.mat_perc);
 
   score += CheckmateHelper(p);
 

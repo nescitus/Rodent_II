@@ -86,20 +86,7 @@ void cEval::FullPawnEval(POS * p, eData *e, int use_hash) {
       Add(e, BC, F_PAWNS, empty_qs[p->king_sq[BC]]);
     }
   }
-
-  // Pawn islands
-  /*
-  U64 wPawns = p->Pawns(WC);
-  U64 wFiles = BB.FillSouth(wPawns) & 0xff;
-  int wIslands = BB.PopCnt(((~wFiles) >> 1) & wFiles);
-  Add(e, WC, F_PAWNS, islands[wIslands]);
-
-  U64 bPawns = p->Pawns(BC);
-  U64 bFiles = BB.FillSouth(bPawns) & 0xff;
-  int bIslands = BB.PopCnt(((~bFiles) >> 1) & bFiles);
-  Add(e, BC, F_PAWNS, islands[bIslands]);
-  */
-
+  
   // Save stuff in pawn hashtable
 
   PawnTT[addr].key = p->pawn_key;
@@ -156,9 +143,13 @@ void cEval::ScorePawns(POS *p, eData *e, int sd) {
 
     if (fl_weak) {
       if (!(Mask.adjacent[File(sq)] & bbOwnPawns)) 
-        Add(e, sd, F_PAWNS, isolated_malus_mg + isolated_open_malus * fl_unopposed, isolated_malus_eg);           // isolated pawn
+        Add(e, sd, F_PAWNS, 
+		    Param.isolated_malus_mg + Param.isolated_open_malus * fl_unopposed,
+			Param.isolated_malus_eg); // isolated pawn
       else 
-        Add(e, sd, F_PAWNS, backward_malus_mg[File(sq)] + backward_open_malus * fl_unopposed, backward_malus_eg); // backward pawn
+        Add(e, sd, F_PAWNS, 
+			Param.backward_malus_mg[File(sq)] + Param.backward_open_malus * fl_unopposed, 
+			Param.backward_malus_eg); // backward pawn
     }
   }
 }
