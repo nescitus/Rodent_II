@@ -63,8 +63,9 @@ void UciLoop(void) {
         printf("option name KeepRook type spin default %d min -200 max 200\n", Param.keep_pc[R]);
         printf("option name KeepQueen type spin default %d min -200 max 200\n", Param.keep_pc[Q]);
 
-        printf("option name BishopPair type spin default %d min 0 max 100\n", Param.bish_pair);
+        printf("option name BishopPair type spin default %d min -100 max 100\n", Param.bish_pair);
         if (panel_style == 2)
+			printf("option name KnightPair type spin default %d min -100 max 100\n", Param.knight_pair);
            printf("option name ExchangeImbalance type spin default %d min -100 max 100\n", Param.exchange_imbalance);
         printf("option name KnightLikesClosed type spin default %d min 0 max 10\n", Param.np_bonus);
         if (panel_style == 2)
@@ -76,19 +77,20 @@ void UciLoop(void) {
         printf("option name OwnMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OWN_MOB]);
         printf("option name OppMobility type spin default %d min 0 max 500\n", dyn_weights[DF_OPP_MOB]);
 
-        printf("option name KingTropism type spin default %d min 0 max 500\n", weights[F_TROPISM]);
+        printf("option name KingTropism type spin default %d min -50 max 500\n", weights[F_TROPISM]);
         printf("option name PiecePlacement type spin default %d min 0 max 500\n", Param.pst_perc);
         printf("option name PiecePressure type spin default %d min 0 max 500\n", weights[F_PRESSURE]);
         printf("option name PassedPawns type spin default %d min 0 max 500\n", weights[F_PASSERS]);
         printf("option name PawnStructure type spin default %d min 0 max 500\n", weights[F_PAWNS]);
 
+		printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
         printf("option name Lines type spin default %d min 0 max 500\n", weights[F_LINES]);
-        printf("option name Outposts type spin default %d min 0 max 500\n", weights[F_OUTPOST]);
         if (panel_style == 2) {
           printf("option name PawnShield type spin default %d min 0 max 500\n", Param.shield_perc);
           printf("option name PawnStorm type spin default %d min 0 max 500\n", Param.storm_perc);
         }
         printf("option name PstStyle type spin default %d min 0 max 2\n", Param.pst_style);
+		printf("option name MobilityStyle type spin default %d min 0 max 1\n", Param.mob_style);
 
         if (panel_style == 2) {
           printf("option name DoubledPawnMg type spin default %d min -100 max 0\n", Param.doubled_malus_mg);
@@ -265,6 +267,9 @@ void ParseSetoption(char *ptr) {
     SetWeight(F_OUTPOST, atoi(value));
   } else if (strcmp(name, "PstStyle") == 0) {
     Param.pst_style = atoi(value);
+    Param.DynamicInit();
+ } else if (strcmp(name, "MobilityStyle") == 0) {
+    Param.mob_style = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "ExchangeImbalance") == 0) {
     Param.exchange_imbalance = atoi(value);

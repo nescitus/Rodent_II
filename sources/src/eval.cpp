@@ -187,6 +187,54 @@ void cParam::DynamicInit(void) {
     }
   }
 
+  // Init mobility tables
+
+  if (mob_style == 0) {
+    for (int i = 0; i < 9; i++) {
+      n_mob_mg[i] = n_mob_mg_linear[i];
+	  n_mob_eg[i] = n_mob_eg_linear[i];
+    }
+
+    for (int i = 0; i < 14; i++) {
+      b_mob_mg[i] = b_mob_mg_linear[i];
+	  b_mob_eg[i] = b_mob_eg_linear[i];
+    }
+
+    for (int i = 0; i < 15; i++) {
+	  r_mob_mg[i] = r_mob_mg_linear[i];
+	  r_mob_eg[i] = r_mob_eg_linear[i];
+    }
+
+    for (int i = 0; i < 28; i++) {
+      q_mob_mg[i] = q_mob_mg_linear[i];
+	  q_mob_eg[i] = q_mob_eg_linear[i];
+    }
+
+  }
+
+  if (mob_style == 1) {
+    for (int i = 0; i < 9; i++) {
+      n_mob_mg[i] = n_mob_mg_decreasing[i];
+	  n_mob_eg[i] = n_mob_eg_decreasing[i];
+    }
+
+    for (int i = 0; i < 14; i++) {
+      b_mob_mg[i] = b_mob_mg_decreasing[i];
+	  b_mob_eg[i] = b_mob_eg_decreasing[i];
+    }
+
+    for (int i = 0; i < 15; i++) {
+	  r_mob_mg[i] = r_mob_mg_decreasing[i];
+	  r_mob_eg[i] = r_mob_eg_decreasing[i];
+    }
+
+    for (int i = 0; i < 28; i++) {
+      q_mob_mg[i] = q_mob_mg_decreasing[i];
+	  q_mob_eg[i] = q_mob_eg_decreasing[i];
+    }
+
+  }
+
   // Init king attack table
 
   for (int t = 0, i = 1; i < 512; ++i) {
@@ -205,7 +253,7 @@ void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 	int tmp = Param.np_table[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
 		    - Param.rp_table[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
-	if (p->cnt[sd][N] > 1) tmp += Param.knight_pair_malus;
+	if (p->cnt[sd][N] > 1) tmp += Param.knight_pair;
 	if (p->cnt[sd][R] > 1) tmp += Param.rook_pair_malus;
 
 	if (p->cnt[sd][B] > 1)                                    // Bishop pair
@@ -267,7 +315,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
     cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op]);   // better to have it mobile than defending stuff
     
-    Add(e, sd, F_MOB, n_mob_mg[cnt], n_mob_eg[cnt]);  // mobility bonus
+    Add(e, sd, F_MOB, Param.n_mob_mg[cnt], Param.n_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & bbKnightChk) 
        att += chk_threat[N];                          // check threat bonus
@@ -312,7 +360,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op] &~bbExcluded);
     
-    Add(e, sd, F_MOB, b_mob_mg[cnt], b_mob_eg[cnt]);   // mobility bonus
+    Add(e, sd, F_MOB, Param.b_mob_mg[cnt], Param.b_mob_eg[cnt]);   // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & bbDiagChk) 
       att += chk_threat[B];                            // check threat bonus
@@ -371,7 +419,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
-    Add(e, sd, F_MOB, r_mob_mg[cnt], r_mob_eg[cnt]);                // mobility bonus
+    Add(e, sd, F_MOB, Param.r_mob_mg[cnt], Param.r_mob_eg[cnt]);                // mobility bonus
     if (((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
@@ -456,7 +504,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
-    Add(e, sd, F_MOB, q_mob_mg[cnt], q_mob_eg[cnt]);  // mobility bonus
+    Add(e, sd, F_MOB, Param.q_mob_mg[cnt], Param.q_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbQueenChk) {  // check threat bonus
       att += chk_threat[Q];

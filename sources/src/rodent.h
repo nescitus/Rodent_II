@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.56"
+#define PROG_NAME "Rodent II 0.9.57"
 
 //#define LEAF_PST
 
@@ -379,13 +379,14 @@ public:
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
-  int pst_style = 0;
+  int pst_style = 2;
+  int mob_style = 1;
   int mat_perc;
   int pst_perc;
   int shield_perc = 120;
   int storm_perc  = 100;
   int bish_pair = 50;
-  int knight_pair_malus = -10;
+  int knight_pair = -10;
   int rook_pair_malus = -5;
   int doubled_malus_mg = -12;
   int doubled_malus_eg = -24;
@@ -422,6 +423,16 @@ public:
   int draw_score = 0;
   int book_filter = 20;
   int eval_blur = 0;
+  int n_mob_mg[9] =  { -16, -12,  -8,  -4,  +0,  +4,  +8, +12, +16 };
+  int n_mob_eg[9] =  { -16, -12,  -8,  -4,  +0,  +4,  +8, +12, +16 };
+  int b_mob_mg[14] = { -35, -30, -25, -20, -15, -10,  -5,  +0,  +5, +10, +15, +20, +25, +30 };
+  int b_mob_eg[14] = { -35, -30, -25, -20, -15, -10,  -5,  +0,  +5, +10, +15, +20, +25, +30 };
+  int r_mob_mg[15] = { -14, -12, -10,  -8,  -6,  -4,  -2,  +0,  +2,  +4,  +6,  +8, +10, +12, +14 };
+  int r_mob_eg[15] = { -28, -24, -20, -16, -12,  -8,  -4,  +0,  +4,  +8, +12, +16, +20, +24, +28 };
+  int q_mob_mg[28] = { -14, -13, -12, -11, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,  +0,
+	                    +1,  +2,  +3,  +4,  +5,  +6,  +7,  +8,  +9, +10, +11, +12, +13 };
+  int q_mob_eg[28] = { -28, -26, -24, -22, -20, -18, -16, -14, -12, -10,  -8,  -6,  -4,  -2,  +0,
+	                    +2,  +4,  +6,  +8, +10, +12, +14, +16, +18, +20, +22, +24, +26 };
   void DynamicInit(void);
   void Default(void);
 } cParam; 
