@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "rodent.h"
 #include "timer.h"
 #include "book.h"
+#include "param.h"
 
 cBitBoard BB;
 cMask Mask;

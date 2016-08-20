@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assert.h>
 #include "rodent.h"
 #include "eval.h"
+#include "param.h"
 
 static const U64 bbCentralFile = FILE_C_BB | FILE_D_BB | FILE_E_BB | FILE_F_BB;
 static const U64 bbKingSide    = FILE_F_BB | FILE_G_BB | FILE_H_BB;

@@ -40,9 +40,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #include "timer.h"
 #include "book.h"
-#include <math.h>
+#include "param.h"
 
 // Random numbers from PolyGlot, used to compute book hash keys
 const U64 PG[781]

@@ -112,7 +112,6 @@ int GetDrawFactor(POS *p, int sd)
      return 32;
   }
 
-
   if (p->cnt[sd][P] == 0) {
 
     // Case 5: low and almost equal material with no pawns

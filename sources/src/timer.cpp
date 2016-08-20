@@ -2,6 +2,7 @@
 #include "timer.h"
 #include <math.h>
 #include "rodent.h"
+#include "param.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)

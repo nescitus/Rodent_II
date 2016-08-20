@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "rodent.h"
+#include "param.h"
 
 void SetPosition(POS *p, char *epd) {
 

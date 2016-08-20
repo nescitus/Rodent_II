@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 #include "rodent.h"
 #include "eval.h"
+#include "param.h"
 
 // parameters for defining game phase [6]
 

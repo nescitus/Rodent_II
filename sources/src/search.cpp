@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <math.h>
 #include <assert.h>
 #include "rodent.h"
+#include "param.h"
 #include "timer.h"
 #include "book.h"
 

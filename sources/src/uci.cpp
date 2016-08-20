@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "book.h"
 #include "eval.h"
+#include "param.h"
 
 void ReadLine(char *str, int n) {
   char *ptr;
@@ -51,11 +52,11 @@ void UciLoop(void) {
       printf("option name Hash type spin default 16 min 1 max 4096\n");
       printf("option name Clear Hash type button\n");
       if (panel_style > 0) {
-        printf("option name PawnValue type spin default %d min 0 max 1200\n", pc_value[P]);
-        printf("option name KnightValue type spin default %d min 0 max 1200\n", pc_value[N]);
-        printf("option name BishopValue type spin default %d min 0 max 1200\n", pc_value[B]);
-        printf("option name RookValue type spin default %d min 0 max 1200\n", pc_value[R]);
-        printf("option name QueenValue type spin default %d min 0 max 1200\n", pc_value[Q]);
+        printf("option name PawnValue type spin default %d min 0 max 1200\n", Param.pc_value[P]);
+        printf("option name KnightValue type spin default %d min 0 max 1200\n", Param.pc_value[N]);
+        printf("option name BishopValue type spin default %d min 0 max 1200\n", Param.pc_value[B]);
+        printf("option name RookValue type spin default %d min 0 max 1200\n", Param.pc_value[R]);
+        printf("option name QueenValue type spin default %d min 0 max 1200\n", Param.pc_value[Q]);
         
 		printf("option name KeepPawn type spin default %d min -200 max 200\n", Param.keep_pc[P]);
         printf("option name KeepKnight type spin default %d min -200 max 200\n", Param.keep_pc[N]);
@@ -206,19 +207,19 @@ void ParseSetoption(char *ptr) {
     Param.pst_perc = (pst_default_perc[Param.pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
     Param.DynamicInit();
   } else if (strcmp(name, "PawnValue") == 0) {
-    pc_value[P] = atoi(value);
+    Param.pc_value[P] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "KnightValue") == 0) {
-    pc_value[N] = atoi(value);
+    Param.pc_value[N] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "BishopValue") == 0) {
-    pc_value[B] = atoi(value);
+    Param.pc_value[B] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "RookValue") == 0) {
-    pc_value[R] = atoi(value);
+    Param.pc_value[R] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "QueenValue") == 0) {
-    pc_value[Q] = atoi(value);
+    Param.pc_value[Q] = atoi(value);
     Param.DynamicInit();
   } else if (strcmp(name, "KeepQueen") == 0) {
     Param.keep_pc[Q] = atoi(value);
