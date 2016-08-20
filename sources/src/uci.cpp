@@ -198,153 +198,153 @@ void ParseSetoption(char *ptr) {
 
   if (strcmp(name, "Hash") == 0) {
     AllocTrans(atoi(value));
-  } else if (strcmp(name, "Clear Hash") == 0) {
+  } else if (strcmp(name, "Clear Hash") == 0 || strcmp(name, "clear hash") == 0) {
     ResetEngine();
-  } else if (strcmp(name, "Material") == 0) {
+  } else if (strcmp(name, "Material") == 0 || strcmp(name, "material") == 0) {
     Param.mat_perc = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "PiecePlacement") == 0) {
+  } else if (strcmp(name, "PiecePlacement") == 0 || strcmp(name, "pieceplacement") == 0) {
     Param.pst_perc = (pst_default_perc[Param.pst_style] * atoi(value)) / 100; // scaling takes into account internal weight
     Param.DynamicInit();
-  } else if (strcmp(name, "PawnValue") == 0) {
+  } else if (strcmp(name, "PawnValue") == 0   || strcmp(name, "pawnvalue") == 0) {
     Param.pc_value[P] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "KnightValue") == 0) {
+  } else if (strcmp(name, "KnightValue") == 0       || strcmp(name, "knightvalue") == 0) {
     Param.pc_value[N] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "BishopValue") == 0) {
+  } else if (strcmp(name, "BishopValue") == 0       || strcmp(name, "bishopvalue") == 0) {
     Param.pc_value[B] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "RookValue") == 0) {
+  } else if (strcmp(name, "RookValue") == 0         || strcmp(name, "rookvalue") == 0) {
     Param.pc_value[R] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "QueenValue") == 0) {
+  } else if (strcmp(name, "QueenValue") == 0        || strcmp(name, "queenvalue") == 0) {
     Param.pc_value[Q] = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "KeepQueen") == 0) {
+  } else if (strcmp(name, "KeepQueen") == 0         || strcmp(name, "keepqueen") == 0) {
     Param.keep_pc[Q] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KeepRook") == 0) {
+  } else if (strcmp(name, "KeepRook") == 0          || strcmp(name, "keeprook") == 0) {
     Param.keep_pc[R] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KeepBishop") == 0) {
+  } else if (strcmp(name, "KeepBishop") == 0        || strcmp(name, "keepbishop") == 0) {
     Param.keep_pc[B] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KeepKnight") == 0) {
+  } else if (strcmp(name, "KeepKnight") == 0        || strcmp(name, "keepknight") == 0) {
     Param.keep_pc[N] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KeepPawn") == 0) {
+  } else if (strcmp(name, "KeepPawn") == 0          || strcmp(name, "keeppawn") == 0) {
     Param.keep_pc[P] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KnightLikedClosed") == 0) {
+  } else if (strcmp(name, "KnightLikesClosed") == 0 || strcmp(name, "knightlikesclosed") == 0) {
     Param.np_bonus = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "RookLikesOpen") == 0) {
+  } else if (strcmp(name, "RookLikesOpen") == 0     || strcmp(name, "rooklikesopen") == 0) {
     Param.rp_malus = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "OwnAttack") == 0) {
+  } else if (strcmp(name, "OwnAttack") == 0         || strcmp(name, "ownattack") == 0) {
     dyn_weights[DF_OWN_ATT] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "OppAttack") == 0) {
+  } else if (strcmp(name, "OppAttack") == 0         || strcmp(name, "oppattack") == 0) {
     dyn_weights[DF_OPP_ATT] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "OwnMobility") == 0) {
+  } else if (strcmp(name, "OwnMobility") == 0       || strcmp(name, "ownmobility") == 0) {
     dyn_weights[DF_OWN_MOB] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "OppMobility") == 0) {
+  } else if (strcmp(name, "OppMobility") == 0       || strcmp(name, "oppmobility") == 0) {
     dyn_weights[DF_OPP_MOB] = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "KingTropism") == 0) {
+  } else if (strcmp(name, "KingTropism") == 0       || strcmp(name, "kingtropism") == 0) {
     SetWeight(F_TROPISM, atoi(value));
-  } else if (strcmp(name, "PiecePressure") == 0) {
+  } else if (strcmp(name, "PiecePressure") == 0     || strcmp(name, "piecepressure") == 0) {
     SetWeight(F_PRESSURE, atoi(value));
-  } else if (strcmp(name, "PassedPawns") == 0) {
+  } else if (strcmp(name, "PassedPawns") == 0       || strcmp(name, "passedpawns") == 0) {
     SetWeight(F_PASSERS, atoi(value));
-  } else if (strcmp(name, "PawnStructure") == 0) {
+  } else if (strcmp(name, "PawnStructure") == 0     || strcmp(name, "pawnstructure") == 0) {
     SetWeight(F_PAWNS, atoi(value));
-  } else if (strcmp(name, "Lines") == 0) {
+  } else if (strcmp(name, "Lines") == 0             || strcmp(name, "lines") == 0) {
    SetWeight(F_LINES, atoi(value));
-  } else if (strcmp(name, "Outposts") == 0) {
+  } else if (strcmp(name, "Outposts") == 0          || strcmp(name, "outposts") == 0) {
     SetWeight(F_OUTPOST, atoi(value));
-  } else if (strcmp(name, "PstStyle") == 0) {
+  } else if (strcmp(name, "PstStyle") == 0          || strcmp(name, "pststyle") == 0) {
     Param.pst_style = atoi(value);
     Param.DynamicInit();
- } else if (strcmp(name, "MobilityStyle") == 0) {
+ } else if (strcmp(name, "MobilityStyle") == 0      || strcmp(name, "mobilitystyle") == 0) {
     Param.mob_style = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "ExchangeImbalance") == 0) {
+  } else if (strcmp(name, "ExchangeImbalance") == 0 || strcmp(name, "exchangeimbalance") == 0) {
     Param.exchange_imbalance = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "BishopPair") == 0) {
+  } else if (strcmp(name, "BishopPair") == 0        || strcmp(name, "bishoppair") == 0) {
     Param.bish_pair = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "DoubledPawnMg") == 0) {
+  } else if (strcmp(name, "DoubledPawnMg") == 0     || strcmp(name, "doubledpawnmg") == 0) {
     Param.doubled_malus_mg = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "DoubledPawnEg") == 0) {
+  } else if (strcmp(name, "DoubledPawnEg") == 0     || strcmp(name, "doubledpawneg") == 0) {
     Param.doubled_malus_eg = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "IsolatedPawnMg") == 0) {
+  } else if (strcmp(name, "IsolatedPawnMg") == 0    || strcmp(name, "isolatedpawnmg") == 0) {
     Param.isolated_malus_mg = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "IsolatedPawnEg") == 0) {
+  } else if (strcmp(name, "IsolatedPawnEg") == 0    || strcmp(name, "isolatedpawneg") == 0) {
     Param.isolated_malus_eg = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "IsolatedOnOpenMg") == 0) {
+  } else if (strcmp(name, "IsolatedOnOpenMg") == 0  || strcmp(name, "isolatedonopenmg") == 0) {
     Param.isolated_open_malus = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "BackwardPawnMg") == 0) {
+  } else if (strcmp(name, "BackwardPawnMg") == 0    || strcmp(name, "backwardpawnmg") == 0) {
     Param.backward_malus_base = atoi(value);
     Param.DynamicInit();
-  } else if (strcmp(name, "BackwardPawnEg") == 0) {
+  } else if (strcmp(name, "BackwardPawnEg") == 0    || strcmp(name, "backwardpawneg") == 0) {
     Param.backward_malus_eg = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "BackwardOnOpenMg") == 0) {
+  } else if (strcmp(name, "BackwardOnOpenMg") == 0  || strcmp(name, "backwardonopenmg") == 0) {
     Param.backward_open_malus = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "PawnShield") == 0) {
+  } else if (strcmp(name, "PawnShield") == 0        || strcmp(name, "pawnshield") == 0) {
     Param.shield_perc = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "PawnStorm") == 0) {
+  } else if (strcmp(name, "PawnStorm") == 0         || strcmp(name, "pawnstorm") == 0) {
     Param.storm_perc = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "NpsLimit") == 0) {
+  } else if (strcmp(name, "NpsLimit") == 0          || strcmp(name, "npslimit") == 0) {
     Timer.nps_limit = atoi(value);
     ResetEngine();
     if (Timer.nps_limit != 0) Param.fl_weakening = 1;
-  } else if (strcmp(name, "EvalBlur") == 0) {
+  } else if (strcmp(name, "EvalBlur") == 0          || strcmp(name, "evalblur") == 0) {
     Param.eval_blur = atoi(value);
     ResetEngine();
     if (Param.eval_blur != 0) Param.fl_weakening = 1;
-  } else if (strcmp(name, "Contempt") == 0) {
+  } else if (strcmp(name, "Contempt") == 0          || strcmp(name, "contempt") == 0) {
     Param.draw_score = atoi(value);
     ResetEngine();
-  } else if (strcmp(name, "SlowMover") == 0) {
+  } else if (strcmp(name, "SlowMover") == 0         || strcmp(name, "slowmover") == 0) {
     time_percentage = atoi(value);
-  } else if (strcmp(name, "UCI_Elo") == 0) {
+  } else if (strcmp(name, "UCI_Elo") == 0           || strcmp(name, "uci_elo") == 0) {
     Param.elo = atoi(value);
     Timer.SetSpeed(Param.elo);
-  } else if (strcmp(name, "Selectivity") == 0) {
+  } else if (strcmp(name, "Selectivity") == 0       || strcmp(name, "selectivity") == 0) {
     hist_perc = atoi(value);
     hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
-  } else if (strcmp(name, "GuideBookFile") == 0) {
+  } else if (strcmp(name, "GuideBookFile") == 0     || strcmp(name, "guidebookfile") == 0) {
     if (!fl_separate_books || !fl_reading_personality) {
       GuideBook.ClosePolyglot();
       GuideBook.bookName = value;
       GuideBook.OpenPolyglot();
     }
-  } else if (strcmp(name, "MainBookFile") == 0) {
+  } else if (strcmp(name, "MainBookFile") == 0      || strcmp(name, "mainbookfile") == 0) {
     if (!fl_separate_books || !fl_reading_personality) {
       MainBook.ClosePolyglot();
       MainBook.bookName = value;
       MainBook.OpenPolyglot();
     }
-  } else if (strcmp(name, "PersonalityFile") == 0) {
+  } else if (strcmp(name, "PersonalityFile") == 0   || strcmp(name, "personalityfile") == 0) {
     printf("info string reading ");
     printf(value);
     printf("\n");
     ReadPersonality(value);
-  } else if (strcmp(name, "BookFilter") == 0) {
+  } else if (strcmp(name, "BookFilter") == 0        || strcmp(name, "bookfilter") == 0) {
     Param.book_filter = atoi(value);
   }
 }

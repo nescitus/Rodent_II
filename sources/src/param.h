@@ -23,6 +23,7 @@ public:
   int elo = 2850;
   int fl_weakening = 0;
   int pc_value[7] = { 100, 325, 335, 500, 1000, 0, 0 }; // these values might be changed via UCI options
+  int keep_pc[7] =  {   0,   0,   0,   0,   0,  0, 0 };
   int mg_pst[2][6][64];       // midgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
   int eg_pst[2][6][64];       // endgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
   int sp_pst_data[2][6][64];  // special piece/square tables (outposts etc.)
@@ -33,8 +34,8 @@ public:
   int defended[2][64];
   int pst_style = 0;
   int mob_style = 0;
-  int mat_perc;
-  int pst_perc;
+  int mat_perc = 100;
+  int pst_perc = 80;
   int shield_perc = 120;
   int storm_perc  = 100;
   int bish_pair = 50;
@@ -71,7 +72,6 @@ public:
   int imbalance[9][9];
   int np_table[9];
   int rp_table[9];
-  int keep_pc[7] = {0, 0, 0, 0, 0, 0, 0};
   int draw_score = 0;
   int book_filter = 20;
   int eval_blur = 0;
