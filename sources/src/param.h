@@ -40,6 +40,9 @@ public:
   int storm_perc  = 100;
   int bish_pair = 50;
   int knight_pair = -10;
+  int exchange_imbalance = 25;
+  int np_bonus = 6;
+  int rp_malus = 3;
   int rook_pair_malus = -5;
   int doubled_malus_mg = -12;
   int doubled_malus_eg = -24;
@@ -66,9 +69,6 @@ public:
   int rookOnGoodHalfOpenEg = 6;
   int queenOn7thMg = 4;
   int queenOn7thEg = 8;
-  int exchange_imbalance = 25;
-  int np_bonus = 6;
-  int rp_malus = 3;
   int imbalance[9][9];
   int np_table[9];
   int rp_table[9];

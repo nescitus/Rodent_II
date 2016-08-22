@@ -99,12 +99,11 @@ void InitWeights(void) {
     weights[fc] = 100;
 
   weights[F_TROPISM] = 20;
-  Param.mat_perc = 100;
   Param.pst_perc = pst_default_perc[Param.pst_style];
 
   // weights for asymmetric factors
 
-  dyn_weights[DF_OWN_ATT] = 110;
+  dyn_weights[DF_OWN_ATT] = 110; 
   dyn_weights[DF_OPP_ATT] = 100;
   dyn_weights[DF_OWN_MOB] = 100;
   dyn_weights[DF_OPP_MOB] = 110;
@@ -605,6 +604,8 @@ void cEval::ScoreHanging(POS *p, eData *e, int sd) {
   bbDefended &= ~p->Pawns(op);    // currently we don't evaluate threats against pawns
 
   // hanging pieces (attacked and undefended)
+
+  // TODO: penalty for more than one hanging piece
 
   while (bbHanging) {
     sq = BB.PopFirstBit(&bbHanging);
