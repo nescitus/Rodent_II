@@ -634,6 +634,19 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
     new_depth -= reduction;
   }
 
+  if (use_lmr 
+  && depth >= 2
+  && mv_tried > 3
+  && alpha > -MAX_EVAL && beta < MAX_EVAL
+  && !fl_check 
+  && !InCheck(p)
+  && (fl_mv_type == MV_BADCAPT)
+  && lmr_size[is_pv][depth][mv_tried] > 0
+  && !is_pv) {
+     reduction = 1;
+	 new_depth -= reduction;
+  }
+
   // a place to come back if reduction scores above alpha
 
   re_search:

@@ -419,7 +419,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     bbMob = BB.RookAttacks(OccBb(p), sq);
     cnt = BB.PopCnt(bbMob &~bbExcluded);
-    Add(e, sd, F_MOB, Param.r_mob_mg[cnt], Param.r_mob_eg[cnt]);                // mobility bonus
+    Add(e, sd, F_MOB, Param.r_mob_mg[cnt], Param.r_mob_eg[cnt]);    // mobility bonus
     if (((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbStr8Chk)  // check threat bonus
     && p->cnt[sd][Q]) {
       att += chk_threat[R]; 
