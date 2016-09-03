@@ -521,7 +521,7 @@ static const int empty_qs[64] =
 
 static const int passed_bonus_mg[2][8] = {
   { 0, 12, 12, 30, 50, 80, 130, 0 },
-  { 0, 120, 80, 50, 30, 12, 12, 0 }
+  { 0, 130, 80, 50, 30, 12, 12, 0 }
 };
 
 static const int passed_bonus_eg[2][8] = {

@@ -701,6 +701,7 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
 
   ksq = KingSq(p, WC);
   if (p->side == WC) tempo = 1; else tempo = 0;
+  bbPieces = p->Pawns(BC);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
     if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
