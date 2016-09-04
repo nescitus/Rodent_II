@@ -605,8 +605,6 @@ void cEval::ScoreHanging(POS *p, eData *e, int sd) {
 
   // hanging pieces (attacked and undefended)
 
-  // TODO: penalty for more than one hanging piece
-
   while (bbHanging) {
     sq = BB.PopFirstBit(&bbHanging);
     pc = TpOnSq(p, sq);
@@ -717,11 +715,10 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
     }
   }
 
-  // current function is too stupid to evaluate pawn races properly,
-  // so we add a bonus only if only one side has an unstoppable passer.
+  // TODO: use in case of two unstoppable passers
 
-  if (w_dist < b_dist && b_dist == 8) Add(e, WC, F_PASSERS, 0, 500);
-  if (b_dist < w_dist && w_dist == 8) Add(e, BC, F_PASSERS, 0, 500);
+  if (w_dist < b_dist-1) Add(e, WC, F_PASSERS, 0, 500);
+  if (b_dist < w_dist-1) Add(e, BC, F_PASSERS, 0, 500);
 }
 
 int cEval::Return(POS *p, eData * e, int use_hash) {
