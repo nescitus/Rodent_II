@@ -671,51 +671,48 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
   int b_dist = 8;
   int sq, ksq, psq, tempo, prom_dist;
 
-  // Function loses Elo if it is used in endgames with pieces.
-  // Is it a speed issue or a problem with logic?
-
-  if (!p->PawnEndgame()) return;
-
   // White unstoppable passers
 
-  ksq = KingSq(p, BC);
-  if (p->side == BC) tempo = 1; else tempo = 0;
-  bbPieces = p->Pawns(WC);
-  while (bbPieces) {
-    sq = BB.PopFirstBit(&bbPieces);
-    if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
-      bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
-      psq = ((WC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, Param.chebyshev_dist[sq] [psq]);
+  if (p->cnt[BC][N] + p->cnt[BC][B] + p->cnt[BC][R] + p->cnt[BC][Q] == 0) {
+	  ksq = KingSq(p, BC);
+	  if (p->side == BC) tempo = 1; else tempo = 0;
+	  bbPieces = p->Pawns(WC);
+	  while (bbPieces) {
+		  sq = BB.PopFirstBit(&bbPieces);
+		  if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
+			  bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
+			  psq = ((WC - 1) & 56) + (sq & 7);
+			  prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
 
-      if ( prom_dist < (Param.chebyshev_dist[ksq] [psq] - tempo)) {
-        if (bbSpan & p->Kings(WC)) prom_dist++;
-        w_dist = Min(w_dist, prom_dist);
-      }
-    }
+			  if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
+				  if (bbSpan & p->Kings(WC)) prom_dist++;
+				  w_dist = Min(w_dist, prom_dist);
+			  }
+		  }
+	  }
   }
 
   // Black unstoppable passers
 
-  ksq = KingSq(p, WC);
-  if (p->side == WC) tempo = 1; else tempo = 0;
-  bbPieces = p->Pawns(BC);
-  while (bbPieces) {
-    sq = BB.PopFirstBit(&bbPieces);
-    if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
-      bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
-      if (bbSpan & p->Kings(WC)) tempo -= 1;
-      psq = ((BC - 1) & 56) + (sq & 7);
-      prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
+  if (p->cnt[WC][N] + p->cnt[WC][B] + p->cnt[WC][R] + p->cnt[WC][Q] == 0) {
+	  ksq = KingSq(p, WC);
+	  if (p->side == WC) tempo = 1; else tempo = 0;
+	  bbPieces = p->Pawns(BC);
+	  while (bbPieces) {
+		  sq = BB.PopFirstBit(&bbPieces);
+		  if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
+			  bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
+			  if (bbSpan & p->Kings(WC)) tempo -= 1;
+			  psq = ((BC - 1) & 56) + (sq & 7);
+			  prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
 
-      if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
-        if (bbSpan & p->Kings(BC)) prom_dist++;
-        b_dist = Min(b_dist, prom_dist);
-      }
-    }
+			  if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
+				  if (bbSpan & p->Kings(BC)) prom_dist++;
+				  b_dist = Min(b_dist, prom_dist);
+			  }
+		  }
+	  }
   }
-
-  // TODO: use in case of two unstoppable passers
 
   if (w_dist < b_dist-1) Add(e, WC, F_PASSERS, 0, 500);
   if (b_dist < w_dist-1) Add(e, BC, F_PASSERS, 0, 500);
