@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // bench: 894.996
-// bench 12: 7.965.322
-// bench 15: 33.640.527 32.2 2.500
+// bench 12: 7.355.711
+// bench 15: 33.640.503 33.8 2.307
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
 // 5994 lines of code
 // 0.9.50: 56,3% vs 0.9.33

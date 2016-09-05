@@ -47,9 +47,9 @@ void cMask::Init(void) {
   // Init adjacent mask for isolated pawns detection
 
   for (int f = 0; f < 8; f++) {
-	  adjacent[f] = 0ULL;
-	  if (f > 0) adjacent[f] |= FILE_A_BB << (f - 1);
-	  if (f < 7) adjacent[f] |= FILE_A_BB << (f + 1);
+    adjacent[f] = 0ULL;
+    if (f > 0) adjacent[f] |= FILE_A_BB << (f - 1);
+    if (f < 7) adjacent[f] |= FILE_A_BB << (f + 1);
   }
 
   // Init supported mask for weak pawns detection
@@ -143,13 +143,13 @@ void cParam::DynamicInit(void) {
       mg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightMg[pst_style][sq], pst_perc);
       eg_pst[sd][N][REL_SQ(sq, sd)] = SCALE(pc_value[N], mat_perc) + SCALE(pstKnightEg[pst_style][sq], pst_perc);
       mg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopMg[pst_style][sq], pst_perc);
-	  eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[pst_style][sq], pst_perc);
-	  mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[pst_style][sq], pst_perc);
-	  eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[pst_style][sq], pst_perc);
-	  mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[pst_style][sq], pst_perc);
-	  eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[pst_style][sq], pst_perc);
-	  mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[pst_style][sq];
-	  eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[pst_style][sq];
+      eg_pst[sd][B][REL_SQ(sq, sd)] = SCALE(pc_value[B], mat_perc) + SCALE(pstBishopEg[pst_style][sq], pst_perc);
+      mg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookMg[pst_style][sq], pst_perc);
+      eg_pst[sd][R][REL_SQ(sq, sd)] = SCALE(pc_value[R], mat_perc) + SCALE(pstRookEg[pst_style][sq], pst_perc);
+      mg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenMg[pst_style][sq], pst_perc);
+      eg_pst[sd][Q][REL_SQ(sq, sd)] = SCALE(pc_value[Q], mat_perc) + SCALE(pstQueenEg[pst_style][sq], pst_perc);
+      mg_pst[sd][K][REL_SQ(sq, sd)] = pstKingMg[pst_style][sq];
+      eg_pst[sd][K][REL_SQ(sq, sd)] = pstKingEg[pst_style][sq];
 
       phalanx[sd][REL_SQ(sq, sd)] = pstPhalanxPawn[sq];
       defended[sd][REL_SQ(sq, sd)] = pstDefendedPawn[sq];
@@ -163,14 +163,14 @@ void cParam::DynamicInit(void) {
   // according to the number of own pawns
 
   for (int i = 0; i < 9; i++) {
-	  np_table[i] = adj[i] * np_bonus;
-	  rp_table[i] = adj[i] * rp_malus;
+    np_table[i] = adj[i] * np_bonus;
+    rp_table[i] = adj[i] * rp_malus;
   }
 
   // Init backward pawns table, adding file offset to base value
 
   for (int i = 0; i < 8; i++) {
-	  backward_malus_mg[i] = backward_malus_base + file_adj[i];
+    backward_malus_mg[i] = backward_malus_base + file_adj[i];
   }
 
   // Init imbalance table, so that we can expose option for exchange delta
@@ -181,9 +181,9 @@ void cParam::DynamicInit(void) {
       // insert original values
       imbalance[i][j] = imbalance_data[i][j];
 
-	  // insert value defined by the user
-	  if (imbalance[i][j] == Ex) imbalance[i][j] = exchange_imbalance;
-	  if (imbalance[i][j] == -Ex) imbalance[i][j] = -exchange_imbalance;
+      // insert value defined by the user
+      if (imbalance[i][j] == Ex) imbalance[i][j] = exchange_imbalance;
+      if (imbalance[i][j] == -Ex) imbalance[i][j] = -exchange_imbalance;
     }
   }
 
@@ -192,22 +192,22 @@ void cParam::DynamicInit(void) {
   if (mob_style == 0) {
     for (int i = 0; i < 9; i++) {
       n_mob_mg[i] = n_mob_mg_linear[i];
-	  n_mob_eg[i] = n_mob_eg_linear[i];
+      n_mob_eg[i] = n_mob_eg_linear[i];
     }
 
     for (int i = 0; i < 14; i++) {
       b_mob_mg[i] = b_mob_mg_linear[i];
-	  b_mob_eg[i] = b_mob_eg_linear[i];
+      b_mob_eg[i] = b_mob_eg_linear[i];
     }
 
     for (int i = 0; i < 15; i++) {
-	  r_mob_mg[i] = r_mob_mg_linear[i];
-	  r_mob_eg[i] = r_mob_eg_linear[i];
+      r_mob_mg[i] = r_mob_mg_linear[i];
+      r_mob_eg[i] = r_mob_eg_linear[i];
     }
 
     for (int i = 0; i < 28; i++) {
       q_mob_mg[i] = q_mob_mg_linear[i];
-	  q_mob_eg[i] = q_mob_eg_linear[i];
+      q_mob_eg[i] = q_mob_eg_linear[i];
     }
 
   }
@@ -215,22 +215,22 @@ void cParam::DynamicInit(void) {
   if (mob_style == 1) {
     for (int i = 0; i < 9; i++) {
       n_mob_mg[i] = n_mob_mg_decreasing[i];
-	  n_mob_eg[i] = n_mob_eg_decreasing[i];
+      n_mob_eg[i] = n_mob_eg_decreasing[i];
     }
 
     for (int i = 0; i < 14; i++) {
       b_mob_mg[i] = b_mob_mg_decreasing[i];
-	  b_mob_eg[i] = b_mob_eg_decreasing[i];
+      b_mob_eg[i] = b_mob_eg_decreasing[i];
     }
 
     for (int i = 0; i < 15; i++) {
-	  r_mob_mg[i] = r_mob_mg_decreasing[i];
-	  r_mob_eg[i] = r_mob_eg_decreasing[i];
+      r_mob_mg[i] = r_mob_mg_decreasing[i];
+      r_mob_eg[i] = r_mob_eg_decreasing[i];
     }
 
     for (int i = 0; i < 28; i++) {
       q_mob_mg[i] = q_mob_mg_decreasing[i];
-	  q_mob_eg[i] = q_mob_eg_decreasing[i];
+      q_mob_eg[i] = q_mob_eg_decreasing[i];
     }
 
   }
@@ -246,25 +246,25 @@ void cParam::DynamicInit(void) {
 
 void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 
-	int op = Opp(sd);
+  int op = Opp(sd);
 
-	// Piece configurations
+  // Piece configurations
 
-	int tmp = Param.np_table[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
-		    - Param.rp_table[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
+  int tmp = Param.np_table[p->cnt[sd][P]] * p->cnt[sd][N]   // knights lose value as pawns disappear
+          - Param.rp_table[p->cnt[sd][P]] * p->cnt[sd][R];  // rooks gain value as pawns disappear
 
-	if (p->cnt[sd][N] > 1) tmp += Param.knight_pair;
-	if (p->cnt[sd][R] > 1) tmp += Param.rook_pair_malus;
+  if (p->cnt[sd][N] > 1) tmp += Param.knight_pair;
+  if (p->cnt[sd][R] > 1) tmp += Param.rook_pair_malus;
 
-	if (p->cnt[sd][B] > 1)                                    // Bishop pair
-		Add(e, sd, F_OTHERS, SCALE(Param.bish_pair, Param.mat_perc), SCALE((Param.bish_pair+10), Param.mat_perc));
+  if (p->cnt[sd][B] > 1)                                    // Bishop pair
+    Add(e, sd, F_OTHERS, SCALE(Param.bish_pair, Param.mat_perc), SCALE((Param.bish_pair+10), Param.mat_perc));
 
-	// "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
+  // "elephantiasis correction" for queen, idea by H.G.Mueller (nb. rookVsQueen doesn't help)
 
-	if (p->cnt[sd][Q])
-		tmp -= Param.minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
+  if (p->cnt[sd][Q])
+    tmp -= Param.minorVsQueen * (p->cnt[op][N] + p->cnt[op][B]);
 
-	Add(e, sd, F_OTHERS, SCALE(tmp, Param.mat_perc));
+  Add(e, sd, F_OTHERS, SCALE(tmp, Param.mat_perc));
 }
 
 void cEval::ScorePieces(POS *p, eData *e, int sd) {
@@ -303,7 +303,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(e, sd, F_PST, Param.mg_pst[sd][N][sq], Param.eg_pst[sd][N][sq]);
+    Add(e, sd, F_PST, Param.mg_pst[sd][N][sq], Param.eg_pst[sd][N][sq]);
 #endif
 
     // Knight tropism to enemy king
@@ -325,7 +325,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     // Knight attacks on enemy king zone
 
-	bbAtt = BB.KnightAttacks(sq);
+    bbAtt = BB.KnightAttacks(sq);
     if (bbAtt & bbZone) {
       wood++;
       att += king_att[N] * BB.PopCnt(bbAtt & bbZone);
@@ -333,7 +333,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     // Knight outpost
 
-	ScoreOutpost(p, e, sd, N, sq);
+    ScoreOutpost(p, e, sd, N, sq);
 
   } // end of knight eval
 
@@ -344,7 +344,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(e, sd, F_PST, Param.mg_pst[sd][B][sq], Param.eg_pst[sd][B][sq]);
+  Add(e, sd, F_PST, Param.mg_pst[sd][B][sq], Param.eg_pst[sd][B][sq]);
 #endif
 
   // Bishop tropism to enemy king
@@ -380,12 +380,12 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     ScoreOutpost(p, e, sd, B, sq);
 
-	// Bishops side by side
+    // Bishops side by side
 
-	if (ShiftNorth(SqBb(sq)) & p->Bishops(sd) )
-	   Add(e, sd, F_OTHERS, 4);
-	if (ShiftEast(SqBb(sq)) & p->Bishops(sd))
-		Add(e, sd, F_OTHERS, 4);
+    if (ShiftNorth(SqBb(sq)) & p->Bishops(sd) )
+      Add(e, sd, F_OTHERS, 4);
+    if (ShiftEast(SqBb(sq)) & p->Bishops(sd))
+      Add(e, sd, F_OTHERS, 4);
 
     // Pawns on the same square color as our bishop
   
@@ -408,7 +408,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(e, sd, F_PST, Param.mg_pst[sd][R][sq], Param.eg_pst[sd][R][sq]);
+  Add(e, sd, F_PST, Param.mg_pst[sd][R][sq], Param.eg_pst[sd][R][sq]);
 #endif
 
     // Rook tropism to enemy king
@@ -461,16 +461,16 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     if (!(bbFile & p->Pawns(sd))) {
       if (!(bbFile & p->Pawns(op))) {
-		  Add(e, sd, F_LINES, Param.rookOnOpenMg, Param.rookOnOpenEg);
-		  //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(e, sd, F_LINES, 4, 2); // equal
+        Add(e, sd, F_LINES, Param.rookOnOpenMg, Param.rookOnOpenEg);
+        //if (BB.GetFrontSpan(SqBb(sq), sd) & p->Rooks(sd)) Add(e, sd, F_LINES, 4, 2); // equal
       }
       else {
-		// score differs depending on whether half-open file is blocked by defended enemy pawn
+        // score differs depending on whether half-open file is blocked by defended enemy pawn
         if ((bbFile & p->Pawns(op)) & e->bbPawnTakes[op])
           Add(e, sd, F_LINES, Param.rookOnBadHalfOpenMg, Param.rookOnBadHalfOpenEg);
         else {
           Add(e, sd, F_LINES, Param.rookOnGoodHalfOpenMg, Param.rookOnGoodHalfOpenEg);
-		}
+        }
       }
     }
 
@@ -497,7 +497,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     Add(e, sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
 #ifdef LEAF_PST
-	Add(e, sd, F_PST, Param.mg_pst[sd][Q][sq], Param.eg_pst[sd][Q][sq]);
+    Add(e, sd, F_PST, Param.mg_pst[sd][Q][sq], Param.eg_pst[sd][Q][sq]);
 #endif
 
     // Queen mobility
@@ -516,7 +516,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
       int contactSq = BB.PopFirstBit(&bbContact);
 
         // queen exchanges are accepted as contact checks
-	
+
         if (Swap(p, sq, contactSq) >= 0) {
           att += q_contact_check;
           break;
@@ -634,7 +634,7 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
     sq = BB.PopFirstBit(&bbPieces);
 
 #ifdef LEAF_PST
-	Add(e, sd, F_PST, Param.mg_pst[sd][P][sq], Param.eg_pst[sd][P][sq]);
+    Add(e, sd, F_PST, Param.mg_pst[sd][P][sq], Param.eg_pst[sd][P][sq]);
 #endif
 
     // Passed pawn
@@ -644,7 +644,7 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
       bbStop = BB.ShiftFwd(SqBb(sq), sd);
       mg_tmp = passed_bonus_mg[sd][Rank(sq)];
       eg_tmp = passed_bonus_eg[sd][Rank(sq)] 
-		     - ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[op]]) / 30);
+             - ((passed_bonus_eg[sd][Rank(sq)] * Param.dist[sq][p->king_sq[op]]) / 30);
 
       mul = 100;
 
@@ -656,9 +656,9 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
     
       else if ( (bbStop & e->bbAllAttacks[sd]) 
       &&   (bbStop & ~e->bbAllAttacks[op]) ) mul += 10;
-		  
-	  // add final score
-	  
+  
+      // add final score
+  
       Add(e, sd, F_PASSERS, (mg_tmp * mul) / 100, (eg_tmp * mul) / 100);
     }
   }
@@ -674,44 +674,44 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
   // White unstoppable passers
 
   if (p->cnt[BC][N] + p->cnt[BC][B] + p->cnt[BC][R] + p->cnt[BC][Q] == 0) {
-	  ksq = KingSq(p, BC);
-	  if (p->side == BC) tempo = 1; else tempo = 0;
-	  bbPieces = p->Pawns(WC);
-	  while (bbPieces) {
-		  sq = BB.PopFirstBit(&bbPieces);
-		  if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
-			  bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
-			  psq = ((WC - 1) & 56) + (sq & 7);
-			  prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
+    ksq = KingSq(p, BC);
+    if (p->side == BC) tempo = 1; else tempo = 0;
+    bbPieces = p->Pawns(WC);
+    while (bbPieces) {
+      sq = BB.PopFirstBit(&bbPieces);
+      if (!(Mask.passed[WC][sq] & p->Pawns(BC))) {
+        bbSpan = BB.GetFrontSpan(SqBb(sq), WC);
+        psq = ((WC - 1) & 56) + (sq & 7);
+        prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
 
-			  if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
-				  if (bbSpan & p->Kings(WC)) prom_dist++;
-				  w_dist = Min(w_dist, prom_dist);
-			  }
-		  }
-	  }
+        if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
+          if (bbSpan & p->Kings(WC)) prom_dist++;
+          w_dist = Min(w_dist, prom_dist);
+        }
+      }
+    }
   }
 
   // Black unstoppable passers
 
   if (p->cnt[WC][N] + p->cnt[WC][B] + p->cnt[WC][R] + p->cnt[WC][Q] == 0) {
-	  ksq = KingSq(p, WC);
-	  if (p->side == WC) tempo = 1; else tempo = 0;
-	  bbPieces = p->Pawns(BC);
-	  while (bbPieces) {
-		  sq = BB.PopFirstBit(&bbPieces);
-		  if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
-			  bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
-			  if (bbSpan & p->Kings(WC)) tempo -= 1;
-			  psq = ((BC - 1) & 56) + (sq & 7);
-			  prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
+    ksq = KingSq(p, WC);
+    if (p->side == WC) tempo = 1; else tempo = 0;
+    bbPieces = p->Pawns(BC);
+    while (bbPieces) {
+      sq = BB.PopFirstBit(&bbPieces);
+      if (!(Mask.passed[BC][sq] & p->Pawns(WC))) {
+        bbSpan = BB.GetFrontSpan(SqBb(sq), BC);
+        if (bbSpan & p->Kings(WC)) tempo -= 1;
+        psq = ((BC - 1) & 56) + (sq & 7);
+        prom_dist = Min(5, Param.chebyshev_dist[sq][psq]);
 
-			  if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
-				  if (bbSpan & p->Kings(BC)) prom_dist++;
-				  b_dist = Min(b_dist, prom_dist);
-			  }
-		  }
-	  }
+        if (prom_dist < (Param.chebyshev_dist[ksq][psq] - tempo)) {
+          if (bbSpan & p->Kings(BC)) prom_dist++;
+          b_dist = Min(b_dist, prom_dist);
+        }
+      }
+    }
   }
 
   if (w_dist < b_dist-1) Add(e, WC, F_PASSERS, 0, 500);

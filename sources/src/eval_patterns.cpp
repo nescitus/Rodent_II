@@ -173,10 +173,10 @@ void cEval::ScorePatterns(POS * p, eData *e) {
   // castling rights
 
   if (IsOnSq(p, WC, K, E1)) {
-	  if ((p->castle_flags & W_KS) || (p->castle_flags & W_QS)) Add(e, WC, F_OTHERS, 10, 0);
+    if ((p->castle_flags & W_KS) || (p->castle_flags & W_QS)) Add(e, WC, F_OTHERS, 10, 0);
   }
 
   if (IsOnSq(p, BC, K, E8)) {
-	  if ((p->castle_flags & B_KS) || (p->castle_flags & B_QS)) Add(e, BC, F_OTHERS, 10, 0);
+    if ((p->castle_flags & B_KS) || (p->castle_flags & B_QS)) Add(e, BC, F_OTHERS, 10, 0);
   }
 }
