@@ -191,23 +191,23 @@ void cParam::DynamicInit(void) {
 
   if (mob_style == 0) {
     for (int i = 0; i < 9; i++) {
-      n_mob_mg[i] = n_mob_mg_linear[i];
-      n_mob_eg[i] = n_mob_eg_linear[i];
+      n_mob_mg[i] = 4 * (i - 4);
+      n_mob_eg[i] = 4 * (i - 4);
     }
 
     for (int i = 0; i < 14; i++) {
-      b_mob_mg[i] = b_mob_mg_linear[i];
-      b_mob_eg[i] = b_mob_eg_linear[i];
+      b_mob_mg[i] = 5 * (i - 7);
+      b_mob_eg[i] = 5 * (i - 7);
     }
 
     for (int i = 0; i < 15; i++) {
-      r_mob_mg[i] = r_mob_mg_linear[i];
-      r_mob_eg[i] = r_mob_eg_linear[i];
+      r_mob_mg[i] = 2 * (i - 7);
+      r_mob_eg[i] = 4 * (i - 7);
     }
 
     for (int i = 0; i < 28; i++) {
-      q_mob_mg[i] = q_mob_mg_linear[i];
-      q_mob_eg[i] = q_mob_eg_linear[i];
+      q_mob_mg[i] = 1 * (i - 14);
+      q_mob_eg[i] = 2 * (i - 14);
     }
 
   }
@@ -269,7 +269,7 @@ void cEval::ScoreMaterial(POS * p, eData *e, int sd) {
 
 void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
-  U64 bbPieces, bbMob, bbAtt, bbFile, bbContact;
+  U64 bbPieces, bbMob, bbSafe, bbAtt, bbFile, bbContact;
   int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
   int own_pawn_cnt, opp_pawn_cnt;
   int r_on_7th = 0;
@@ -312,13 +312,13 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     
     // Knight mobility
 
-    bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky, 
-    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op]);   // better to have it mobile than defending stuff
+    bbMob = BB.KnightAttacks(sq) & ~p->cl_bb[sd];  // knight is tricky,
+	bbSafe = bbMob &~e->bbPawnTakes[op];           // better to have it mobile than defending own stuff
+    cnt = BB.PopCnt(bbSafe);   
     
     Add(e, sd, F_MOB, Param.n_mob_mg[cnt], Param.n_mob_eg[cnt]);  // mobility bonus
 
-    if ((bbMob &~e->bbPawnTakes[op]) & bbKnightChk) 
-       att += chk_threat[N];                          // check threat bonus
+    if (bbSafe & bbKnightChk) att += chk_threat[N];               // check threat bonus
 
     e->bbAllAttacks[sd] |= bbMob;
     e->bbEvAttacks[sd]  |= bbMob;
@@ -354,16 +354,16 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Bishop mobility
 
     bbMob = BB.BishAttacks(OccBb(p), sq);
+	bbSafe = bbMob &~e->bbPawnTakes[op];
 
     if (!(bbMob & bbAwayZone[sd]))               // penalty for bishops unable to reach enemy half of the board
        Add(e, sd, F_MOB, Param.bishConfined);    // (idea from Andscacs)
 
-    cnt = BB.PopCnt(bbMob &~e->bbPawnTakes[op] &~bbExcluded);
+    cnt = BB.PopCnt(bbSafe &~bbExcluded);
     
     Add(e, sd, F_MOB, Param.b_mob_mg[cnt], Param.b_mob_eg[cnt]);   // mobility bonus
 
-    if ((bbMob &~e->bbPawnTakes[op]) & bbDiagChk) 
-      att += chk_threat[B];                            // check threat bonus
+    if (bbSafe & bbDiagChk & ~p->cl_bb[sd]) att += chk_threat[B];  // check threat bonus
 
     e->bbAllAttacks[sd] |= bbMob;
     e->bbEvAttacks[sd]  |= bbMob;
