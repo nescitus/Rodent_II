@@ -554,7 +554,7 @@ struct sPawnHashEntry {
 extern sEvalHashEntry EvalTT[EVAL_HASH_SIZE];
 extern sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
-// mobility parameters [130]
+// mobility parameters 
 
 static const int n_mob_mg_decreasing[9] =  { -16,  -8,  -4,  +0,  +4,  +8, +11, +13, +14 };
 static const int n_mob_eg_decreasing[9] =  { -14,  -7,  -3,  +0,  +3,  +6,  +8,  +9, +10 };
