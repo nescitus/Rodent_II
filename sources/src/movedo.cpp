@@ -67,32 +67,27 @@ void POS::DoMove(int move, UNDO *u) {
   hash_key ^= zob_piece[Pc(sd, ftp)][fsq] ^ zob_piece[Pc(sd, ftp)][tsq];
   cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
   tp_bb[ftp] ^= SqBb(fsq) | SqBb(tsq);
-#ifndef LEAF_PST
   mg_sc[sd] += Param.mg_pst[sd][ftp][tsq] - Param.mg_pst[sd][ftp][fsq];
   eg_sc[sd] += Param.eg_pst[sd][ftp][tsq] - Param.eg_pst[sd][ftp][fsq];
-#endif
 
   // Update king location
 
-  if (ftp == K)
-    king_sq[sd] = tsq;
+  if (ftp == K) king_sq[sd] = tsq;
 
   // Capture enemy piece
 
   if (ttp != NO_TP) {
     hash_key ^= zob_piece[Pc(op, ttp)][tsq];
 
-  if (ttp == P)
-    pawn_key ^= zob_piece[Pc(op, ttp)][tsq];
+    if (ttp == P)
+      pawn_key ^= zob_piece[Pc(op, ttp)][tsq];
 
-  cl_bb[op] ^= SqBb(tsq);
-  tp_bb[ttp] ^= SqBb(tsq);
-  phase -= phase_value[ttp];
-#ifndef LEAF_PST
-  mg_sc[op] -= Param.mg_pst[op][ttp][tsq];
-  eg_sc[op] -= Param.eg_pst[op][ttp][tsq];
-#endif
-  cnt[op][ttp]--;
+    cl_bb[op] ^= SqBb(tsq);
+    tp_bb[ttp] ^= SqBb(tsq);
+    phase -= phase_value[ttp];
+    mg_sc[op] -= Param.mg_pst[op][ttp][tsq];
+    eg_sc[op] -= Param.eg_pst[op][ttp][tsq];
+    cnt[op][ttp]--;
   }
 
   switch (MoveType(move)) {
@@ -116,10 +111,8 @@ void POS::DoMove(int move, UNDO *u) {
     hash_key ^= zob_piece[Pc(sd, R)][fsq] ^ zob_piece[Pc(sd, R)][tsq];
     cl_bb[sd] ^= SqBb(fsq) | SqBb(tsq);
     tp_bb[R]  ^= SqBb(fsq) | SqBb(tsq);
-#ifndef LEAF_PST
     mg_sc[sd] += Param.mg_pst[sd][R][tsq] - Param.mg_pst[sd][R][fsq];
     eg_sc[sd] += Param.eg_pst[sd][R][tsq] - Param.eg_pst[sd][R][fsq];
-#endif
     break;
 
   case EP_CAP:
@@ -130,10 +123,8 @@ void POS::DoMove(int move, UNDO *u) {
     cl_bb[op] ^= SqBb(tsq);
     tp_bb[P] ^= SqBb(tsq);
     phase -= phase_value[P];
-#ifndef LEAF_PST
     mg_sc[op] -= Param.mg_pst[op][P][tsq];
     eg_sc[op] -= Param.eg_pst[op][P][tsq];
-#endif
     cnt[op][P]--;
     break;
 
@@ -153,10 +144,8 @@ void POS::DoMove(int move, UNDO *u) {
     tp_bb[P] ^= SqBb(tsq);
     tp_bb[ftp] ^= SqBb(tsq);
     phase += phase_value[ftp] - phase_value[P];
-#ifndef LEAF_PST
     mg_sc[sd] += Param.mg_pst[sd][ftp][tsq] - Param.mg_pst[sd][P][tsq];
     eg_sc[sd] += Param.eg_pst[sd][ftp][tsq] - Param.eg_pst[sd][P][tsq];
-#endif
     cnt[sd][P]--;
     cnt[sd][ftp]++;
     break;

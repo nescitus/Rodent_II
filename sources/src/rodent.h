@@ -17,18 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// bench: 894.996
-// bench 12: 7.355.711
-// bench 15: 33.640.503  33.8  2.527
+// bench: 894.995
+// bench 12: 8.520.838
+// bench 15: 39.561.531  40.4  2.268
 // REGEX to count all the lines under MSVC 13: ^(?([^\r\n])\s)*[^\s+?/]+[^\n]*$
-// 6134 lines of code
+// 6087 lines of code
 // 0.9.50: 56,3% vs 0.9.33
-// 0.9.50: 50.0% vs 0.9.50
 
 #pragma once
 #define PROG_NAME "Rodent II 0.9.63"
-
-//#define LEAF_PST
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -287,10 +284,8 @@ public:
   U64 tp_bb[6];
   int pc[64];
   int king_sq[2];
-#ifndef LEAF_PST
   int mg_sc[2];
   int eg_sc[2];
-#endif
   int cnt[2][6];
   int phase;
   int side;

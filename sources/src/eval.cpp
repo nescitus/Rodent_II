@@ -302,10 +302,6 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
 
-#ifdef LEAF_PST
-    Add(e, sd, F_PST, Param.mg_pst[sd][N][sq], Param.eg_pst[sd][N][sq]);
-#endif
-
     // Knight tropism to enemy king
 
     Add(e, sd, F_TROPISM, tropism_mg[N] * Param.dist[sq][ksq], tropism_eg[N] * Param.dist[sq][ksq]);
@@ -343,10 +339,6 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
 
-#ifdef LEAF_PST
-  Add(e, sd, F_PST, Param.mg_pst[sd][B][sq], Param.eg_pst[sd][B][sq]);
-#endif
-
   // Bishop tropism to enemy king
 
   Add(e, sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
@@ -362,7 +354,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     
     Add(e, sd, F_MOB, Param.b_mob_mg[cnt], Param.b_mob_eg[cnt]);   // mobility bonus
 
-    if ((bbMob &~e->bbPawnTakes[op]) & bbDiagChk) 
+    if ((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbDiagChk)
       att += chk_threat[B];                            // check threat bonus
 
     e->bbAllAttacks[sd] |= bbMob;
@@ -406,10 +398,6 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   bbPieces = p->Rooks(sd);
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
-
-#ifdef LEAF_PST
-  Add(e, sd, F_PST, Param.mg_pst[sd][R][sq], Param.eg_pst[sd][R][sq]);
-#endif
 
     // Rook tropism to enemy king
 
@@ -496,10 +484,6 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     Add(e, sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
-#ifdef LEAF_PST
-    Add(e, sd, F_PST, Param.mg_pst[sd][Q][sq], Param.eg_pst[sd][Q][sq]);
-#endif
-
     // Queen mobility
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
@@ -545,10 +529,6 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     }
 
   } // end of queen eval
-
-#ifdef LEAF_PST
-  Add(e, sd, F_PST, Param.mg_pst[sd][K][KingSq(p,sd)], Param.eg_pst[sd][K][KingSq(p,sd)]);
-#endif
 
   // Score terms using information gathered during piece eval
 
@@ -632,10 +612,6 @@ void cEval::ScorePassers(POS * p, eData *e, int sd)
 
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
-
-#ifdef LEAF_PST
-    Add(e, sd, F_PST, Param.mg_pst[sd][P][sq], Param.eg_pst[sd][P][sq]);
-#endif
 
     // Passed pawn
 
@@ -746,12 +722,10 @@ int cEval::Return(POS *p, eData * e, int use_hash) {
 
   // Init eval with incrementally updated stuff
 
-#ifndef LEAF_PST
   e->mg[WC][F_PST] = p->mg_sc[WC];
   e->mg[BC][F_PST] = p->mg_sc[BC];
   e->eg[WC][F_PST] = p->eg_sc[WC];
   e->eg[BC][F_PST] = p->eg_sc[BC];
-#endif
 
   // Calculate variables used during evaluation
 
