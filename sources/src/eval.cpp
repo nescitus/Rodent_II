@@ -123,6 +123,72 @@ void cParam::Default(void) {
       chebyshev_dist[sq1][sq2] = Max(r_delta, f_delta);
     }
   }
+
+ // Init parameter values
+
+  elo = 2850;
+  fl_weakening = 0;
+  pc_value[P] = 100;
+  pc_value[N] = 325;
+  pc_value[B] = 335;
+  pc_value[R] = 500;
+  pc_value[Q] = 1000;
+  pc_value[K] = 0;
+  pc_value[NO_PC] = 0;
+  keep_pc[P] = 0;
+  keep_pc[N] = 0;
+  keep_pc[B] = 0;
+  keep_pc[R] = 0;
+  keep_pc[Q] = 0;
+  keep_pc[K] = 0;
+  keep_pc[NO_PC] = 0;
+  pst_style = 0;
+  mob_style = 0;
+  mat_perc = 100;
+  pst_perc = 80;
+  shield_perc = 120;
+  storm_perc = 100;
+  bish_pair = 50;
+  knight_pair = -10;
+  exchange_imbalance = 25;
+  np_bonus = 6;
+  rp_malus = 3;
+  rook_pair_malus = -5;
+  doubled_malus_mg = -12;
+  doubled_malus_eg = -24;
+  isolated_malus_mg = -10;
+  isolated_malus_eg = -20;
+  isolated_open_malus = -10;
+  backward_malus_base = -8;
+  backward_malus_mg[FILE_A] = -5;
+  backward_malus_mg[FILE_B] = -7;
+  backward_malus_mg[FILE_C] = -9;
+  backward_malus_mg[FILE_D] = -11;
+  backward_malus_mg[FILE_E] = -11;
+  backward_malus_mg[FILE_F] = -9;
+  backward_malus_mg[FILE_G] = -7;
+  backward_malus_mg[FILE_H] = -5;
+  backward_malus_eg = -8;
+  backward_open_malus = -8;
+  minorBehindPawn = 5;
+  minorVsQueen = 5;
+  bishConfined = -5;
+  rookOn7thMg = 16;
+  rookOn7thEg = 32;
+  twoRooksOn7thMg = 8;
+  twoRooksOn7thEg = 16;
+  rookOnQueen = 5;
+  rookOnOpenMg = 14;
+  rookOnOpenEg = 10;
+  rookOnBadHalfOpenMg = 6;
+  rookOnBadHalfOpenEg = 4;
+  rookOnGoodHalfOpenMg = 8;
+  rookOnGoodHalfOpenEg = 6;
+  queenOn7thMg = 4;
+  queenOn7thEg = 8;
+  draw_score = 0;
+  book_filter = 20;
+  eval_blur = 0;
 }
 
 // @DynamicInit() - here we initialize stuff that might be changed 

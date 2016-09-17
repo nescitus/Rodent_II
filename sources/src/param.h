@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef class {
 public:
-  int elo = 2850;
-  int fl_weakening = 0;
-  int pc_value[7] = { 100, 325, 335, 500, 1000, 0, 0 }; // these values might be changed via UCI options
-  int keep_pc[7] =  {   0,   0,   0,   0,   0,  0, 0 };
+  int elo;
+  int fl_weakening;
+  int pc_value[7];            // these values might be changed via UCI options
+  int keep_pc[7];
   int mg_pst[2][6][64];       // midgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
   int eg_pst[2][6][64];       // endgame piece-square tables (initialized depending on pst_style, pst_perc and mat_perc)
   int sp_pst_data[2][6][64];  // special piece/square tables (outposts etc.)
@@ -32,49 +32,49 @@ public:
   int chebyshev_dist[64][64]; // table for unstoppable passer detection
   int phalanx[2][64];
   int defended[2][64];
-  int pst_style = 0;
-  int mob_style = 0;
-  int mat_perc = 100;
-  int pst_perc = 80;
-  int shield_perc = 120;
-  int storm_perc  = 100;
-  int bish_pair = 50;
-  int knight_pair = -10;
-  int exchange_imbalance = 25;
-  int np_bonus = 6;
-  int rp_malus = 3;
-  int rook_pair_malus = -5;
-  int doubled_malus_mg = -12;
-  int doubled_malus_eg = -24;
-  int isolated_malus_mg = -10;
-  int isolated_malus_eg = -20;
-  int isolated_open_malus = -10;
-  int backward_malus_base = -8;
-  int backward_malus_mg[8] = { -5,  -7,  -9, -11, -11,  -9,  -7,  -5 };
-  int backward_malus_eg = -8;
-  int backward_open_malus = -8;
-  int minorBehindPawn = 5;
-  int minorVsQueen = 5;
-  int bishConfined = -5;
-  int rookOn7thMg = 16;
-  int rookOn7thEg = 32;
-  int twoRooksOn7thMg = 8;
-  int twoRooksOn7thEg = 16;
-  int rookOnQueen = 5;
-  int rookOnOpenMg = 14;
-  int rookOnOpenEg = 10;
-  int rookOnBadHalfOpenMg = 6;
-  int rookOnBadHalfOpenEg = 4;
-  int rookOnGoodHalfOpenMg = 8;
-  int rookOnGoodHalfOpenEg = 6;
-  int queenOn7thMg = 4;
-  int queenOn7thEg = 8;
+  int pst_style;
+  int mob_style;
+  int mat_perc;
+  int pst_perc;
+  int shield_perc;
+  int storm_perc;
+  int bish_pair;
+  int knight_pair;
+  int exchange_imbalance;
+  int np_bonus;
+  int rp_malus;
+  int rook_pair_malus;
+  int doubled_malus_mg;
+  int doubled_malus_eg;
+  int isolated_malus_mg;
+  int isolated_malus_eg;
+  int isolated_open_malus;
+  int backward_malus_base;
+  int backward_malus_mg[8];
+  int backward_malus_eg;
+  int backward_open_malus;
+  int minorBehindPawn;
+  int minorVsQueen;
+  int bishConfined;
+  int rookOn7thMg;
+  int rookOn7thEg;
+  int twoRooksOn7thMg;
+  int twoRooksOn7thEg;
+  int rookOnQueen;
+  int rookOnOpenMg;
+  int rookOnOpenEg;
+  int rookOnBadHalfOpenMg;
+  int rookOnBadHalfOpenEg;
+  int rookOnGoodHalfOpenMg;
+  int rookOnGoodHalfOpenEg;
+  int queenOn7thMg;
+  int queenOn7thEg;
   int imbalance[9][9];
   int np_table[9];
   int rp_table[9];
-  int draw_score = 0;
-  int book_filter = 20;
-  int eval_blur = 0;
+  int draw_score;
+  int book_filter;
+  int eval_blur;
   int n_mob_mg[9];
   int n_mob_eg[9];
   int b_mob_mg[14];
