@@ -74,6 +74,7 @@ public:
   int np_table[9];
   int rp_table[9];
   int draw_score;
+  int forwardness;
   int book_filter;
   int eval_blur;
   int n_mob_mg[9];

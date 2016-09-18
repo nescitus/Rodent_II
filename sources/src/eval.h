@@ -611,6 +611,12 @@ static const int r_contact_check = 24; // [16.. <24> ..?]
 static const int tropism_mg[7] = { 0,  3,  2,  2,  2,  0,  0 };
 static const int tropism_eg[7] = { 0,  3,  1,  1,  4,  0,  0 };
 
+// fowrardness from Toga II 3.0
+
+static const int fwd_bonus[16] = {
+	0, 2, 5, 8, 12, 15, 20, 20, 20, 20, 20, 20 ,20, 20, 20, 20,
+};
+
 static const U64 bbQSCastle[2] = { SqBb(A1) | SqBb(B1) | SqBb(C1) | SqBb(A2) | SqBb(B2) | SqBb(C2),
                                    SqBb(A8) | SqBb(B8) | SqBb(C8) | SqBb(A7) | SqBb(B7) | SqBb(C7)
 };

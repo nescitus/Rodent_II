@@ -187,6 +187,7 @@ void cParam::Default(void) {
   queenOn7thMg = 4;
   queenOn7thEg = 8;
   draw_score = 0;
+  forwardness = 0;
   book_filter = 20;
   eval_blur = 0;
 }
@@ -339,6 +340,8 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   int op, sq, cnt, tmp, ksq, att = 0, wood = 0;
   int own_pawn_cnt, opp_pawn_cnt;
   int r_on_7th = 0;
+  int fwd_weight = 0;
+  int fwd_cnt = 0;
 
   // Is color OK?
 
@@ -371,6 +374,13 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Knight tropism to enemy king
 
     Add(e, sd, F_TROPISM, tropism_mg[N] * Param.dist[sq][ksq], tropism_eg[N] * Param.dist[sq][ksq]);
+
+	// Knight forwardness
+
+    if (SqBb(sq) & bbAwayZone[sd]) {
+      fwd_weight += 1;
+      fwd_cnt += 1;
+	}
     
     // Knight mobility
 
@@ -405,9 +415,16 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
   while (bbPieces) {
     sq = BB.PopFirstBit(&bbPieces);
 
-  // Bishop tropism to enemy king
+    // Bishop tropism to enemy king
 
-  Add(e, sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
+    Add(e, sd, F_TROPISM, tropism_mg[B] * Param.dist[sq][ksq], tropism_eg[B] * Param.dist[sq][ksq]);
+
+    // Bishop forwardness
+
+    if (SqBb(sq) & bbAwayZone[sd]) {
+      fwd_weight += 1;
+      fwd_cnt += 1;
+    }
 
     // Bishop mobility
 
@@ -468,6 +485,13 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     // Rook tropism to enemy king
 
     Add(e, sd, F_TROPISM, tropism_mg[R] * Param.dist[sq][ksq], tropism_eg[R] * Param.dist[sq][ksq]);
+
+	// Rook forwardness
+
+	if (SqBb(sq) & bbAwayZone[sd]) {
+      fwd_weight += 2;
+	  fwd_cnt += 1;
+	}
   
     // Rook mobility
 
@@ -550,6 +574,13 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
     Add(e, sd, F_TROPISM, tropism_mg[Q] * Param.dist[sq][ksq], tropism_eg[Q] * Param.dist[sq][ksq]);
 
+	// Queen forwardness
+
+	if (SqBb(sq) & bbAwayZone[sd]) {
+       fwd_weight += 1;
+	   fwd_cnt += 1;
+	}
+
     // Queen mobility
 
     bbMob = BB.QueenAttacks(OccBb(p), sq);
@@ -600,6 +631,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
   if (r_on_7th == 2)          // two rooks on 7th rank
     Add(e, sd, F_LINES, Param.twoRooksOn7thMg, Param.twoRooksOn7thEg);
+  Add(e, sd, (fwd_bonus[fwd_cnt] * fwd_weight * Param.forwardness) / 100, 0);
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 

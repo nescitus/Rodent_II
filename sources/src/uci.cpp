@@ -89,6 +89,7 @@ void UciLoop(void) {
         if (panel_style == 2) {
           printf("option name PawnShield type spin default %d min 0 max 500\n", Param.shield_perc);
           printf("option name PawnStorm type spin default %d min 0 max 500\n", Param.storm_perc);
+		  printf("option name Forwardness type spin default %d min 0 max 500\n", Param.forwardness);
         }
         printf("option name PstStyle type spin default %d min 0 max 2\n", Param.pst_style);
 		printf("option name MobilityStyle type spin default %d min 0 max 1\n", Param.mob_style);
@@ -307,6 +308,9 @@ void ParseSetoption(char *ptr) {
     ResetEngine();
   } else if (strcmp(name, "PawnStorm") == 0         || strcmp(name, "pawnstorm") == 0) {
     Param.storm_perc = atoi(value);
+    ResetEngine();
+  } else if (strcmp(name, "Forwardness") == 0       || strcmp(name, "forwardness") == 0) {
+    Param.forwardness = atoi(value);
     ResetEngine();
   } else if (strcmp(name, "NpsLimit") == 0          || strcmp(name, "npslimit") == 0) {
     Timer.nps_limit = atoi(value);
