@@ -629,9 +629,11 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
   // Score terms using information gathered during piece eval
 
-  if (r_on_7th == 2)          // two rooks on 7th rank
+  if (r_on_7th == 2)                 // two rooks on 7th rank
     Add(e, sd, F_LINES, Param.twoRooksOn7thMg, Param.twoRooksOn7thEg);
-  Add(e, sd, (fwd_bonus[fwd_cnt] * fwd_weight * Param.forwardness) / 100, 0);
+
+  // forwardness (from Toga II 3.0)
+  Add(e, sd, (fwd_bonus[fwd_cnt] * fwd_weight * Param.forwardness) / 100, 0); 
 
   // Score king attacks if own queen is present and there are at least 2 attackers
 

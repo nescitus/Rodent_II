@@ -37,6 +37,16 @@ POS p;
 #include <math.h>
 
 int EloToSpeed(int elo) {
+
+  if (elo >= 1800) {
+    int mul = (elo - 1600) / 2;
+	return (10 * mul);
+  }
+
+  if (elo >= 1000) {
+    return 50 + (80 * (elo - 1000) / 100);
+  }
+
   int result = 300 + pow(2, (elo - 799) / 85);
   result *= 0.23;
 
