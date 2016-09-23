@@ -93,6 +93,10 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   return best;
 }
 
+// @QuiesceChecks() searches good and equal captures
+// plus checking moves with non-negative SEE.
+// Move selection is performed within NextCaptureOrCheck()
+
 int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
 {
   eData e;
@@ -152,12 +156,13 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
   return best;
 }
 
+// @QuiesceFlee() quiescence search function dedicated to escsping
+// from check. Can be called only while side to move is in check.
 
 int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
   eData e;
-  int best, score, move, new_pv[MAX_PLY];
-  int fl_check, fl_mv_type;
+  int best, score, move, fl_mv_type, new_pv[MAX_PLY];
   int is_pv = (beta > alpha + 1);
 
   MOVES m[1];
@@ -185,11 +190,6 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
 
   if (ply >= MAX_PLY - 1)
     return Eval.Return(p, &e, 1);
-
-  // Are we in check? Knowing that is useful when it comes 
-  // to pruning/reduction decisions
-
-  fl_check = InCheck(p); // TODO: here we are always in check
 
   // Init moves and variables before entering main loop
 
