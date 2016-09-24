@@ -177,6 +177,7 @@ void cEval::ScoreKing(POS *p, eData *e, int sd) {
 
   bbKingFile = BB.FillNorthSq(sq) | BB.FillSouthSq(sq);
   ScoreKingFile(p, sd, bbKingFile, &shield, &storm);
+  shield = SCALE(shield, 120);
 
   bbNextFile = ShiftEast(bbKingFile);
   if (bbNextFile) ScoreKingFile(p, sd, bbNextFile, &shield, &storm);
