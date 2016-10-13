@@ -390,9 +390,9 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     Add(e, sd, F_MOB, Param.n_mob_mg[cnt], Param.n_mob_eg[cnt]);  // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & bbKnightChk) 
-       att += chk_threat[N];                          // check threat bonus
+      att += chk_threat[N]; // check threat bonus
 
-	e->bbAllAttacks[sd] |= BB.KnightAttacks(sq); // TESTING, was bbMob
+	e->bbAllAttacks[sd] |= BB.KnightAttacks(sq);
     e->bbEvAttacks[sd]  |= bbMob;
 
     // Knight attacks on enemy king zone
@@ -438,7 +438,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     Add(e, sd, F_MOB, Param.b_mob_mg[cnt], Param.b_mob_eg[cnt]);   // mobility bonus
 
     if ((bbMob &~e->bbPawnTakes[op]) & ~p->cl_bb[sd] & bbDiagChk)
-      att += chk_threat[B];                            // check threat bonus
+      att += chk_threat[B]; // check threat bonus
 
     e->bbAllAttacks[sd] |= bbMob;
     e->bbEvAttacks[sd]  |= bbMob;
