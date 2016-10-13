@@ -38,7 +38,7 @@ static const U64 bbQueenSide   = FILE_A_BB | FILE_B_BB | FILE_C_BB;
 static const int bigChainScore = 18;
 static const int smallChainScore = 13;
 
-sPawnHashEntry PawnTT[EVAL_HASH_SIZE];
+sPawnHashEntry PawnTT[PAWN_HASH_SIZE];
 
 void ClearPawnHash(void) {
 
