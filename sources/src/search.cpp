@@ -163,7 +163,7 @@ int Widen(POS *p, int depth, int * pv, int lastScore) {
     }
   }
 
-  cur_val = SearchRoot(p, 0, -INF, INF, root_depth, pv); // full window search
+  cur_val = SearchRoot(p, 0, -INF, INF, depth, pv); // full window search
   return cur_val;
 }
 

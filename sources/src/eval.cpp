@@ -392,7 +392,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
     if ((bbMob &~e->bbPawnTakes[op]) & bbKnightChk) 
        att += chk_threat[N];                          // check threat bonus
 
-    e->bbAllAttacks[sd] |= bbMob;
+	e->bbAllAttacks[sd] |= BB.KnightAttacks(sq); // TESTING, was bbMob
     e->bbEvAttacks[sd]  |= bbMob;
 
     // Knight attacks on enemy king zone
