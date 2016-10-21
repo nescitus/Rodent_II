@@ -578,7 +578,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
 	if (SqBb(sq) & bbAwayZone[sd]) {
        fwd_weight += 1;
-	   fwd_cnt += 1;
+	   fwd_cnt += 4;
 	}
 
     // Queen mobility
@@ -629,7 +629,7 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 
   // Score terms using information gathered during piece eval
 
-  if (r_on_7th == 2)                 // two rooks on 7th rank
+  if (r_on_7th > 1)                 // two rooks on 7th rank
     Add(e, sd, F_LINES, Param.twoRooksOn7thMg, Param.twoRooksOn7thEg);
 
   // forwardness (from Toga II 3.0)
