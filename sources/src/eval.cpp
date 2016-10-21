@@ -577,8 +577,8 @@ void cEval::ScorePieces(POS *p, eData *e, int sd) {
 	// Queen forwardness
 
 	if (SqBb(sq) & bbAwayZone[sd]) {
-       fwd_weight += 1;
-	   fwd_cnt += 4;
+       fwd_weight += 4;
+	   fwd_cnt += 1;
 	}
 
     // Queen mobility
