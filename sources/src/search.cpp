@@ -462,13 +462,17 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
                    && alpha > -MAX_EVAL
                    && beta < MAX_EVAL;
 
+  int eval = 0;
+  if (fl_prunable_node
+  && (!was_null || depth <= 6) ) eval = Eval.Return(p, &e, 1);
+
   // Beta pruning / static null move
 
   if (use_beta_pruning
   && fl_prunable_node
   && depth <= 3
   && !was_null) {
-    int sc = Eval.Return(p, &e, 1) - 120 * depth; // TODO: Tune me!
+    int sc = eval - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
   }
 
@@ -480,7 +484,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !was_null
   && MayNull(p)
   ) {
-    int eval = Eval.Return(p, &e, 1);
     if (eval > beta) {
 
       new_depth = depth - ((823 + 67 * depth) / 256); // simplified Stockfish formula
@@ -520,8 +523,6 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && !(p->Pawns(p->side) & bbRelRank[p->side][RANK_7]) // no pawns to promote in one move
   && depth <= 4) {
     int threshold = beta - razor_margin[depth];
-    int eval = Eval.Return(p, &e, 1);
-
     if (eval < threshold) {
       score = QuiesceChecks(p, ply, alpha, beta, pv);
       if (score < threshold) return score;
@@ -553,7 +554,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
       if (use_futility
       && fl_prunable_node
       && depth <= 6) {
-        if (Eval.Return(p, &e, 1) + fut_margin[depth] < beta) fl_futility = 1;
+        if (eval + fut_margin[depth] < beta) fl_futility = 1;
       }
     }
 
