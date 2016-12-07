@@ -356,29 +356,40 @@ U64 sBook::GetPolyglotKey(POS *p)
   return key;
 }
 
-void sBook::OpenPolyglot(void)
+void sBook::OpenPolyglot()
 {
   // check if string contains a line ending information from personality file
   // if found replace with C string termination
   size_t ln = strlen(bookName) - 1;
-  if (*bookName && bookName[ln] == '\n') 
+  if (*bookName && bookName[ln] == '\n')
     bookName[ln] = '\0';
-  bookFile = fopen(bookName, "rb");
+
+  char nameBook[255];
+
+  strcpy(nameBook, "");
+  strcpy(nameBook, bookPath);
+
+  strcat(nameBook, bookName); // append bookname
+  bookFile = fopen(nameBook, "rb");
 
   if (bookFile != NULL) {
-
     if (fseek(bookFile, 0, SEEK_END) == -1) {
       bookFile = NULL;
       return;
     }
 
-    bookSize = ftell(bookFile) / 16;
+    bookSize = (int) ftell(bookFile) / 16;
     if (bookSize == -1) {
       bookFile = NULL;
       return;
     }
   }
 }
+
+void sBook::setPath(char *path)
+{
+  bookPath = path;
+};
 
 int my_random(int n)
 {
@@ -404,7 +415,7 @@ int sBook::GetPolyglotMove(POS *p, int printOutput)
   nOfChoices = 0;
 
   if (bookFile != NULL && bookSize != 0) {
-    srand(Timer.GetMS());
+    srand((unsigned int) Timer.GetMS());
 
     for (pos = FindPos(key); pos < bookSize; pos++) {
 

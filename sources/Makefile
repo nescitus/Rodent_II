@@ -4,8 +4,8 @@
 BINDIR = /usr/bin
 
 #define the directory for the data files
-DATADIR = /usr/share/rodentII
-
+# DATADIR = /usr/share/rodentII
+DATADIR = /opt/picochess/engines/rodent2
 
 # define the C compiler to use
 CC = g++
