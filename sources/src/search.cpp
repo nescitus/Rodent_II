@@ -138,6 +138,15 @@ void Iterate(POS *p, int *pv) {
     && !fl_has_choice 
     && !Timer.IsInfiniteMode() ) break;
 
+    // abort search on finding checkmate score
+
+    if (cur_val > MAX_EVAL || cur_val < -MAX_EVAL) {
+      int maxMateDepth = (MATE - Abs(cur_val) + 1) + 1;
+      maxMateDepth *= 4;
+      maxMateDepth /= 3;
+      if (maxMateDepth <= root_depth) break;
+    }
+
     if (abort_search || Timer.FinishIteration()) break;
     val = cur_val;
   }
@@ -462,6 +471,9 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
                    && alpha > -MAX_EVAL
                    && beta < MAX_EVAL;
 
+  // Get evaluation score if we expect it to be needed
+  // for pruning/reduction decisions
+
   int eval = 0;
   if (fl_prunable_node
   && (!was_null || depth <= 6) ) eval = Eval.Return(p, &e, 1);
@@ -470,7 +482,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
 
   if (use_beta_pruning
   && fl_prunable_node
-  && depth <= 3
+  && depth <= 3                  // TODO: Tune me!
   && !was_null) {
     int sc = eval - 120 * depth; // TODO: Tune me!
     if (sc > beta) return sc;
