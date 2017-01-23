@@ -477,6 +477,13 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   int eval = 0;
   if (fl_prunable_node
   && (!was_null || depth <= 6) ) eval = Eval.Return(p, &e, 1);
+  
+  //Correct self-side score by depth for human opponent
+  if (fl_prunable_node && (Param.riskydepth > 0) && (depth >= Param.riskydepth) && (p->side == root_side) && (abs(eval) > 100)){
+	  int eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/depth) : round(1.0*eval*(nodes > 100 ? 2 : 1)*depth/Param.riskydepth);
+	  if (eval_adj>=MAX_EVAL) eval_adj = MAX_EVAL;
+	  eval = eval_adj;
+  }
 
   // Beta pruning / static null move
 
