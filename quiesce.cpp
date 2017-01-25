@@ -32,9 +32,9 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   best = Eval.Return(p, &e, 1);
   
   //Correct self-side score by depth for human opponent
-  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(best) > 100)){
+  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(best) > 100) && (abs(best) < 1000)){
 	  int eval_adj = best<0 ? round(1.0*best*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply) : round(1.0*best*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth);
-	  if (eval_adj>=MAX_EVAL) eval_adj = MAX_EVAL;
+	  if (eval_adj>1000) eval_adj = 1000;
 	  best = eval_adj;
   }
   
