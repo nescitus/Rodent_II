@@ -190,6 +190,7 @@ void cParam::Default(void) {
   forwardness = 0;
   book_filter = 20;
   eval_blur = 0;
+  riskydepth = 0;
 }
 
 // @DynamicInit() - here we initialize stuff that might be changed 
@@ -792,6 +793,20 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
 
   if (w_dist < b_dist-1) Add(e, WC, F_PASSERS, 0, 500);
   if (b_dist < w_dist-1) Add(e, BC, F_PASSERS, 0, 500);
+}
+
+int cEval::EvalScaleByDepth(POS *p, int ply, int eval){
+  int eval_adj = eval;
+  //Correct self-side score by depth for human opponent
+  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(eval) > 100) && (abs(eval) < 1000)){
+	  eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply) : round(1.0*eval*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth);
+	  if (eval_adj>1000) eval_adj = 1000;
+  }
+  else if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side != root_side) && (abs(eval) > 100) && (abs(eval) < 1000)){
+	  eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth) : round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply);
+	  if (eval_adj>1000) eval_adj = 1000;
+  }
+  return eval_adj;
 }
 
 int cEval::Return(POS *p, eData * e, int use_hash) {

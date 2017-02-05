@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0.9.50: 56,3% vs 0.9.33
 
 #pragma once
-#define PROG_NAME "Rodent II 0.9.68"
+#define PROG_NAME "Rodent II 0.9.68 risky"
 
 enum eColor{WC, BC, NO_CL};
 enum ePieceType{P, N, B, R, Q, K, NO_TP};
@@ -352,12 +352,12 @@ private:
   void ScoreOutpost(POS * p, eData *e, int sd, int pc, int sq);
   void ScorePawns(POS * p, eData *e, int sd);
   void FullPawnEval(POS * p, eData *e, int use_hash);
-
 public:
   int prog_side;
   void Init(void);
   int Return(POS * p, eData * e, int use_hash);
   void Print(POS *p);
+  int EvalScaleByDepth(POS *p, int ply, int eval);
 } cEval;
 
 extern cEval Eval;

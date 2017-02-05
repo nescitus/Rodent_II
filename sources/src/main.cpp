@@ -90,6 +90,7 @@ int main() {
   MainBook.bookName = "books/rodent.bin";
   GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
+  ReadPersonality("rodent.txt");
 #elif __linux || __unix
   // if we are on Linux
   // first check, if compiler got told where books and settings are stored
@@ -98,6 +99,7 @@ int main() {
   char nameMainbook[20] = "/rodent.bin";
   char nameGuidebook[20]= "/guide.bin";
   char namePersonality[20]= "/basic.ini";
+  char namePersonality2[20]= "/rodent.txt";
   // process Mainbook
   strcpy(path, ""); // first clear
   strcpy(path, STR(BOOKPATH)); // copy path from c preprocessor here
@@ -113,10 +115,16 @@ int main() {
   strcpy(path, STR(BOOKPATH));
   strcat(path, namePersonality);
   ReadPersonality(path);
+
+  strcpy(path, "");
+  strcpy(path, STR(BOOKPATH));
+  strcat(path, namePersonality2);
+  ReadPersonality(path);
 #else // if no path was given than we assume that files are stored at /usr/share/rodentII
   MainBook.bookName = "/usr/share/rodentII/rodent.bin";
   GuideBook.bookName = "/usr/share/rodentII/guide.bin";
   ReadPersonality("/usr/share/rodentII/basic.ini");
+  ReadPersonality("/usr/share/rodentII/rodent.txt");
 #endif
 
 #else
@@ -126,6 +134,7 @@ int main() {
   MainBook.bookName = "books/rodent.bin";
   GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
+  ReadPersonality("rodent.txt");
 #endif
   MainBook.OpenPolyglot();
   GuideBook.OpenPolyglot();

@@ -1,4 +1,7 @@
 #include "rodent.h"
+#include "param.h"
+#include <math.h>
+
 
 //#define USE_QS_HASH
 
@@ -21,12 +24,20 @@ int Quiesce(POS *p, int ply, int alpha, int beta, int *pv) {
   if (abort_search) return 0;
   *pv = 0;
   if (IsDraw(p)) return DrawScore(p);
-  if (ply >= MAX_PLY - 1) return Eval.Return(p, &e, 1);
+  if (ply >= MAX_PLY - 1) return Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
 
   // Get a stand-pat score and adjust bounds
   // (exiting if eval exceeds beta)
 
-  best = Eval.Return(p, &e, 1);
+  best = Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
+  
+  //Correct self-side score by depth for human opponent
+  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(best) > 100) && (abs(best) < 1000)){
+	  int eval_adj = best<0 ? round(1.0*best*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply) : round(1.0*best*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth);
+	  if (eval_adj>1000) eval_adj = 1000;
+	  best = eval_adj;
+  }
+  
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
 
@@ -115,9 +126,9 @@ int QuiesceChecks(POS *p, int ply, int alpha, int beta, int *pv)
   if (IsDraw(p)) return DrawScore(p);
 
   if (ply >= MAX_PLY - 1)
-    return Eval.Return(p, &e, 1);
+    return Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
 
-  best = stand_pat = Eval.Return(p, &e, 1);
+  best = stand_pat = Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
 
   if (best >= beta) return best;
   if (best > alpha) alpha = best;
@@ -189,7 +200,7 @@ int QuiesceFlee(POS *p, int ply, int alpha, int beta, int *pv) {
   // Safeguard against exceeding ply limit
 
   if (ply >= MAX_PLY - 1)
-    return Eval.Return(p, &e, 1);
+    return Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
 
   // Init moves and variables before entering main loop
 
