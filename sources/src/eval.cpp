@@ -798,11 +798,11 @@ void cEval::ScoreUnstoppable(eData *e, POS * p) {
 int cEval::EvalScaleByDepth(POS *p, int ply, int eval){
   int eval_adj = eval;
   //Correct self-side score by depth for human opponent
-  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(eval) > 100) && (abs(eval) < 1000)){
+  if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(eval) > Param.draw_score) && (abs(eval) < 1000)){
 	  eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply) : round(1.0*eval*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth);
 	  if (eval_adj>1000) eval_adj = 1000;
   }
-  else if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side != root_side) && (abs(eval) > 100) && (abs(eval) < 1000)){
+  else if ((Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side != root_side) && (abs(eval) > Param.draw_score) && (abs(eval) < 1000)){
 	  eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth) : round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply);
 	  if (eval_adj>1000) eval_adj = 1000;
   }
