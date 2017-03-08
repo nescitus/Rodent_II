@@ -119,7 +119,10 @@ void UciLoop(void) {
         printf("option name Contempt type spin default %d min -250 max 250\n", Param.draw_score);
         printf("option name SlowMover type spin default %d min 10 max 500\n", time_percentage);
         printf("option name Selectivity type spin default %d min 0 max 200\n", hist_perc);
-        printf("option name OwnBook type check default true\n");
+        
+		printf("option name RiskyDepth type spin default %d min 0 max 10\n", Param.riskydepth);
+        
+		printf("option name OwnBook type check default true\n");
         printf("option name GuideBookFile type string default guide.bin\n");
         printf("option name MainBookFile type string default rodent.bin\n");
         printf("option name BookFilter type spin default %d min 0 max 5000000\n", Param.book_filter);
@@ -331,6 +334,9 @@ void ParseSetoption(char *ptr) {
   } else if (strcmp(name, "Selectivity") == 0       || strcmp(name, "selectivity") == 0) {
     hist_perc = atoi(value);
     hist_limit = -HIST_LIMIT + ((HIST_LIMIT * hist_perc) / 100);
+  } else if (strcmp(name, "RiskyDepth") == 0       || strcmp(name, "riskydepth") == 0) {
+    Param.riskydepth = atoi(value);
+    ResetEngine();
   } else if (strcmp(name, "GuideBookFile") == 0     || strcmp(name, "guidebookfile") == 0) {
     if (!fl_separate_books || !fl_reading_personality) {
       GuideBook.ClosePolyglot();

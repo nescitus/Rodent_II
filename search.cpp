@@ -443,7 +443,7 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   // Safeguard against exceeding ply limit
   
   if (ply >= MAX_PLY - 1)
-    return Eval.EvalScaleByDepth(p,ply,Eval.Return(p, &e, 1));
+    return Eval.Return(p, &e, 1);
 
   // Are we in check? Knowing that is useful when it comes 
   // to pruning/reduction decisions
@@ -479,8 +479,10 @@ int Search(POS *p, int ply, int alpha, int beta, int depth, int was_null, int la
   && (!was_null || depth <= 6) ) eval = Eval.Return(p, &e, 1);
   
   //Correct self-side score by depth for human opponent
-  if (fl_prunable_node){
-	  eval = Eval.EvalScaleByDepth(p,ply,eval);
+  if (fl_prunable_node && (Param.riskydepth > 0) && (ply >= Param.riskydepth) && (p->side == root_side) && (abs(eval) > 100) && (abs(eval) < 1000)){
+	  int eval_adj = eval<0 ? round(1.0*eval*(nodes > 100 ? 0.5 : 1)*Param.riskydepth/ply) : round(1.0*eval*(nodes > 100 ? 2 : 1)*ply/Param.riskydepth);
+	  if (eval_adj>1000) eval_adj = 1000;
+	  eval = eval_adj;
   }
 
   // Beta pruning / static null move

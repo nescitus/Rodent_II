@@ -85,6 +85,7 @@ public:
   int r_mob_eg[15];
   int q_mob_mg[28];
   int q_mob_eg[28];
+  int riskydepth;
   void DynamicInit(void);
   void Default(void);
 } cParam; 

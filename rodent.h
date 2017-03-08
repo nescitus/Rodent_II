@@ -352,12 +352,12 @@ private:
   void ScoreOutpost(POS * p, eData *e, int sd, int pc, int sq);
   void ScorePawns(POS * p, eData *e, int sd);
   void FullPawnEval(POS * p, eData *e, int use_hash);
+
 public:
   int prog_side;
   void Init(void);
   int Return(POS * p, eData * e, int use_hash);
   void Print(POS *p);
-  int EvalScaleByDepth(POS *p, int ply, int eval);
 } cEval;
 
 extern cEval Eval;
