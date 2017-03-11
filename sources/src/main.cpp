@@ -85,44 +85,51 @@ int main() {
   Param.Default();
   Param.DynamicInit();
   InitSearch();
+
 #ifdef _WIN32 || _WIN64
   // if we are on Windows search for books and settings in same directory as rodentII.exe
+  MainBook.setPath('');
+  GuideBook.setPath('');
   MainBook.bookName = "books/rodent.bin";
   GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");
+
 #elif __linux || __unix
   // if we are on Linux
   // first check, if compiler got told where books and settings are stored
 #ifdef BOOKPATH
-  char path[255]; // space for complete path and filename
-  char nameMainbook[20] = "/rodent.bin";
-  char nameGuidebook[20]= "/guide.bin";
-  char namePersonality[20]= "/basic.ini";
+  char nameMainbook[255];
+  char nameGuidebook[255];
+  char namePersonality[255];
+
+  strcpy(nameMainbook, ""); // first clear
+  strcpy(nameMainbook, STR(BOOKPATH)); // copy path from c preprocessor here
+  strcat(nameMainbook, "/");
+  MainBook.setPath(nameMainbook);
+
+  strcpy(nameGuidebook, ""); // first clear
+  strcpy(nameGuidebook, STR(BOOKPATH)); // copy path from c preprocessor here
+  strcat(nameGuidebook, "/");
+  GuideBook.setPath(nameGuidebook);
+
   // process Mainbook
-  strcpy(path, ""); // first clear
-  strcpy(path, STR(BOOKPATH)); // copy path from c preprocessor here
-  strcat(path, nameMainbook); // append bookname
-  MainBook.bookName = path; // store it
+  MainBook.bookName = "books/rodent.bin"; // store it
   // process Guidebook
-  strcpy(path, "");
-  strcpy(path, STR(BOOKPATH));
-  strcat(path, nameGuidebook);
-  GuideBook.bookName = nameGuidebook;
+  GuideBook.bookName = "books/guide.bin"; // store it
+
   // process Personality file
-  strcpy(path, "");
-  strcpy(path, STR(BOOKPATH));
-  strcat(path, namePersonality);
-  ReadPersonality(path);
-#else // if no path was given than we assume that files are stored at /usr/share/rodentII
-  MainBook.bookName = "/usr/share/rodentII/rodent.bin";
-  GuideBook.bookName = "/usr/share/rodentII/guide.bin";
-  ReadPersonality("/usr/share/rodentII/basic.ini");
+  strcpy(namePersonality, "");
+  strcpy(namePersonality, STR(BOOKPATH));
+  strcat(namePersonality, "/basic.ini");
+  ReadPersonality(namePersonality);
 #endif
 
 #else
   // a platform we have not tested yet. We assume that opening books and 
   // settings are stored within the same directory. Similiar to Windows.
   printf("Platform unknown. We assume that opening books and settings are stored within RodentII path");
+  MainBook.setPath('');
+  GuideBook.setPath('');
   MainBook.bookName = "books/rodent.bin";
   GuideBook.bookName = "books/guide.bin";
   ReadPersonality("basic.ini");

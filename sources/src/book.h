@@ -33,7 +33,7 @@ struct polyglot_move {
     int  learn;
 };
 
-#include<stdio.h>
+#include <stdio.h>
 
 struct sBook {
 private:
@@ -41,19 +41,19 @@ private:
     FILE * bookFile;
     int moves[100];
     int nOfChoices;
-    char testString [12];
     int IsInfrequent(int val, int maxFreq);
-    void ParseBookEntry(char * ptr, int line_no);
     int FindPos(U64 key);
     void ReadEntry(polyglot_move * entry, int n);
     U64 ReadInteger(int size);
 public:
     char *bookName;
+    char *bookPath;
     int GetPolyglotMove(POS *p, int printOutput);
     U64 GetPolyglotKey(POS *p);
     void OpenPolyglot(void);
     void ClosePolyglot(void);
     void Init(POS *p);
+    void setPath(char *path);
 };
 
 extern sBook GuideBook;
