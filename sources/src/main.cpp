@@ -94,28 +94,27 @@ int main() {
   // if we are on Linux
   // first check, if compiler got told where books and settings are stored
 #ifdef BOOKPATH
-  char path[255]; // space for complete path and filename
-  char nameMainbook[20] = "/rodent.bin";
-  char nameGuidebook[20]= "/guide.bin";
-  char namePersonality[20]= "/basic.ini";
+  char DataPath[235];
+  char MainBookPath[255];
+  char GuideBookPath[255];
+  char PersonalityPath[255];
+  strncpy(DataPath, STR(BOOKPATH), sizeof(DataPath)-2); // store path from c preprocessor here
+  strcat(DataPath, "/");
   // process Mainbook
-  strcpy(path, ""); // first clear
-  strcpy(path, STR(BOOKPATH)); // copy path from c preprocessor here
-  strcat(path, nameMainbook); // append bookname
-  MainBook.bookName = path; // store it
+  strcpy(MainBookPath, DataPath); // copy data path
+  strcat(MainBookPath, "books/rodent.bin"); // append bookname
+  MainBook.bookName = MainBookPath; // store it
   // process Guidebook
-  strcpy(path, "");
-  strcpy(path, STR(BOOKPATH));
-  strcat(path, nameGuidebook);
-  GuideBook.bookName = nameGuidebook;
+  strcpy(GuideBookPath, DataPath);
+  strcat(GuideBookPath, "books/guide.bin");
+  GuideBook.bookName = GuideBookPath; 
   // process Personality file
-  strcpy(path, "");
-  strcpy(path, STR(BOOKPATH));
-  strcat(path, namePersonality);
-  ReadPersonality(path);
+  strcpy(PersonalityPath, DataPath);
+  strcat(PersonalityPath, "basic.ini");
+  ReadPersonality(PersonalityPath);
 #else // if no path was given than we assume that files are stored at /usr/share/rodentII
-  MainBook.bookName = "/usr/share/rodentII/rodent.bin";
-  GuideBook.bookName = "/usr/share/rodentII/guide.bin";
+  MainBook.bookName = "/usr/share/rodentII/books/rodent.bin";
+  GuideBook.bookName = "/usr/share/rodentII/books/guide.bin";
   ReadPersonality("/usr/share/rodentII/basic.ini");
 #endif
 

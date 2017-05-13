@@ -29,17 +29,17 @@ default: build
 build:
 	@echo "Type make help for additional options"
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $(EXENAME) -x c++ compile.linux
-	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+	echo -e "SHOW_OPTIONS\nPERSONALITY_BOOKS\nNPS_BLUR" > $(CONFIGFILE)
 
 build-static:
 	@echo "Type make help for additional options"
 	$(CC) $(LDFLAGS) -static $(CFLAGS) -o $(EXENAME) -x c++ compile.linux
-	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+	echo -e "SHOW_OPTIONS\nPERSONALITY_BOOKS\nNPS_BLUR" > $(CONFIGFILE)
 
 build-debug:
 	@echo "Type make help for additional options"
 	$(CC) $(LD1FLAGS) $(C1FLAGS) -o $(EXENAME) -x c++ compile.linux
-	echo "SHOW_OPTIONS" > $(CONFIGFILE)
+	echo -e "SHOW_OPTIONS\nPERSONALITY_BOOKS\nNPS_BLUR" > $(CONFIGFILE)
 
 %.o : %.c
 	$(CC) $(CFLAGS) $< -o $@
@@ -51,14 +51,16 @@ clean:
 	rm -f $(EXENAME)
 
 install:
-	mkdir -p $(BINDIR)
-	mkdir -p $(DATADIR)
+	mkdir -p -m 755 $(BINDIR)
+	mkdir -p -m 755 $(DATADIR)
 	cp $(EXENAME) $(BINDIR)
 	cp $(CONFIGFILE) $(DATADIR)
-	find ../books/ -name '*.bin' -type f -exec cp '{}' $(DATADIR) \;
-	find ../personalities/ -name '*.ini' -type f -exec cp '{}' $(DATADIR) \;
+	find -name '*.txt' -type f -exec cp '{}' $(DATADIR) \;
+	cp -r ../books $(DATADIR)
+	cp -r ../personalities $(DATADIR)
 	chmod 755 $(BINDIR)/$(EXENAME)
-	chmod 644 $(DATADIR)/*
+	chmod -R 644 $(DATADIR)/*
+	find $(DATADIR) -type d -exec chmod 755 '{}' \;
 
 # this just performs a copy of rodentII engine
 update:
@@ -74,8 +76,8 @@ help:
 	@echo ""
 	@echo "make build		> Compile Rodent II"
 	@echo "make build-static	> Compile Rodent II as a static binary"
-	@echo "make build-debug		> Compile Rodent II with Logfile support"
+	@echo "make build-debug 	> Compile Rodent II with Logfile support"
 	@echo "make clean 		> Clean up"
-	@echo "make install		> Install RodentII (root privileges required)"
-	@echo "make update		> Update RodenII engine (root privileges required)"
-	@echo "make remove		> Remove RodenII from your system (root privileges required)"
+	@echo "make install		> Install Rodent II (root privileges required)"
+	@echo "make update		> Update Rodent II engine (root privileges required)"
+	@echo "make remove		> Remove Rodent II from your system (root privileges required)"
